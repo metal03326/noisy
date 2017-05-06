@@ -2,7 +2,7 @@
  * Noisy communication module for Dropbox
  *
  * @author metal03326
- * @version 20141117
+ * @version 20170506
  */
 
 // Dropbox singleton to be passed to Noisy

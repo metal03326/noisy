@@ -2,7 +2,7 @@
  * Noisy communication base module
  *
  * @author metal03326
- * @version 20141121
+ * @version 20170506
  */
 
 "use strict";

@@ -188,7 +188,7 @@ var n = {
 	themes: themes,
 
 	// Version of Noisy
-	version: 20141124,
+	version: 20170506,
 
 	/**
 	 * Deselect all selected items from the current playlist and find window
