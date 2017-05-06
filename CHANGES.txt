@@ -1,11 +1,13 @@
-20141128:
- - Small improvements;
+20170506:
+ - Switched Dropbox to APIv2;
+ - Removed Application Cache;
+ - Other small improvements;
 
- 20141123:
+20141123:
  - Fixed problems with navigating inside of Google Drive using mouse only;
  - Small improvements;
 
- 20141119:
+20141119:
  - Improved support for mobile devices;
  - Fixed Power saver to disable itself when device is charging;
  - Small fixes;
@@ -21,7 +23,7 @@
  - Fixed battery indicator to show actual battery level on hover;
  - Fixed multiselect with Shift key;
 
- 20141111:
+20141111:
  - New background music to the video;
  - Minified video;
  - Playing of the intro video now doesn't require the user to click on the second play button;
