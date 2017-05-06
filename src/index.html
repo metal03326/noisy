@@ -1,0 +1,514 @@
+﻿<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml">
+	<head>
+        <title>Noisy - Your cloud player</title>
+        <meta name="description" content="Noisy is HTML5 player. It uses cloud services like Dropbox and Google Drive to play files from and has scrobbling to Last.fm. Free to use. No account needed" />
+        <meta name="keywords" content="Noisy,HTML5,audio,player,free,Dropbox,Google Drive,Last.fm" />
+        <meta name="author" content="metal03326" />
+        <meta property="og:title" content="Noisy - Your cloud player">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://www.noisyplayer.com">
+        <meta property="og:image" content="https://www.noisyplayer.com/open_praph.png">
+        <fb:like href="http://developers.facebook.com/" width="450" height="80" />
+		<script type="text/javascript">
+            var timerStart = Date.now();
+        </script>
+		<meta charset="utf-8" />
+        <meta name=viewport content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/style.css" />
+        <link rel="apple-touch-icon" sizes="57x57" href="./img/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon" sizes="114x114" href="./img/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon" sizes="72x72" href="./img/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="./img/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon" sizes="60x60" href="./img/apple-touch-icon-60x60.png" />
+        <link rel="apple-touch-icon" sizes="120x120" href="./img/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon" sizes="76x76" href="./img/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="./img/apple-touch-icon-152x152.png" />
+        <link id="largest-logo" rel="icon" type="image/png" sizes="196x196" href="./img/favicon-196x196.png" />
+        <link rel="icon" type="image/png" sizes="160x160" href="./img/favicon-160x160.png" />
+        <link rel="icon" type="image/png" sizes="96x96" href="./img/favicon-96x96.png" />
+        <link id="notify-logo" rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png" />
+        <meta name="msapplication-TileColor" content="#2b5797" />
+        <meta name="msapplication-TileImage" content="./img/mstile-144x144.png" />
+        <style id="theme"></style>
+        <style id="animations"></style>
+	</head>
+	<body>
+		<div id="splash" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:9999;background:#000;color:#fff">
+			<span id="initializing-noisy" style="width: 100%;position:absolute;top:90%;text-align:center">Initializing Noisy...</span>
+			<div class="hidden" style="width:770px;height:170px;position:absolute;top:50%;left:50%;margin-left:-385px;margin-top:-85px;text-align:center;">
+                <div data-icon=">" style="font-size: 96px;"></div>
+                <div id="splash-screen-text">
+                    If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){}location.replace('//'+location.host+'/')})()" style="text-decoration:none;color:red;">leaving it</a>. If not you can <a href="javascript:localStorage.removeItem('preferences'),location.reload()" style="text-decoration:none;color:red;">click here to delete the settings</a>. If that doesn't help, try <a href="javascript:localStorage.removeItem('playlists'),location.reload()" style="text-decoration:none;color:red;">deleting the playlists</a>, too.
+                </div>
+            </div>
+		</div>
+		<script>
+			window.splashTimeout = setTimeout( function(){
+				var splash = document.querySelector( '#splash div' );
+				if ( splash )
+				{
+					splash.className = "";
+				}
+			}, 10000 );
+		</script>
+		<div id="themes-style-tag-container"></div>
+		<header id="header">
+            <div id="header-left" tabindex="0">
+                <div id="battery-level-menu-handle">
+                    <div id="battery-cap"></div>
+                    <div id="battery-level-3" class="battery-level"></div>
+                    <div id="battery-level-2" class="battery-level"></div>
+                    <div id="battery-level-1" class="battery-level"></div>
+                </div>
+                <div id="the-menu">
+                    <a href="javascript:" id="connect" data-menulistener="connect" class="menu-ul-li" tabindex="0"><span data-icon="<"></span></a>
+                    <a href="javascript:" id="showAddFileFolder" data-menulistener="showAddFileFolder" class="menu-ul-li" tabindex="0"><span data-icon="="></span></a>
+                    <a href="javascript:" id="showSavePlaylist" data-menulistener="showSavePlaylist" class="menu-ul-li" tabindex="0"><span data-icon="9"></span></a>
+                    <a href="javascript:" id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0"><span data-icon="8"></span></a>
+                    <a href="javascript:" id="showAbout" data-menulistener="showAbout" class="menu-ul-li" tabindex="0"><span data-icon=";"></span></a>
+                    <a href="javascript:" id="showWelcome" data-menulistener="showWelcome" class="menu-ul-li" tabindex="0"><span data-icon="6"></span></a>
+                </div>
+            </div>
+            <div id="header-center">
+                <nav class="controls">
+                    <ul class="nav-ul">
+                        <li class="nav-ul-li"><a id="trigger-stop" class="control-ul-a" href="javascript:" data-menulistener="stop" data-icon="v"></a></li>
+                        <li class="nav-ul-li"><a id="trigger-play" class="control-ul-a" href="javascript:" data-menulistener="play" data-icon="x"></a></li>
+                        <li class="nav-ul-li"><a id="trigger-pause" class="control-ul-a" href="javascript:" data-menulistener="playPause" data-icon="c"></a></li>
+                        <li class="nav-ul-li"><a id="trigger-prev" class="control-ul-a" href="javascript:" data-menulistener="prev" data-icon="C"></a></li>
+                        <li class="nav-ul-li"><a id="trigger-next" class="control-ul-a" href="javascript:" data-menulistener="next" data-icon="B"></a></li>
+                        <li class="nav-ul-li"><a id="trigger-next-random" class="control-ul-a" href="javascript:" data-menulistener="nextRandom" data-icon="s"></a></li>
+                    </ul>
+                </nav>
+                <nav class="inputs">
+                    <ul class="nav-ul">
+                        <div id="nav-volume">
+                            <li class="nav-inputs-li"><a id="trigger-mute" class="control-ul-a" href="javascript:" data-menulistener="toggleMute" data-icon="0"></a></li>
+                            <li class="nav-inputs-li"><div id="volume"><div id="volume-progress"></div></div></li>
+                        </div>
+                        <div id="nav-progress">
+                            <li class="nav-inputs-li"><div id="progress"><div id="playback-progress"></div><a id="mark50" title="50%">|</a></div></li>
+                        </div>
+                        <div id="nav-playback-dropdown">
+                            <li class="nav-ul-li css3-selectbox top-bar">
+                                <select id="playback-order">
+                                    <option id="playback-order-default"></option>
+                                    <option id="playback-order-repeat-playlist"></option>
+                                    <option id="playback-order-repeat-track"></option>
+                                    <option id="playback-order-random"></option>
+                                    <option id="playback-order-stop-after-current"></option>
+                                </select>
+                            </li>
+                        </div>
+                    </ul>
+                </nav>
+            </div>
+            <div id="header-right">
+                <a href="javascript:" onclick="n.showSearch(event)" class="search-in-playlist hidden" data-icon="#"></a>
+                <a href="javascript:" onclick="n.showPreferences(event)" data-icon="$" class="nav-ul-a"></a>
+            </div>
+		</header>
+
+		<div id="playlists-wrapper">
+            <div id="playlists-tabs-wrapper">
+			    <ul id="playlists-tabs">
+                    <li id="add-playlist" class="playlists-tabs-li"><span class="center-vertically">+</span></li>
+                </ul>
+                <a href="javascript:" onclick="n.showSearch(event)" class="search-in-playlist" data-icon="#"></a>
+            </div>
+			<ul id="playlists">
+                <li id="playlist-hints" class="row playlist scroll-y">
+                    <span id="add-playlist-hint-icon" class="rotate90"><span data-icon="?"></span></span> <span id="add-playlist-hint-text"></span>
+                    <div id="search-playlist-hint-container">
+                        <span id="search-playlist-hint-text"></span> <span id="search-playlist-hint-icon" class="rotate270"><span data-icon="7"></span></span>
+                    </div>
+                    <div id="main-menu-hint">
+                        <div id="main-menu-hint-icon" data-icon="@"></div><span id="main-menu-hint-text"></span>
+                    </div>
+                </li>
+			</ul>
+		</div>
+
+		<footer id="footer" class="row">
+            <div id="footer-text"></div>
+            <div id="footer-counter"></div>
+            <a href="javascript:n.setFooter(null,true);" id="cancel-action" data-icon="*"></a>
+        </footer>
+		<div id="youtube-search-window" class="window"><!--visibility-hidden-->
+			<div id="window-title" class="cf">
+				<span id="preferences-window-title" class="window-title-span"></span>
+				<span id="about-window-title" class="window-title-span"></span>
+				<span id="find-window-title" class="window-title-span"></span>
+				<span id="connect-window-title" class="window-title-span"></span>
+				<span id="add-window-title" class="window-title-span"></span>
+				<span id="save-playlist-window-title" class="window-title-span"></span>
+				<span id="load-playlist-window-title" class="window-title-span"></span>
+				<span id="save-preferences-window-title" class="window-title-span"></span>
+				<span id="load-preferences-window-title" class="window-title-span"></span>
+				<span id="welcome-window-title" class="window-title-span"></span>
+				<span id="local-window-title" class="window-title-span"></span>
+				<span id="youtube-search-window-title" class="window-title-span"></span>
+				<a href="javascript:" id="window-close">&times;</a>
+			</div>
+			<div id="window-content" class="row scroll-y">
+				<div id="preferences-window-content">
+                    <div id="preferences-tabs">
+                        <a href="javascript:" class="preferences-item active" data-preference="general"></a>
+                        <a href="javascript:" class="preferences-item" data-preference="appearance"></a>
+                        <a href="javascript:" class="preferences-item" data-preference="keyboard"></a>
+                        <a href="javascript:" class="preferences-item" data-preference="performance"></a>
+                    </div>
+                    <div id="preferences-container">
+                        <div id="preference-general">
+                            <div id="preference-general-legend"></div>
+                            <table id="preferences-format-table">
+                                <tr>
+                                    <td>
+                                        <label id="preference-general-playlist" for="preference-playlist-format"></label>
+                                    </td>
+                                    <td>
+                                        <input id="preference-playlist-format" type="text" class="preference-format-input" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label id="preference-general-title" for="preference-window-title-format"></label>
+                                    </td>
+                                    <td>
+                                        <input id="preference-window-title-format" type="text" class="preference-format-input" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label id="preference-general-statusbar" for="preference-status-bar-format"></label>
+                                    </td>
+                                    <td>
+                                        <input id="preference-status-bar-format" type="text" class="preference-format-input" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <label id="preference-general-notification" for="preference-notification-popup-format"></label>
+                                    </td>
+                                    <td>
+                                        <input id="preference-notification-popup-format" type="text" class="preference-format-input" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <label>
+                                <input id="preference-cursor-follows-playback" type="checkbox" />
+                                <span id="preference-general-cursor-playback"></span>
+                            </label><br />
+                            <label>
+                                <input id="preference-playback-follows-cursor" type="checkbox" />
+                                <span id="preference-general-playback-cursor"></span>
+                            </label><br />
+                            <label>
+                                <input id="preference-hide-playlist-tabs" type="checkbox" onclick="n.oneTabCheck()" />
+                                <span id="preference-general-hide-tabs"></span>
+                            </label><br />&nbsp;<br />
+                            <a href="javascript:" id="preference-general-help"><span data-icon="H"></span></a>
+                        </div>
+                        <div id="preference-appearance" class="hidden">
+                            <table id="appearance-table">
+                                <tr>
+                                    <td class="appearance-table-left">
+                                        <label id="themes-label" for="preference-theme"></label>
+                                    </td>
+                                    <td>
+                                        <span class="css3-selectbox">
+                                            <select id="preference-theme" onchange="n.onStyleChange(this)">
+                                                <option value="blue"></option>
+                                                <option value="default"></option>
+                                                <option value="forum"></option>
+                                                <option value="grey"></option>
+                                                <option value="green"></option>
+                                                <option value="contrast"></option>
+                                                <option value="orange"></option>
+                                                <option value="pink"></option>
+                                                <option value="purple"></option>
+                                                <option value="red"></option>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="appearance-table-left">
+                                        <label id="languages-label" for="preference-user-language"></label>
+                                    </td>
+                                    <td>
+                                        <span class="css3-selectbox">
+                                            <select id="preference-user-language" onchange="n.onLanguageChange(this)">
+                                                <option value="bg">Български</option>
+                                                <option value="en">English</option>
+                                            </select>
+                                        </span>
+                                        <a href="javascript:" id="preference-language-help"><span data-icon="H"></span></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id="translation-contributors-label" class="appearance-table-left"></td>
+                                    <td>
+                                        <div id="translation-contributors">
+                                            <div class="translation-contributor">
+                                                <span class="translation-language">Български</span> - <span class="translation-author">metal03326</span>
+                                            </div>
+                                            <div class="translation-contributor">
+                                                <span class="translation-language">English</span> - <span class="translation-author">metal03326</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="preference-keyboard" class="hidden">
+                            <table id="keyboard-shortcuts">
+                                <tr>
+                                    <th id="preference-keyboard-shortcut"></th>
+                                    <th id="preference-keyboard-action"></th>
+                                    <th></th>
+                                </tr>
+                                <tr class="align-top">
+                                    <td>
+                                        <input id="keyboard-shortcut" type="text" data-keys="" required class="required-item" /><br />
+                                        <span class="exists-text"></span>
+                                    </td>
+                                    <td>
+                                        <span class="css3-selectbox">
+                                            <select id="actions">
+                                                <option value="play"></option>
+                                                <option value="pause"></option>
+                                                <option value="stop"></option>
+                                                <option value="playPause"></option>
+                                                <option value="next"></option>
+                                                <option value="nextRandom"></option>
+                                                <option value="prev"></option>
+                                                <option value="showSearch"></option>
+                                                <option value="addToQueue"></option>
+                                                <option value="removeFromQueue"></option>
+                                                <option value="volumeUp"></option>
+                                                <option value="volumeDown"></option>
+                                                <option value="toggleMute"></option>
+                                                <option value="removeFromPlaylist"></option>
+                                            </select>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button id="shortcut-add" class="button-add"></button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="preference-performance" class="hidden">
+                            <label>
+                                <input id="preference-enable-powersaver" type="checkbox" />
+                                <span id="preference-performance-powersaver"></span> <a href="javascript:" id="preference-powersaver-help"><span data-icon="H"></span></a>
+                            </label><br />
+                            <span id="preference-performance-powersaver-threshold"></span>
+                            <span class="css3-selectbox">
+                                <select id="power-saver-state" onchange="n.onPowerSaverStateChange(this)">
+                                    <option>5</option>
+                                    <option>10</option>
+                                    <option>15</option>
+                                    <option>25</option>
+                                    <option>50</option>
+                                    <option>75</option>
+                                    <option>100</option>
+                                </select>
+                            </span>%<br />
+                            <div id="preference-performance-notes"></div>
+                            <label>
+                                <input id="preference-enable-animations" type="checkbox" />
+                                <span id="preference-performance-animation"></span>
+                            </label><br />
+                            <label>
+                                <input id="preference-enable-counter" type="checkbox" />
+                                <span id="preference-performance-counter"></span>
+                            </label><br />
+                            <label>
+                                <input id="preference-enable-notifications" type="checkbox" />
+                                <span id="preference-performance-notifications"></span>
+                            </label><br />
+                            <label>
+                                <input id="preference-enable-scrobbling" type="checkbox" />
+                                <span id="preference-performance-scrobbling"></span>
+                            </label><br />
+                            <span id="preference-performance-scrobbling-position"></span> 50% <input type="range" id="preference-scrobbling-position" min="50" max="100" /> 100%<br />
+                            <span id="preference-performance-scrobbling-queued-tracks"></span> <span id="preference-performance-scrobbling-tracks-to-scrobble"></span> <button class="button-submit scrobble-action" onclick="n.lastfm.queue.process()"></button><button class="button-clear scrobble-action" onclick="n.lastfm.queue.reset()"></button><br />
+                        </div>
+                    </div>
+                    <div id="console-panel">
+                        <div id="console-title"><span id="console-title-text"></span> <a href="javascript:n.clearConsole();" id="clear-console" data-icon="%"></a></div>
+                        <div id="console-content"></div>
+                    </div>
+				</div>
+				<div id="about-window-content">
+                    <div id="about-heading-row" class="cf">
+                        <div class="favicon"><img alt="Noisy logo" src="./img/apple-touch-icon-120x120.png" /></div>
+                        <div id="about-heading">
+                            <h5>Noisy</h5>
+                            <a href="../CHANGES.txt" target="_blank"><h6 id="version"></h6></a>
+                            <h4 id="moto"></h4>
+                            <h6><span id="by"></span> metal03326</h6>
+                        </div>
+                        <div class="donation">
+                            <form action="//www.paypal.com/cgi-bin/webscr" method="post" target="_top" id="donation-form">
+                                <input type="hidden" name="cmd" value="_s-xclick">
+                                <input type="hidden" name="hosted_button_id" value="GGT9XHZS35BAJ">
+                                <input type="image" src="data:image/gif;base64,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" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                            </form>
+                            or <b>BitCoin</b>
+                            <div>12X2rsGrWpT2wPp1XtREiGxG8vc7nuAatT</div>
+                        </div>
+                    </div>
+                    <div id="about-follow">
+                        <span id="about-follow-us"></span>
+                        <a href="//www.facebook.com/NoisyPlayer" rel="publisher" class="follow-link" target="_blank"><span data-icon="F"></span></a>
+                        <a href="//plus.google.com/+Noisyplayer" rel="publisher" class="follow-link" target="_blank"><span data-icon="G"></span></a>
+                    </div>
+                    <div id="about-resources">
+                        <div><span id="about-used-resources"></span></div>
+                        <div><span id="about-font-icons"></span> <a href="//icomoon.io" target="_blank">IcoMoon</a></div>
+                        <div><span id="about-icons"></span> <a href="http://www.dailyoverview.com" target="_blank">DAILY OVERVIEW</a></div>
+                        <div><span id="fav-icons"></span> <a href="http://realfavicongenerator.net" target="_blank">RealFaviconGenerator</a></div>
+                        <div><span id="md5-library"></span> <a href="http://pajhome.org.uk/crypt/md5/scripts.html" target="_blank">Paul Johnston</a></div>
+                        <div><span id="about-music"></span> <a href="http://www.bensound.com" target="_blank">Bensound</a></div>
+                    </div>
+                    <div id="faq-panel">
+                        <div id="faq-title"></div>
+                        <div id="faq-content"></div>
+                    </div>
+				</div>
+				<div id="find-window-content">
+                    <div id="find-item-container">
+					    <input id="find-item" type="text" class="border-box" />
+                    </div>
+                    <button id="init-search" onclick="n.initSearch()" data-icon="#"></button>
+					<article id="find-window-results" class="playlist scroll-y"></article>
+				</div>
+				<div id="connect-window-content">
+					<div id="currently-connected-to"></div>
+					<table id="connected-table">
+						<tr>
+							<td>Dropbox</td>
+							<td id="connected-dropbox"></td>
+						</tr>
+						<tr>
+							<td>Google Drive</td>
+							<td id="connected-googledrive"></td>
+						</tr>
+						<tr>
+							<td>Last.fm</td>
+							<td id="connected-lastfm"></td>
+						</tr>
+					</table>
+					<span id="make-connection-to"></span>
+                    <span class="css3-selectbox">
+                        <select id="connect-to">
+                            <option value="dropbox">Dropbox</option>
+                            <option value="googledrive">Google Drive</option>
+                            <option value="lastfm">Last.fm</option>
+                        </select>
+                    </span>
+				</div>
+				<div id="add-window-content" class="no-selection">
+					<div id="add-window-cloud-chooser">
+                        <a href="javascript:" class="cloud-icon dropbox-icon" data-cloud="dropbox">
+                            <span data-icon="D" class="icon"></span>
+                            <span id="dropbox-text">Dropbox</span>
+                        </a>
+                        <a href="javascript:" class="cloud-icon googledrive-icon" data-cloud="googledrive">
+                            <span data-icon="A" class="icon"></span>
+                            <span id="google-drive-text">Google Drive</span>
+                        </a>
+						<a href="javascript:" class="cloud-icon local-icon" data-cloud="local">
+                            <span data-icon="5" class="icon"></span>
+                            <span id="local-text"></span>
+						</a>
+					</div>
+					<div id="add-window-files" class="hidden"></div>
+					<div id="loading-folder-contents" class="visibility-hidden"><div id="loading-folder-contents-icon" data-icon="w"></div></div>
+				</div>
+				<div id="welcome-window-content"></div>
+				<div id="local-window-content">
+                    <span id="choose-files-to-play"></span>
+                    <div id="file-input-methods">
+                        <input type="file" multiple id="selected-playback-files" class="hidden" onchange="n.onFilesSupplied(this)" />
+                        <button onclick="document.getElementById('selected-playback-files').click()" id="selected-playback-files-trigger"></button>
+                        <div id="file-upload-method-or"></div>
+                        <div id="drop-zone"></div>
+                    </div>
+                    <p><b id="file-upload-method-note"></b> <span id="playback-limitations"></span></p>
+				</div>
+                <div id="youtube-search-window-content"></div>
+			</div>
+			<div id="window-buttons" class="row cf">
+				<div id="preferences-window-buttons" class="cf">
+                    <div class="float-left">
+                        <span class="hide-when-asking">
+                            <button onclick="this.parentNode.parentNode.classList.add('confirmation')" id="button-reset-preferences"></button>
+                            <button id="channel-switcher" onclick="n.switchChannel()">Switch to dev channel</button>
+                            <a href="javascript:" id="preference-dev-channel-help"><span data-icon="H"></span></a>
+                        </span>
+                        <div class="confirm">
+                            <span id="confirmation"></span>
+                            <button onclick="n.restoreToDefaults()" class="button-yes"></button>
+                            <button onclick="this.parentNode.parentNode.classList.remove('confirmation')" class="button-no"></button>
+                        </div>
+                    </div>
+                    <div class="float-right">
+                        <button onclick="n.showSavePreferences()" id="button-export-preferences"></button>
+                        <button onclick="n.showLoadPreferences()" id="button-import-preferences"></button>
+                    </div>
+				</div>
+				<div id="find-window-buttons" class="hidden"></div>
+				<div id="connect-window-buttons">
+					<button onclick="n.connectTo()" class="button-connect"></button>
+				</div>
+				<div id="add-window-buttons">
+                    <span class="window-buttons-text"><span class="dropbox-convert-text"></span><a href="javascript:n.showReadFile();" class="click-here"></a></span>
+					<button onclick="n.addFileFolder()" class="button-add" disabled></button>
+					<button onclick="n.openFolder()" class="button-open" disabled></button>
+				</div>
+				<div id="save-playlist-window-buttons">
+					<input id="save-playlist-window-filename" type="text" disabled />.plst.nsy
+					<button onclick="n.savePlaylistToCloud()" class="button-save" disabled></button>
+				</div>
+				<div id="load-playlist-window-buttons">
+                    <span class="window-buttons-text"><span class="dropbox-convert-text"></span><a href="javascript:n.showReadFile();" class="click-here"></a></span>
+					<button onclick="n.loadPlaylistFromCloud()" class="button-load" disabled></button>
+				</div>
+				<div id="save-preferences-window-buttons">
+					<input id="save-preferences-window-filename" type="text" placeholder="Enter filename" disabled />.pref.nsy
+					<button onclick="n.savePreferencesToCloud()" class="button-save" disabled></button>
+				</div>
+				<div id="load-preferences-window-buttons">
+					<button onclick="n.loadPreferencesFromCloud()" class="button-load" disabled></button>
+				</div>
+				<div id="welcome-window-buttons">
+					<label class="window-buttons-text"><input type="checkbox" id="show-on-startup-checkbox" checked="checked" /> <span id="show-on-startup"></span></label>
+                    <button onclick="n.changeSlide(-1)"><div data-icon="@" class="rotate270"></div></button>
+                    <span id="welcome-slide-counter"></span>
+                    <button onclick="n.changeSlide(1)" id="welcome-slide-next"><div data-icon="@" class="rotate90"></div></button>
+				</div>
+				<div id="local-window-buttons" class="hidden"></div>
+				<div id="youtube-search-window-buttons" class="hidden"></div>
+			</div>
+		</div>
+		<script src="js/libs/md5.js"></script>
+        <script src="js/urlmanager.js"></script>
+		<script src="js/cloud.js"></script>
+		<script src="js/clouds/dropbox.js"></script>
+		<script src="js/clouds/googledrive.js"></script>
+		<script src="js/clouds/lastfm.js"></script>
+		<script src="js/i18n/en.js"></script>
+		<script src="js/i18n/bg.js"></script>
+		<script src="js/lang.js"></script>
+		<script src="js/themes.js"></script>
+		<script src="js/preferences.js"></script>
+		<script src="js/player.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

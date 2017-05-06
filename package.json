@@ -1,0 +1,18 @@
+{
+  "name": "noisy",
+  "version": "20170428",
+  "description": "Cloud player",
+  "main": "index.html",
+  "author": "metal03326",
+  "license": "GPLv3",
+  "scripts": {
+    "dev": "lite-server",
+    "build": "node ./build/builder.js"
+  },
+  "devDependencies": {
+    "clean-css": "^4.0.12",
+    "html-minifier": "^3.4.3",
+    "lite-server": "^2.3.0",
+    "uglify-js": "^2.8.22"
+  }
+}
