@@ -2,12 +2,11 @@
  * Noisy Preferences module for data binding between the DOM and the preferences object
  *
  * @author metal03326
- * @version 20141127
+ * @version 20170507
  */
 
 // Preferences singleton to be passed to Noisy
-var pref =
-{
+let pref = {
 	// Flag showing if we are running Noisy for the first time
 	firstTime: true,
 
@@ -16,93 +15,96 @@ var pref =
 
 	// Default settings
 	settings: {
-		"values": {
-			"power-saver-state": "15",
-			"preference-user-language": "en",
-			"preference-theme": "default",
-			"preference-scrobbling-position": "50",
-			"preference-notification-popup-format": "%artist% - %title%",
-			"preference-status-bar-format": "%artist% - %title%",
-			"preference-window-title-format": "%artist% - %title%",
-			"preference-playlist-format": "%artist% - %title%"
+		values          : {
+			'power-saver-state'                   : '15',
+			'preference-user-language'            : 'en',
+			'preference-theme'                    : 'default',
+			'preference-scrobbling-position'      : '50',
+			'preference-notification-popup-format': '%artist% - %title%',
+			'preference-status-bar-format'        : '%artist% - %title%',
+			'preference-window-title-format'      : '%artist% - %title%',
+			'preference-playlist-format'          : '%artist% - %title%'
 		},
-		"checkboxes": {
-			"preference-enable-notifications": false,
-			"preference-enable-counter": true,
-			"preference-enable-animations": true,
-			"preference-enable-powersaver": true,
-			"preference-enable-scrobbling": true,
-			"preference-hide-playlist-tabs": false,
-			"preference-playback-follows-cursor": false,
-			"preference-cursor-follows-playback": false
+		checkboxes      : {
+			'preference-enable-notifications'   : false,
+			'preference-enable-counter'         : true,
+			'preference-enable-animations'      : true,
+			'preference-enable-powersaver'      : true,
+			'preference-enable-scrobbling'      : true,
+			'preference-hide-playlist-tabs'     : false,
+			'preference-playback-follows-cursor': false,
+			'preference-cursor-follows-playback': false
 		},
-		"showWelcome": true, "keys": [
-			{"key": "17+81", "action": "addToQueue"},
-			{"key": "81", "action": "addToQueue"},
-			{"key": "74", "action": "showSearch"},
-			{"key": "66", "action": "next"},
-			{"key": "86", "action": "stop"},
-			{"key": "67", "action": "playPause"},
-			{"key": "88", "action": "play"},
-			{"key": "90", "action": "prev"},
-			{"key": "17+38", "action": "volumeUp"},
-			{"key": "17+40", "action": "volumeDown"},
-			{"key": "77", "action": "toggleMute"},
-			{"key": "46", "action": "removeFromPlaylist"}
+		showWelcome     : true,
+		keys            : [
+			{ key: '17+81', action: 'addToQueue' },
+			{ key: '81', action: 'addToQueue' },
+			{ key: '74', action: 'showSearch' },
+			{ key: '66', action: 'next' },
+			{ key: '86', action: 'stop' },
+			{ key: '67', action: 'playPause' },
+			{ key: '88', action: 'play' },
+			{ key: '90', action: 'prev' },
+			{ key: '17+38', action: 'volumeUp' },
+			{ key: '17+40', action: 'volumeDown' },
+			{ key: '77', action: 'toggleMute' },
+			{ key: '46', action: 'removeFromPlaylist' }
 		],
-		"volume": 1,
-		"activePlaylistId": null,
-		"muted": false,
-		"playbackOrder": 0,
-		"devChannel": false,
-		"dropbox": {
-			"accessToken": null
+		volume          : 1,
+		activePlaylistId: null,
+		muted           : false,
+		playbackOrder   : 0,
+		devChannel      : false,
+		dropbox         : {
+			accessToken: null
 		},
-		"googledrive": {
-			"accessToken": null
+		googledrive     : {
+			accessToken: null
 		},
-		"lastfm": {
-			"accessToken": null
+		lastfm          : {
+			accessToken: null
 		}
 	},
 
-	save: function()
+	save()
 	{
 		localStorage.setItem( 'preferences', JSON.stringify( this.settings ) );
 	},
 
-	load: function()
+	load()
 	{
 		this.originalSettings = JSON.parse( JSON.stringify( this.settings ) );
-		var settings = localStorage.getItem( 'preferences' );
-		if( settings )
+
+		let settings = localStorage.getItem( 'preferences' );
+
+		if ( settings )
 		{
-			this.settings = JSON.parse( settings );
+			this.settings  = JSON.parse( settings );
 			this.firstTime = false;
 		}
 	},
 
-	'import': function( settings )
+	'import'( settings )
 	{
 		this.settings = settings;
 		this.save();
 	},
 
-	'export': function()
+	'export'()
 	{
 		return this.settings;
 	},
 
-	process: function()
+	process()
 	{
 		// Set language if we are running for the first time
-		if( this.firstTime )
+		if ( this.firstTime )
 		{
 			// Take default user language and set it as language
-			var language = navigator.language.split( '-' ).shift();
+			let language = navigator.language.split( '-' ).shift();
 
 			// Set language to English if we don't have translations for this language
-			if( !lang[ language ] )
+			if ( !lang[ language ] )
 			{
 				language = 'en';
 			}
@@ -114,34 +116,44 @@ var pref =
 		}
 
 		// Load all elements that have it's values stored in .value property
-		var inputs = this.settings.values,
-			inputEl;
-		for( var input in inputs )
+		let inputs = this.settings.values;
+		let inputEl;
+
+		for ( let input in inputs )
 		{
-			inputEl = document.getElementById( input );
-			if( inputEl )
+			if ( inputs.hasOwnProperty( input ) )
 			{
-				inputEl.value = this.settings.values[ input ];
-			}
-			else
-			{
-				n.warn( 'missing-element', input );
+				inputEl = document.getElementById( input );
+
+				if ( inputEl )
+				{
+					inputEl.value = this.settings.values[ input ];
+				}
+				else
+				{
+					n.warn( 'missing-element', input );
+				}
 			}
 		}
 
 		// Load all elements that havev it's values stored in .checked property
-		var checkboxes = this.settings.checkboxes,
-			checkboxEl;
-		for( var checkbox in checkboxes )
+		let checkboxes = this.settings.checkboxes;
+		let checkboxEl;
+
+		for ( let checkbox in checkboxes )
 		{
-			checkboxEl = document.getElementById( checkbox );
-			if( checkboxEl )
+			if ( checkboxes.hasOwnProperty( checkbox ) )
 			{
-				checkboxEl.checked = this.settings.checkboxes[ checkbox ];
-			}
-			else
-			{
-				n.warn( 'missing-element', checkbox );
+				checkboxEl = document.getElementById( checkbox );
+
+				if ( checkboxEl )
+				{
+					checkboxEl.checked = this.settings.checkboxes[ checkbox ];
+				}
+				else
+				{
+					n.warn( 'missing-element', checkbox );
+				}
 			}
 		}
 
@@ -157,11 +169,12 @@ var pref =
 		n.updateVolumeState();
 
 		// Load playback order
-		var playbackOrder = document.getElementById( 'playback-order' );
-		if( playbackOrder )
+		let playbackOrder = document.getElementById( 'playback-order' );
+
+		if ( playbackOrder )
 		{
 			playbackOrder.selectedIndex = this.settings.playbackOrder || 0;
-			n.audio.loop = !( 2 - playbackOrder.selectedIndex );
+			n.audio.loop                = !( 2 - playbackOrder.selectedIndex );
 		}
 		else
 		{
@@ -179,20 +192,21 @@ var pref =
 
 		// Set Last.fm access token to loaded value
 		n.lastfm.accessToken = this.settings.lastfm.accessToken;
-		n.lastfm.userName = this.settings.lastfm.userName;
+		n.lastfm.userName    = this.settings.lastfm.userName;
 
 		// Set language
 		n.lang = lang[ this.lang ];
 
 		// Disable counter update if user said so
-		if( !this.counter )
+		if ( !this.counter )
 		{
 			document.getElementById( 'footer-counter' ).classList.add( 'hidden' );
 		}
 
 		// Un-check Power Saver checkbox if it's not supported by the browser
-		var powerSaver = document.getElementById( 'preference-enable-powersaver' );
-		if( powerSaver.checked && document.getElementById( 'preference-performance-powersaver' ).classList.contains( 'not-supported' ) )
+		let powerSaver = document.getElementById( 'preference-enable-powersaver' );
+
+		if ( powerSaver.checked && document.getElementById( 'preference-performance-powersaver' ).classList.contains( 'not-supported' ) )
 		{
 			powerSaver.checked = false;
 			n.changePowerSaverState( false );
@@ -201,9 +215,10 @@ var pref =
 
 	set playbackOrder( value )
 	{
-		var shouldSave = this.settings.playbackOrder != value;
+		let shouldSave              = this.settings.playbackOrder !== value;
 		this.settings.playbackOrder = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -228,18 +243,22 @@ var pref =
 
 	set input( input )
 	{
-		var shouldSave;
-		if( 'checkbox' == input.type )
+		let shouldSave;
+
+		if ( 'checkbox' === input.type )
 		{
-			shouldSave = this.settings.checkboxes[ input.id ] != input.checked;
+			shouldSave = this.settings.checkboxes[ input.id ] !== input.checked;
+
 			this.settings.checkboxes[ input.id ] = input.checked;
 		}
 		else
 		{
-			shouldSave = this.settings.values[ input.id ] != input.value;
+			shouldSave = this.settings.values[ input.id ] !== input.value;
+
 			this.settings.values[ input.id ] = input.value;
 		}
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -247,9 +266,11 @@ var pref =
 
 	set showWelcome( value )
 	{
-		var shouldSave = this.settings.showWelcome != value;
+		let shouldSave = this.settings.showWelcome !== value;
+
 		this.settings.showWelcome = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -262,10 +283,13 @@ var pref =
 
 	set lang( value )
 	{
-		var shouldSave = n.lang != lang[ value ];
+		let shouldSave = n.lang !== lang[ value ];
+
 		n.lang = lang[ value ];
+
 		this.settings.values[ 'preference-user-language' ] = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -278,9 +302,11 @@ var pref =
 
 	set theme( value )
 	{
-		var shouldSave = this.settings.values[ 'preference-theme' ] != value;
+		let shouldSave = this.settings.values[ 'preference-theme' ] !== value;
+
 		this.settings.values[ 'preference-theme' ] = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -288,9 +314,11 @@ var pref =
 
 	set powerSaverState( value )
 	{
-		var shouldSave = this.settings.values[ 'power-saver-state' ] != value;
+		let shouldSave = this.settings.values[ 'power-saver-state' ] !== value;
+
 		this.settings.values[ 'power-saver-state' ] = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -298,9 +326,11 @@ var pref =
 
 	set accessToken( object )
 	{
-		var shouldSave = this.settings[ object.cloud ].accessToken != object.accessToken;
+		let shouldSave = this.settings[ object.cloud ].accessToken !== object.accessToken;
+
 		this.settings[ object.cloud ].accessToken = object.accessToken;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -309,7 +339,8 @@ var pref =
 	set activePlaylistId( value )
 	{
 		this.settings.activePlaylistId = value;
-		if( value )
+
+		if ( value )
 		{
 			this.scrollTop = document.getElementById( value ).scrollTop;
 		}
@@ -327,9 +358,11 @@ var pref =
 
 	set scrollTop( value )
 	{
-		var shouldSave = this.settings.scrollTop != value;
+		let shouldSave = this.settings.scrollTop !== value;
+
 		this.settings.scrollTop = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -342,9 +375,11 @@ var pref =
 
 	set tokenCloud( value )
 	{
-		var shouldSave = this.settings.tokenCloud != value;
+		let shouldSave = this.settings.tokenCloud !== value;
+
 		this.settings.tokenCloud = value;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -357,9 +392,11 @@ var pref =
 
 	set userName( object )
 	{
-		var shouldSave = this.settings[ object.cloud ].userName != object.userName;
+		let shouldSave = this.settings[ object.cloud ].userName !== object.userName;
+
 		this.settings[ object.cloud ].userName = object.userName;
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -367,11 +404,14 @@ var pref =
 
 	set muted( value )
 	{
-		var shouldSave = this.settings.muted != value;
+		let shouldSave = this.settings.muted !== value;
+
 		this.settings.muted = value;
-		n.audio.muted = value;
+		n.audio.muted       = value;
+
 		n.updateVolumeState();
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -381,12 +421,18 @@ var pref =
 	{
 		// Fix 0.7000000000000001 to be 0.7
 		value = parseFloat( value.toFixed( 1 ) );
-		var shouldSave = this.settings.volume != value;
+
+		let shouldSave = this.settings.volume !== value;
+
 		this.settings.volume = value;
+
 		n.audio.muted = this.settings.muted = false;
+
 		n.audio.volume = value;
+
 		n.updateVolumeState();
-		if( shouldSave )
+
+		if ( shouldSave )
 		{
 			this.save();
 		}
@@ -409,7 +455,7 @@ var pref =
 
 	get powerSaverEnabled()
 	{
-		return this.settings.checkboxes[ "preference-enable-powersaver" ];
+		return this.settings.checkboxes[ 'preference-enable-powersaver' ];
 	},
 
 	set devChannel( state )
