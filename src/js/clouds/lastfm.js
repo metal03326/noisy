@@ -30,7 +30,7 @@ let lastfm = new Cloud( {
 		{
 			if ( lastfm.isAuthenticated && n.pref.scrobbling && n.audio.dataset.playlist )
 			{
-				let item = document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ n.audio.dataset.item ];
+				let item = document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ n.audio.dataset.item ];
 
 				if ( item )
 				{
