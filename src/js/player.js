@@ -525,10 +525,7 @@ let n = {
 		sec.setAttribute( 'tabindex', 0 );
 
 		// Make all key:value pairs of the passed item to be added to the section element as data-key="value"
-		for ( let prop in item )
-		{
-			sec.dataset[ prop ] = item[ prop ];
-		}
+		Object.assign( sec.dataset, item );
 
 		// Add the visual to the user part (icon depending of the type and name)
 		sec.innerHTML = '<span data-icon=\''.concat( ( item.folder ? 'f' : '"' ), '\'></span>', item.name );
@@ -631,37 +628,31 @@ let n = {
 		if ( 'default' !== theme )
 		{
 			// Loop through all selectors. themes is a global variable declared in themes.js file
-			for ( selector in themes )
+			Object.keys( themes ).forEach( selector =>
 			{
-				if ( themes.hasOwnProperty( selector ) )
+				// Get the object of theme rules
+				selectorRules = themes[ selector ];
+
+				// Loop them
+				Object.keys( selectorRules ).forEach( selectedRule =>
 				{
-					// Get the object of theme rules
-					selectorRules = themes[ selector ];
-
-					// Loop them
-					for ( selectedRule in selectorRules )
+					// If current theme contains our theme name, then we should use the rules inside
+					if ( ~selectedRule.indexOf( theme ) )
 					{
-						// If current theme contains our theme name, then we should use the rules inside
-						if ( selectorRules.hasOwnProperty( selectedRule ) && ~selectedRule.indexOf( theme ) )
+						// Get rules for current theme
+						rules = selectorRules[ selectedRule ];
+						styles += selector.concat( openRuleString );
+
+						// Loop through all the rules for this theme and append them to the styles string
+						Object.keys( rules ).forEach( rule =>
 						{
-							// Get rules for current theme
-							rules = selectorRules[ selectedRule ];
-							styles += selector.concat( openRuleString );
+							styles += rule.concat( columnString, rules[ rule ], newLineString );
+						} );
 
-							// Loop through all the rules for this theme and append them to the styles string
-							for ( rule in rules )
-							{
-								if ( rules.hasOwnProperty( rule ) )
-								{
-									styles += rule.concat( columnString, rules[ rule ], newLineString );
-								}
-							}
-
-							styles += closeRuleString;
-						}
+						styles += closeRuleString;
 					}
-				}
-			}
+				} );
+			} );
 		}
 
 		// Replace old styles with the new ones
@@ -1004,7 +995,7 @@ let n = {
 
 		// Reset styles of cloud choosing icons in add/save window and select service depending on what the user clicked
 		len              = icons.length;
-		let _onIconClick = () =>
+		let _onIconClick = function()
 		{
 			let cloud = n[ this.dataset.cloud ];
 
@@ -1473,13 +1464,10 @@ let n = {
 			inputs[ i ].value = emptyString;
 		}
 
-		for ( let key in data )
+		Object.keys( data ).forEach( key =>
 		{
-			if ( data.hasOwnProperty( key ) )
-			{
-				delete data[ key ];
-			}
-		}
+			delete data[ key ];
+		} );
 
 		len = selects.length;
 		for ( i = len; i--; )
@@ -1879,13 +1867,7 @@ let n = {
 			itm.cloud = itm.cloud || cloudString;
 
 			// Setting all available attributes to the DOM item
-			for ( let prop in itm )
-			{
-				if ( itm.hasOwnProperty( prop ) )
-				{
-					item.dataset[ prop ] = itm[ prop ];
-				}
-			}
+			Object.assign( item.dataset, itm );
 
 			// Check if current item is supported by the browser
 			let mimeType = itm.mimetype;
@@ -2045,16 +2027,14 @@ let n = {
 		};
 		// Count how many of the of the tag we are not using
 		let notUsed = 0;
-		let regEx;
-		let replaceEx;
 
 		// Loop through tags to format them
-		for ( let tag in needed )
+		Object.keys( needed ).forEach( tag =>
 		{
-			regEx = needed[ tag ];
+			let regEx = needed[ tag ];
 
 			// Create regex for current tag if needed
-			replaceEx = regEx ? new RegExp( regEx[ 0 ], 'g' ) : '';
+			let replaceEx = regEx ? new RegExp( regEx[ 0 ], 'g' ) : '';
 
 			// Replace the tag with the value if found
 			if ( regEx && item.dataset[ tag ] )
@@ -2074,7 +2054,7 @@ let n = {
 			{
 				notUsed++;
 			}
-		}
+		} );
 
 		// If all tags are counted as not used, then use the placeholder string as a result;
 		if ( 4 === notUsed )
@@ -3079,23 +3059,11 @@ let n = {
 		let len    = items.length;
 		let toSave = [];
 
-		// Itterate all items
+		// Iterate all items
 		for ( let i = len; i--; )
 		{
-			// Shorthand for current item
-			let data = items[ i ].dataset;
-			let obj  = {};
-
-			for ( let prop in data )
-			{
-				if ( data.hasOwnProperty( prop ) )
-				{
-					obj[ prop ] = data[ prop ];
-				}
-			}
-
-			// Push the object to the array
-			toSave.push( obj );
+			// Clone dataset object into a new one
+			toSave.push( Object.assign( {}, items[ i ].dataset ) );
 		}
 
 		// Return the array of objects as a result
@@ -3817,16 +3785,12 @@ let n = {
 			{
 				let tags = n.powerSaveMode ? {} : n.readTags( this.result, fileToAdd.placeholder.split( '.' ).pop() );
 
-				for ( let tag in tags )
-				{
-					if ( tags.hasOwnProperty( tag ) )
-					{
-						fileToAdd[ tag ] = tags[ tag ];
-					}
-				}
+				// Copy the tags to the file
+				Object.assign( fileToAdd, tags );
 
 				// Stop listening for file loaded as we are going to attach a new listener next time
 				fr.removeEventListener( 'load', _handleFileLoad );
+
 				loop.next();
 			}
 
@@ -4219,7 +4183,7 @@ let n = {
 				{
 					charCode = dv.getUint8( i++ );
 
-					for ( tag in toGet )
+					Object.keys( toGet ).forEach( tag =>
 					{
 						tagCode = tag.charCodeAt( 0 );
 
@@ -4284,7 +4248,7 @@ let n = {
 								len = Object.keys( toGet ).length;
 							}
 						}
-					}
+					} );
 				}
 				break;
 			case 'ogg':
@@ -4468,6 +4432,7 @@ let n = {
 								metadata[ toGet[ tag ] ] = decodeURIComponent( str );
 								delete toGet[ tag ];
 								len = Object.keys( toGet ).length;
+
 								continue;
 							}
 						}
@@ -5312,92 +5277,65 @@ let n = {
 			const end          = '>';
 			const emptyString  = '';
 
-			for ( let el in answer )
+			Object.keys( answer ).forEach( el =>
 			{
-				if ( answer.hasOwnProperty( el ) )
+				let val = answer[ el ];
+				if ( stringString === typeof answer[ el ] )
 				{
-					let val = answer[ el ];
-					if ( stringString === typeof answer[ el ] )
-					{
-						compiled += startOpen.concat( el, end, val, startClose, el, end );
-					}
-					else
-					{
-						let isNan = isNaN( el );
-						compiled += ( isNan ? startOpen.concat( el, end ) : emptyString );
-						if ( val.adv )
-						{
-							compiled += _concatHTML( val.adv );
-						}
-						else
-						{
-							compiled += _concatHTML( val );
-						}
-						compiled += ( isNan ? startClose.concat( el, end ) : emptyString );
-					}
+					compiled += startOpen.concat( el, end, val, startClose, el, end );
 				}
-			}
+				else
+				{
+					let isNan = isNaN( el );
+					compiled += ( isNan ? startOpen.concat( el, end ) : emptyString );
+					compiled += _concatHTML( val.adv || val );
+					compiled += ( isNan ? startClose.concat( el, end ) : emptyString );
+				}
+			} );
+
 			return compiled;
 		}
 
 		document.getElementsByTagName( 'html' )[ 0 ].lang = n.pref.lang;
 
 		let splashItems = n.lang.splash;
-		let key;
-		let items;
 		let len;
 		let i;
-		let splashNode;
 
-		for ( key in splashItems )
+		Object.keys( splashItems ).forEach( key =>
 		{
-			if ( splashItems.hasOwnProperty( key ) )
-			{
-				// When changing language the splash screen isn't present in the DOM, so we need fake object to set the
-				// HTML to
-				splashNode           = document.getElementById( key ) || {};
-				splashNode.innerHTML = splashItems[ key ];
-			}
-		}
+			// When changing language the splash screen isn't present in the DOM, so we need fake object to set the
+			// HTML to
+			let splashNode       = document.getElementById( key ) || {};
+			splashNode.innerHTML = splashItems[ key ];
+		} );
 
 		let menuItems = n.lang.menu;
-		for ( key in menuItems )
+		Object.keys( menuItems ).forEach( key =>
 		{
-			if ( menuItems.hasOwnProperty( key ) )
-			{
-				document.getElementById( key ).innerHTML = menuItems[ key ];
-			}
-		}
+			document.getElementById( key ).innerHTML = menuItems[ key ];
+		} );
 
 		let windowItems = n.lang.window;
-		for ( key in windowItems )
+		Object.keys( windowItems ).forEach( key =>
 		{
-			if ( windowItems.hasOwnProperty( key ) )
-			{
-				document.getElementById( key ).innerHTML = windowItems[ key ];
-			}
-		}
+			document.getElementById( key ).innerHTML = windowItems[ key ];
+		} );
 
 		let placeholderItems = n.lang.placeholders;
-		for ( key in placeholderItems )
+		Object.keys( placeholderItems ).forEach( key =>
 		{
-			if ( placeholderItems.hasOwnProperty( key ) )
-			{
-				document.getElementById( key ).placeholder = placeholderItems[ key ];
-			}
-		}
+			document.getElementById( key ).placeholder = placeholderItems[ key ];
+		} );
 
 		let preferenceItems = n.lang.preferences;
 		let id              = 'preferences-tabs';
 		let selectorStart   = 'a[data-preference="';
 		const selectorEnd   = '"]';
-		for ( key in preferenceItems )
+		Object.keys( preferenceItems ).forEach( key =>
 		{
-			if ( preferenceItems.hasOwnProperty( key ) )
-			{
-				document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = preferenceItems[ key ];
-			}
-		}
+			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = preferenceItems[ key ];
+		} );
 
 		let actionItems = n.lang.actions;
 		let secondId    = 'keyboard-shortcuts';
@@ -5406,123 +5344,94 @@ let n = {
 		id            = 'actions';
 		selectorStart = 'option[value="';
 
-		for ( key in actionItems )
+		Object.keys( actionItems ).forEach( key =>
 		{
-			if ( actionItems.hasOwnProperty( key ) )
+			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = actionItems[ key ];
+
+			let elements = document.getElementById( secondId ).querySelectorAll( dotString + key );
+			let len      = elements.length;
+
+			for ( i = len; i--; )
 			{
-				document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = actionItems[ key ];
-
-				let elements = document.getElementById( secondId ).querySelectorAll( dotString + key );
-				len          = elements.length;
-
-				for ( i = len; i--; )
-				{
-					elements[ i ].innerHTML = n.lang.actions[ key ];
-				}
+				elements[ i ].innerHTML = n.lang.actions[ key ];
 			}
-		}
+		} );
 
 		let themeItems = n.lang.themes;
 		id             = 'preference-theme';
 		selectorStart  = 'option[value="';
-		for ( key in themeItems )
+		Object.keys( themeItems ).forEach( key =>
 		{
-			if ( themeItems.hasOwnProperty( key ) )
-			{
-				document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = themeItems[ key ];
-			}
-		}
+			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = themeItems[ key ];
+		} );
 
 		let buttonItems = n.lang.buttons;
-		for ( key in buttonItems )
+		Object.keys( buttonItems ).forEach( key =>
 		{
-			if ( buttonItems.hasOwnProperty( key ) )
-			{
-				items = document.getElementsByClassName( key );
-				len   = items.length;
+			let items = document.getElementsByClassName( key );
+			let len   = items.length;
 
-				for ( i = len; i--; )
-				{
-					items[ i ].innerHTML = buttonItems[ key ];
-				}
+			for ( i = len; i--; )
+			{
+				items[ i ].innerHTML = buttonItems[ key ];
 			}
-		}
+		} );
 
 		let validationItems = n.lang.validation;
-		for ( key in validationItems )
+		Object.keys( validationItems ).forEach( key =>
 		{
-			if ( validationItems.hasOwnProperty( key ) )
-			{
-				items = document.getElementsByClassName( key );
-				len   = items.length;
+			let items = document.getElementsByClassName( key );
+			let len   = items.length;
 
-				for ( i = len; i--; )
-				{
-					items[ i ].innerHTML = validationItems[ key ];
-				}
+			for ( i = len; i--; )
+			{
+				items[ i ].innerHTML = validationItems[ key ];
 			}
-		}
+		} );
 
 		let consoleItems = n.lang.console;
-		for ( key in consoleItems )
+		Object.keys( consoleItems ).forEach( key =>
 		{
-			if ( consoleItems.hasOwnProperty( key ) )
-			{
-				items = document.getElementsByClassName( key );
-				len   = items.length;
+			let items = document.getElementsByClassName( key );
+			let len   = items.length;
 
-				for ( i = len; i--; )
-				{
-					items[ i ].innerHTML = consoleItems[ key ];
-				}
+			for ( i = len; i--; )
+			{
+				items[ i ].innerHTML = consoleItems[ key ];
 			}
-		}
+		} );
 
 		let footerItems = n.lang.footer;
-		for ( key in footerItems )
+		Object.keys( footerItems ).forEach( key =>
 		{
-			if ( footerItems.hasOwnProperty( key ) )
-			{
-				let item = document.getElementById( key );
+			let item = document.getElementById( key ) || {};
 
-				if ( item )
-				{
-					item.innerHTML = footerItems[ key ];
-				}
-			}
-		}
+			item.innerHTML = footerItems[ key ];
+		} );
 
 		let helpItems = n.lang.help;
-		for ( key in helpItems )
+		Object.keys( helpItems ).forEach( key =>
 		{
-			if ( helpItems.hasOwnProperty( key ) )
-			{
-				document.getElementById( key ).title = helpItems[ key ];
-			}
-		}
+			document.getElementById( key ).title = helpItems[ key ];
+		} );
 
 		// Translate FAQ window
 		let questions = n.lang.faq.q;
-		len           = questions.length;
 		id            = 'q-';
 		secondId      = 'a-';
-		for ( i = len; i--; )
+
+		questions.forEach( ( question, i ) =>
 		{
 			// Get corresponding answer for current question
-			let answer = n.lang.faq.a[ i ];
+			let answer   = n.lang.faq.a[ i ];
+			let domIndex = i + 1;
 
-			// Prind the question to the screen
-			document.getElementById( id.concat( ( i + 1 ) ) ).innerHTML = questions[ i ];
+			// Print the question to the screen
+			document.getElementById( id + domIndex ).innerHTML = question;
 
-			if ( answer.adv )
-			{
-				document.getElementById( secondId.concat( ( i + 1 ) ) ).innerHTML = _concatHTML( answer.adv );
-			}
-			else
-			{
-				document.getElementById( secondId.concat( ( i + 1 ) ) ).innerHTML = _concatHTML( answer );
-			}
-		}
+			// Print the answer to the screen
+			document.getElementById( secondId + domIndex ).innerHTML = _concatHTML( answer.adv || answer );
+		} );
 
 		// Add not supported text to all options which are not supported by the current browser
 		let notSupported = document.getElementsByClassName( 'not-supported' );

@@ -117,45 +117,37 @@ let pref = {
 
 		// Load all elements that have it's values stored in .value property
 		let inputs = this.settings.values;
-		let inputEl;
 
-		for ( let input in inputs )
+		Object.keys( inputs ).forEach( input =>
 		{
-			if ( inputs.hasOwnProperty( input ) )
+			let inputEl = document.getElementById( input );
+
+			if ( inputEl )
 			{
-				inputEl = document.getElementById( input );
-
-				if ( inputEl )
-				{
-					inputEl.value = this.settings.values[ input ];
-				}
-				else
-				{
-					n.warn( 'missing-element', input );
-				}
+				inputEl.value = this.settings.values[ input ];
 			}
-		}
+			else
+			{
+				n.warn( 'missing-element', input );
+			}
+		} );
 
-		// Load all elements that havev it's values stored in .checked property
+		// Load all elements that have it's values stored in .checked property
 		let checkboxes = this.settings.checkboxes;
-		let checkboxEl;
 
-		for ( let checkbox in checkboxes )
+		Object.keys( checkboxes ).forEach( checkbox =>
 		{
-			if ( checkboxes.hasOwnProperty( checkbox ) )
-			{
-				checkboxEl = document.getElementById( checkbox );
+			let checkboxEl = document.getElementById( checkbox );
 
-				if ( checkboxEl )
-				{
-					checkboxEl.checked = this.settings.checkboxes[ checkbox ];
-				}
-				else
-				{
-					n.warn( 'missing-element', checkbox );
-				}
+			if ( checkboxEl )
+			{
+				checkboxEl.checked = this.settings.checkboxes[ checkbox ];
 			}
-		}
+			else
+			{
+				n.warn( 'missing-element', checkbox );
+			}
+		} );
 
 		// Render loaded keyboard shortcuts into the table in preferences window
 		n.renderKeyboardShortcuts();

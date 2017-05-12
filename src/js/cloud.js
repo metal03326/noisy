@@ -22,13 +22,7 @@ class Cloud
 		this.usesIds = false;
 
 		// Copy all the passed props
-		for ( let prop in props )
-		{
-			if ( props.hasOwnProperty( prop ) )
-			{
-				this[ prop ] = props[ prop ];
-			}
-		}
+		Object.assign( this, props );
 	}
 
 	/**
@@ -73,10 +67,10 @@ class Cloud
 
 		xhr.setRequestHeader( 'Authorization', 'Bearer ' + this.accessToken );
 
-		for ( let param in params )
+		Object.keys( params ).forEach( param =>
 		{
 			xhr.setRequestHeader( param, params[ param ] );
-		}
+		} );
 
 		xhr.send( body );
 	}
@@ -310,13 +304,10 @@ class Cloud
 		let headers         = {};
 		let url             = this.usesIds ? item.dataset.downloadURL : loadPlaylistURL.url;
 
-		for ( let header in loadPlaylistURL.headers )
+		Object.keys( loadPlaylistURL.headers ).forEach( header =>
 		{
-			if ( loadPlaylistURL.headers.hasOwnProperty( header ) )
-			{
-				headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
-			}
-		}
+			headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
+		} );
 
 		asyncLoop( 10, loop =>
 		{
@@ -363,13 +354,10 @@ class Cloud
 		let headers         = {};
 		let url             = this.usesIds ? item.dataset.downloadURL : loadPlaylistURL.url;
 
-		for ( let header in loadPlaylistURL.headers )
+		Object.keys( loadPlaylistURL.headers ).forEach( header =>
 		{
-			if ( loadPlaylistURL.headers.hasOwnProperty( header ) )
-			{
-				headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
-			}
-		}
+			headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
+		} );
 
 		asyncLoop( 10, loop =>
 		{
@@ -431,13 +419,7 @@ class Cloud
 
 				let metadata = n.powerSaveMode ? {} : n.readTags( buffer, extension );
 
-				for ( tag in metadata )
-				{
-					if ( metadata.hasOwnProperty( tag ) )
-					{
-						item.dataset[ tag ] = metadata[ tag ];
-					}
-				}
+				Object.assign( item.dataset, metadata );
 
 				// Check if current item is supported by the browser
 				if ( mimeType && !~n.formats.indexOf( mimeType ) )
@@ -595,13 +577,10 @@ class Cloud
 			{
 				let metadata = n.audio.mozGetMetadata();
 
-				for ( let prop in metadata )
+				Object.keys( metadata ).forEach( prop =>
 				{
-					if ( metadata.hasOwnProperty( prop ) )
-					{
-						item.dataset[ prop.toLowerCase() ] = metadata[ prop ];
-					}
-				}
+					item.dataset[ prop.toLowerCase() ] = metadata[ prop ];
+				} );
 			}
 
 			// Save playlist as we have new data
@@ -736,13 +715,10 @@ class Cloud
 			let savePath        = (path + '/' + file).replace( '//', '/' );
 			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
 
-			for ( let header in savePlaylistURL.headers )
+			Object.keys( savePlaylistURL.headers ).forEach( header =>
 			{
-				if ( savePlaylistURL.headers.hasOwnProperty( header ) )
-				{
-					headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
-				}
-			}
+				headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
+			} );
 
 			asyncLoop( 10, loop =>
 			{
@@ -809,13 +785,10 @@ class Cloud
 			let savePath        = (path + '/' + file).replace( '//', '/' );
 			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
 
-			for ( let header in savePlaylistURL.headers )
+			Object.keys( savePlaylistURL.headers ).forEach( header =>
 			{
-				if ( savePlaylistURL.headers.hasOwnProperty( header ) )
-				{
-					headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
-				}
-			}
+				headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
+			} );
 
 			asyncLoop( 10, loop =>
 			{
