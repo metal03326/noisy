@@ -2,68 +2,70 @@
  * Noisy communication module for Last.fm
  *
  * @author metal03326
- * @version 20170506
+ * @version 20170507
  */
 
 // Last.fm singleton to be passed to Noisy
-var lastfm = new Cloud( {
+let lastfm = new Cloud( {
 	name: 'Last.fm',
 
-	apiKey: '72e8177b21934e08c11195b8e559c925',
+	apiKey   : '72e8177b21934e08c11195b8e559c925',
 	apiSecret: 'c11941c36875f14d1dfe392848a43685',
 
 	urls: {
-		connect: "//www.last.fm/api/auth/?api_key="
+		connect: '//www.last.fm/api/auth/?api_key='
 	},
 
 	queue: {
 		q: {},
 
-		reset: function()
+		reset()
 		{
 			this.q = {};
 			this.save();
 			n.updateScrobbleCounter();
 		},
 
-		add: function()
+		add()
 		{
-			if( lastfm.isAuthenticated && n.pref.scrobbling && n.audio.dataset.playlist )
+			if ( lastfm.isAuthenticated && n.pref.scrobbling && n.audio.dataset.playlist )
 			{
-				var item = document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ n.audio.dataset.item ];
-				if( item )
+				let item = document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ n.audio.dataset.item ];
+
+				if ( item )
 				{
-					var duration = n.audio.duration;
-					//				var position = n.audio.currentTime;
-					var position = +new Date() / 1000 - parseInt( n.audio.dataset.start, 10 );
-					// Decrease position with one second if the duration is less. This may happen as a calculation error,
-					// which is less than a second, so we compensate here
-					if( position > duration )
+					let duration = n.audio.duration;
+					let position = +new Date() / 1000 - parseInt( n.audio.dataset.start, 10 );
+
+					// Decrease position with one second if the duration is less. This may happen as a calculation
+					// error, which is less than a second, so we compensate here
+					if ( position > duration )
 					{
 						position = duration;
 					}
 
 					// Last.fm requires a minimum of 30 seconds and 50% to be passed from the song before scrobbling
-					var neededPosition = Math.max( 30, duration * parseInt( n.pref.settings.values[ 'preference-scrobbling-position' ], 10 ) / 100 );
-					if( position >= neededPosition )
+					let neededPosition = Math.max( 30, duration * parseInt( n.pref.settings.values[ 'preference-scrobbling-position' ], 10 ) / 100 );
+
+					if ( position >= neededPosition )
 					{
-						var count = Object.keys( this.q ).length;
+						let count = Object.keys( this.q ).length;
 
-						// Last.fm allows a maximum of 50 songs to be scrobbled at one call to track.scrobble, so we limit
-						// the user to maximum of 50 songs in the queue
-						if( 50 > count )
+						// Last.fm allows a maximum of 50 songs to be scrobbled at one call to track.scrobble, so we
+						// limit the user to maximum of 50 songs in the queue
+						if ( 50 > count )
 						{
-							var artist = item.dataset.artist,
-								title = item.dataset.title,
-								timestamp = n.audio.dataset.start;
+							let { artist, title } = item.dataset;
+							let timestamp         = n.audio.dataset.start;
 
-							if( artist && title && timestamp )
+							if ( artist && title && timestamp )
 							{
 								// Check if we already have an item to scrobble for this timestamp
-								var exists = false;
-								for ( var q in this.q )
+								let exists = false;
+
+								for ( let q in this.q )
 								{
-									if ( this.q[ q ].timestamp == timestamp )
+									if ( this.q.hasOwnProperty( q ) && this.q[ q ].timestamp === timestamp )
 									{
 										exists = true;
 										break;
@@ -71,13 +73,14 @@ var lastfm = new Cloud( {
 								}
 
 								// Add the item if unique
-								if( !exists )
+								if ( !exists )
 								{
 									this.q[ count ] = {
-										artist: artist,
+										artist,
 										track: title,
-										timestamp: timestamp
+										timestamp
 									};
+
 									this.save();
 									n.updateScrobbleCounter();
 									this.process();
@@ -89,35 +92,37 @@ var lastfm = new Cloud( {
 			}
 		},
 
-		process: function()
+		process()
 		{
-			if( lastfm.isAuthenticated )
+			if ( lastfm.isAuthenticated )
 			{
-				var keys = Object.keys( this.q ),
-					artists = '',
-					artistsEq = '',
-					method = 'track.scrobble',
-					timestamps = '',
-					timestampsEq = '',
-					tracks = '',
-					tracksEq = '';
+				let keys         = Object.keys( this.q );
+				let artists      = '';
+				let artistsEq    = '';
+				let method       = 'track.scrobble';
+				let timestamps   = '';
+				let timestampsEq = '';
+				let tracks       = '';
+				let tracksEq     = '';
 
 				// Proceed only if we have at least one item to scrobble
-				if( keys.length )
+				if ( keys.length )
 				{
 					keys.sort();
 
-					for( var i = 0; i < keys.length; i++ )
+					keys.forEach( ( key, i ) =>
 					{
-						artists += 'artist['.concat( i, ']', this.q[ i ].artist );
-						artistsEq += '&artist['.concat( i, ']=', encodeURIComponent( this.q[ i ].artist ) );
-						timestamps += 'timestamp['.concat( i, ']', this.q[ i ].timestamp );
-						timestampsEq += '&timestamp['.concat( i, ']=', this.q[ i ].timestamp );
-						tracks += 'track['.concat( i, ']', this.q[ i ].track );
-						tracksEq += '&track['.concat( i, ']=', encodeURIComponent( this.q[ i ].track ) );
-					}
+						let q = this.q[ i ];
 
-					var params = 'api_key='.concat( lastfm.apiKey,
+						artists += 'artist['.concat( i, ']', q.artist );
+						artistsEq += '&artist['.concat( i, ']=', encodeURIComponent( q.artist ) );
+						timestamps += 'timestamp['.concat( i, ']', q.timestamp );
+						timestampsEq += '&timestamp['.concat( i, ']=', q.timestamp );
+						tracks += 'track['.concat( i, ']', q.track );
+						tracksEq += '&track['.concat( i, ']=', encodeURIComponent( q.track ) );
+					} );
+
+					let params = 'api_key='.concat( lastfm.apiKey,
 						'&api_sig=', hex_md5( 'api_key'.concat( lastfm.apiKey, artists, 'method', method, 'sk', lastfm.accessToken, timestamps, tracks, lastfm.apiSecret ) ),
 						artistsEq,
 						'&format=json',
@@ -128,27 +133,28 @@ var lastfm = new Cloud( {
 					);
 
 					lastfm.ajaxRequest( '//ws.audioscrobbler.com/2.0/?' + params,
-						function()
+						() =>
 						{
 							//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
 							lastfm.queue.reset();
 
-						}, function()
+						}, () =>
 						{
 						}, 'POST', params );
 				}
 			}
 		},
 
-		save: function()
+		save()
 		{
 			localStorage.setItem( 'lastfm-queue', JSON.stringify( this.q ) );
 		},
 
-		load: function()
+		load()
 		{
-			var loaded = localStorage.getItem( 'lastfm-queue' );
-			if( loaded )
+			let loaded = localStorage.getItem( 'lastfm-queue' );
+
+			if ( loaded )
 			{
 				this.q = JSON.parse( loaded );
 			}
@@ -161,36 +167,37 @@ var lastfm = new Cloud( {
 	 * @param {Function} successCallback Required. Function to be called if the access token is successfuly received.
 	 * @param {Function} failureCallback Required. Function to be called if there is a problem with the access token.
 	 */
-	getAccessToken: function( token, successCallback, failureCallback )
+	getAccessToken( token, successCallback, failureCallback )
 	{
-		this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=' + token + '&api_key=' + this.apiKey + '&api_sig=' + hex_md5( "api_key" + this.apiKey + "methodauth.getSessiontoken" + token + 'c11941c36875f14d1dfe392848a43685' ), successCallback, failureCallback );
+		this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=' + token + '&api_key=' + this.apiKey + '&api_sig=' + hex_md5( 'api_key' + this.apiKey + 'methodauth.getSessiontoken' + token + 'c11941c36875f14d1dfe392848a43685' ), successCallback, failureCallback );
 	},
 
 	/**
-	 * Tokens in last.fm do not expire. So we check if we can get info for our user. If we have user, then we should have a valid token.
+	 * Tokens in last.fm do not expire. So we check if we can get info for our user. If we have user, then we should
+	 * have a valid token.
 	 * @param {Function} successCallback Required. Function to be called if access token is valid.
 	 * @param {Function} failureCallback Required. Function to be called if access token is invalid.
 	 */
 	//TODO: Find a way to verify token.
-	checkToken: function( successCallback, failureCallback )
+	checkToken( successCallback, failureCallback )
 	{
-		var self = this;
-		this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=' + this.userName + '&api_key=72e8177b21934e08c11195b8e559c925', function( xhr )
+		this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=' + this.userName + '&api_key=72e8177b21934e08c11195b8e559c925', xhr =>
 		{
-			var response = JSON.parse( xhr.responseText ),
-				username = response.user.name;
-			if( 'undefined' == username )
+			let response = JSON.parse( xhr.responseText );
+			let username = response.user.name;
+
+			if ( 'undefined' === username )
 			{
-				failureCallback( self, xhr );
+				failureCallback( this, xhr );
 			}
 			else
 			{
-				self.display_name = username;
-				successCallback( self );
+				this.display_name = username;
+				successCallback( this );
 			}
-		}, function( xhr )
+		}, xhr =>
 		{
-			failureCallback( self, xhr );
+			failureCallback( this, xhr );
 		} );
 	},
 
@@ -198,17 +205,16 @@ var lastfm = new Cloud( {
 	 * Sends request to last.fm to update the Now listening status of the user.
 	 * @param {HTMLElement} item Required. Playlist item from which to read the information to be sent to last.fm.
 	 */
-	updateNowPlaying: function( item )
+	updateNowPlaying( item )
 	{
-		if( n.pref.scrobbling )
+		if ( n.pref.scrobbling )
 		{
-			var artist = item.dataset.artist,
-				title = item.dataset.title,
-				method = 'track.updateNowPlaying';
+			let { artist, title } = item.dataset;
+			let method            = 'track.updateNowPlaying';
 
-			if( artist && title )
+			if ( artist && title )
 			{
-				var params = 'api_key='.concat( this.apiKey,
+				let params = 'api_key='.concat( this.apiKey,
 					'&api_sig=', hex_md5( 'api_key'.concat( this.apiKey, 'artist', artist, 'method', method, 'sk', this.accessToken, 'track', title, this.apiSecret ) ),
 					'&artist=', artist,
 					'&format=json',
@@ -218,10 +224,10 @@ var lastfm = new Cloud( {
 				);
 
 				this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?' + params,
-					function( xhr )
+					xhr =>
 					{
 						//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
-					}, function()
+					}, () =>
 					{
 					}, 'POST', '' );
 			}
@@ -231,9 +237,9 @@ var lastfm = new Cloud( {
 	/**
 	 * Sends request to last.fm to scrobble the item loaded in n.audio
 	 */
-	scrobble: function()
+	scrobble()
 	{
-		if( n.pref.scrobbling && ! n.powerSaveMode )
+		if ( n.pref.scrobbling && !n.powerSaveMode )
 		{
 			this.queue.add();
 		}
