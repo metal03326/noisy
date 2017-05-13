@@ -108,7 +108,7 @@ let n = {
 			n.setTitle( item );
 			n.setFooter( item );
 
-			let items = item.parentNode.getElementsByClassName( 'playlist-item' );
+			let items = item.parentNode.querySelectorAll( '.playlist-item' );
 
 			// Get the index of the focused item and tell the audio element which item is being played, so we can later
 			// get it
@@ -203,12 +203,11 @@ let n = {
 	{
 		// Find the selected items
 		let selected           = document.querySelectorAll( '#'.concat( n.activePlaylistId, ' .selected,.window .selected' ) );
-		let len                = selected.length;
 		let selectedString     = 'selected';
 		let confirmationString = 'confirmation';
 
 		// Deselect them
-		for ( let i = len; i--; )
+		for ( let i = selected.length; i--; )
 		{
 			selected[ i ].classList.remove( selectedString );
 
@@ -254,17 +253,15 @@ let n = {
 			if ( selectionStart )
 			{
 				// Get all items in the active playlist
-				let items         = document.getElementById( containerId ).getElementsByClassName( itemClass );
+				let items         = document.getElementById( containerId ).querySelectorAll( itemClass );
 				// Get the index of the focused item
 				let idx           = Array.prototype.indexOf.call( items, selectionStart );
 				// Get the index of the clicked item
 				let idx2          = Array.prototype.indexOf.call( items, this );
-				let i;
-				let selectedItems = document.getElementById( containerId ).getElementsByClassName( 'selected' );
-				let len           = selectedItems.length;
+				let selectedItems = document.getElementById( containerId ).querySelectorAll( '.selected' );
 
 				// First de-select all items
-				for ( i = len; i--; )
+				for ( let i = selectedItems.length; i--; )
 				{
 					selectedItems[ i ].classList.remove( 'selected' );
 				}
@@ -276,7 +273,7 @@ let n = {
 
 					if ( window )
 					{
-						items = window.getElementsByClassName( itemClass );
+						items = window.querySelectorAll( itemClass );
 						// Get the index of the focused item
 						idx   = Array.prototype.indexOf.call( items, selectionStart );
 						// Get the index of the clicked item
@@ -292,8 +289,8 @@ let n = {
 					// Get the higher index of both items
 					let max = Math.max( idx, idx2 );
 
-					// Itterate items between focused and clicked and toggle selected state
-					for ( i = min; i <= max; i++ )
+					// Iterate items between focused and clicked and toggle selected state
+					for ( let i = min; i <= max; i++ )
 					{
 						let item = items[ i ];
 						item.classList.add( selectedClass );
@@ -354,7 +351,7 @@ let n = {
 	 */
 	get activePlaylistId()
 	{
-		let tab = document.getElementById( 'playlists-tabs' ).getElementsByClassName( 'active' )[ 0 ];
+		let tab = document.getElementById( 'playlists-tabs' ).querySelector( '.active' );
 		return tab ? tab.dataset.for : null;
 	},
 
@@ -376,7 +373,7 @@ let n = {
 	addFileFolder()
 	{
 		// Get selected items
-		let items      = document.getElementById( 'add-window-files' ).getElementsByClassName( 'active' );
+		let items      = document.getElementById( 'add-window-files' ).querySelectorAll( '.active' );
 		let playlistId = n.activePlaylistId;
 
 		// Make sure we are starting to add files without raised stop flag
@@ -565,7 +562,8 @@ let n = {
 			item.classList.add( 'is-in-queue' );
 
 			// Set item queue state
-			let queueState = item.getElementsByClassName( 'item-queue' ).item( 0 );
+			let queueState = item.querySelector( '.item-queue' );
+
 			if ( !queueState.innerHTML )
 			{
 				queueState.innerHTML = n.queue.length;
@@ -573,13 +571,12 @@ let n = {
 		}
 
 		// Get all selected items
-		let items = document.getElementById( n.activePlaylistId ).getElementsByClassName( 'selected' );
-		let len   = items.length;
+		let items = document.getElementById( n.activePlaylistId ).querySelectorAll( '.selected' );
 
 		// Add them all if many
 		if ( ~Array.prototype.indexOf.call( items, item ) )
 		{
-			for ( let i = 0; i < len; i++ )
+			for ( let i = 0; i < items.length; i++ )
 			{
 				_add( items[ i ] );
 			}
@@ -667,26 +664,26 @@ let n = {
 	 */
 	applyWindowState( state )
 	{
-		let window  = document.getElementsByClassName( 'window' )[ 0 ];
+		let window  = document.querySelector( '.window' );
 		let windows = {
 			'add-window'             : {
 				all()
 				{
-					let buttons = document.getElementById( 'add-window-buttons' ).getElementsByTagName( 'button' );
+					let buttons = document.getElementById( 'add-window-buttons' ).querySelectorAll( 'button' );
 
 					buttons[ 0 ].disabled = false;
 					buttons[ 1 ].disabled = false;
 				},
 				file()
 				{
-					let buttons = document.getElementById( 'add-window-buttons' ).getElementsByTagName( 'button' );
+					let buttons = document.getElementById( 'add-window-buttons' ).querySelectorAll( 'button' );
 
 					buttons[ 0 ].disabled = false;
 					buttons[ 1 ].disabled = true;
 				},
 				'default'()
 				{
-					let buttons = document.getElementById( 'add-window-buttons' ).getElementsByTagName( 'button' );
+					let buttons = document.getElementById( 'add-window-buttons' ).querySelectorAll( 'button' );
 
 					buttons[ 0 ].disabled = true;
 					buttons[ 1 ].disabled = true;
@@ -845,19 +842,17 @@ let n = {
 		} );
 
 		// Attach event listeners to the tabs
-		let tabs             = document.getElementsByClassName( 'playlists-tabs-li' );
-		let inputs           = document.getElementsByTagName( 'input' );
-		let icons            = document.getElementsByClassName( 'cloud-icon' );
+		let tabs             = document.querySelectorAll( '.playlists-tabs-li' );
+		let inputs           = document.querySelectorAll( 'input' );
+		let icons            = document.querySelectorAll( '.cloud-icon' );
 		let checkboxes       = document.querySelectorAll( '#preference-cursor-follows-playback,#preference-playback-follows-cursor' );
-		let len              = tabs.length;
-		let i;
 		const clickEvent     = 'click';
 		const mouseDownEvent = 'mousedown';
 		const keyDownEvent   = 'keydown';
 		const changeEvent    = 'change';
 		const keyUpEvent     = 'keyup';
 
-		for ( i = len; i--; )
+		for ( let i = tabs.length; i--; )
 		{
 			tabs[ i ].addEventListener( clickEvent, n.onTabClick );
 			tabs[ i ].addEventListener( mouseDownEvent, n.onTabDown );
@@ -865,15 +860,13 @@ let n = {
 		}
 
 		// Attach event handlers to the events for changing the checkboxes for playback order in the preferences
-		len = checkboxes.length;
-		for ( i = len; i--; )
+		for ( let i = checkboxes.length; i--; )
 		{
 			checkboxes[ i ].addEventListener( changeEvent, n.onCheckboxChange );
 		}
 
 		// Stop bubbling to all input fields as keyboard shortcuts may prevent user from typing in them
-		len = inputs.length;
-		for ( i = len; i--; )
+		for ( let i = inputs.length; i--; )
 		{
 			inputs[ i ].addEventListener( keyDownEvent, n.stopBubbling );
 		}
@@ -941,14 +934,13 @@ let n = {
 
 		// Save preferences when user changes an input inside the preferences window
 		inputs = document.getElementById( 'preferences-container' ).querySelectorAll( 'input:not(#keyboard-shortcut)' );
-		len    = inputs.length;
 
 		let _onChange = event =>
 		{
 			n.pref.input = event.target;
 		};
 
-		for ( i = len; i--; )
+		for ( let i = inputs.length; i--; )
 		{
 			inputs[ i ].onchange = _onChange;
 		}
@@ -994,7 +986,6 @@ let n = {
 		/* End: Window state events */
 
 		// Reset styles of cloud choosing icons in add/save window and select service depending on what the user clicked
-		len              = icons.length;
 		let _onIconClick = function()
 		{
 			let cloud = n[ this.dataset.cloud ];
@@ -1011,7 +1002,7 @@ let n = {
 			}
 		};
 
-		for ( i = len; i--; )
+		for ( let i = icons.length; i--; )
 		{
 			icons[ i ].addEventListener( clickEvent, _onIconClick );
 		}
@@ -1113,7 +1104,7 @@ let n = {
 						n._deselectItems();
 
 						// Select chosen item
-						n._selectItems.call( toSelect, {}, n.activePlaylistId, 'playlist-item', 'selected' );
+						n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
 
 						// Scroll the item into the view
 						toSelect.scrollIntoView();
@@ -1135,7 +1126,7 @@ let n = {
 						n._deselectItems();
 
 						// Select chosen item
-						n._selectItems.call( toSelect, {}, n.activePlaylistId, 'playlist-item', 'selected' );
+						n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
 
 						// Scroll the item into the view
 						toSelect.scrollIntoView( false );
@@ -1222,14 +1213,13 @@ let n = {
 	cancelRenames()
 	{
 		// Get all playlist being renamed (shouldn't be more than one, but to be sure we take all of them)
-		let renamings               = document.getElementsByClassName( 'renaming' );
-		let len                     = renamings.length;
+		let renamings               = document.querySelectorAll( '.renaming' );
 		const contentEditableString = 'contenteditable';
 		const clickEvent            = 'click';
 		const emptyString           = '';
 
 		// Iterate all and remove contentaeditable attribute, remove class and event listener for name check
-		for ( let i = len; i--; )
+		for ( let i = renamings.length; i--; )
 		{
 			let renaming = renamings[ i ];
 
@@ -1271,7 +1261,7 @@ let n = {
 	changePlaylist( tab )
 	{
 		// Remove active tab class and hide the playlist associated with it
-		let el = document.getElementById( 'playlists-tabs' ).getElementsByClassName( 'playlists-tabs-li active' ).item( 0 );
+		let el = document.getElementById( 'playlists-tabs' ).querySelector( '.playlists-tabs-li.active' );
 
 		if ( el )
 		{
@@ -1321,10 +1311,9 @@ let n = {
 	{
 		document.getElementById( 'preference-scrobbling-position' ).disabled = !enabled;
 
-		let buttons = document.getElementById( 'preference-performance' ).getElementsByClassName( 'scrobble-action' );
-		let len     = buttons.length;
+		let buttons = document.getElementById( 'preference-performance' ).querySelectorAll( '.scrobble-action' );
 
-		for ( let i = len; i--; )
+		for ( let i = buttons.length; i--; )
 		{
 			buttons[ i ].disabled = !enabled;
 		}
@@ -1453,13 +1442,11 @@ let n = {
 	clearWindow()
 	{
 		let inputs        = document.querySelectorAll( '#keyboard-shortcut,#save-playlist-window-filename,#save-preferences-window-filename' );
-		let len           = inputs.length;
-		let data          = document.getElementsByClassName( 'window' )[ 0 ].dataset;
+		let data          = document.querySelector( '.window' ).dataset;
 		let selects       = document.querySelectorAll( '#connect-to,#add-files-service-choose,#actions' );
-		let i;
 		const emptyString = '';
 
-		for ( i = len; i--; )
+		for ( let i = inputs.length; i--; )
 		{
 			inputs[ i ].value = emptyString;
 		}
@@ -1469,8 +1456,7 @@ let n = {
 			delete data[ key ];
 		} );
 
-		len = selects.length;
-		for ( i = len; i--; )
+		for ( let i = selects.length; i--; )
 		{
 			selects[ i ].selectedIndex = 0;
 		}
@@ -1524,7 +1510,7 @@ let n = {
 			n.refreshWindowTitle();
 		}
 
-		let confirmation = document.getElementById( 'preferences-window-buttons' ).getElementsByClassName( 'confirmation' );
+		let confirmation = document.getElementById( 'preferences-window-buttons' ).querySelectorAll( '.confirmation' );
 
 		if ( confirmation.length )
 		{
@@ -1537,7 +1523,7 @@ let n = {
 	 */
 	closeWindow()
 	{
-		let window = document.getElementsByClassName( 'window' )[ 0 ];
+		let window = document.querySelector( '.window' );
 		let id     = window.id;
 
 		if ( id )
@@ -1570,7 +1556,7 @@ let n = {
 			}, 300 );
 
 			// Remove other classes from the window
-			document.getElementsByClassName( 'window' )[ 0 ].className = 'window visibility-hidden';
+			document.querySelector( '.window' ).className = 'window visibility-hidden';
 
 			n.clearWindow();
 
@@ -1617,7 +1603,7 @@ let n = {
 		tab.tabIndex  = 0;
 		tab.innerHTML = '<span>'.concat( name, '</span> <a href="javascript:;" class="playlist-edit"><span data-icon="!"></span></a> <a href="javascript:;" class="playlist-remove">&times;</a>' );
 
-		let triggers = tab.getElementsByTagName( 'a' );
+		let triggers = tab.querySelectorAll( 'a' );
 
 		triggers[ 0 ].addEventListener( 'click', n.renamePlaylist );
 		triggers[ 1 ].addEventListener( 'click', n.deletePlaylist );
@@ -1663,7 +1649,7 @@ let n = {
 	 */
 	get currentlySelectedItems()
 	{
-		return document.getElementById( n.activePlaylistId ).getElementsByClassName( 'selected' );
+		return document.getElementById( n.activePlaylistId ).querySelectorAll( '.selected' );
 	},
 
 	/**
@@ -1712,7 +1698,7 @@ let n = {
 		if ( tab && playlist )
 		{
 			// Remove event listeners
-			let triggers = tab.getElementsByTagName( 'a' );
+			let triggers = tab.querySelectorAll( 'a' );
 
 			triggers[ 0 ].removeEventListener( 'click', n.renamePlaylist, false );
 			triggers[ 1 ].removeEventListener( 'click', n.deletePlaylist, false );
@@ -1781,12 +1767,11 @@ let n = {
 	//TODO: Maybe combine this with closeFileFolderWindow()?
 	emptyAddWindow()
 	{
-		let items            = document.getElementsByClassName( 'add-item' );
-		let len              = items.length;
+		let items            = document.querySelectorAll( '.add-item' );
 		const mouseDownEvent = 'mousedown';
 		const dblClickEvent  = 'dblclick';
 
-		for ( let i = len; i--; )
+		for ( let i = items.length; i--; )
 		{
 			let item = items[ i ];
 			item.removeEventListener( mouseDownEvent, n.onAddItemDown );
@@ -1803,16 +1788,15 @@ let n = {
 	emptyQueue()
 	{
 		let queue           = n.queue;
-		let len             = queue.length;
 		let item;
 		const emptyString   = '';
 		const classToRemove = 'is-in-queue';
 
-		for ( let i = len; i--; )
+		for ( let i = queue.length; i--; )
 		{
 			item = queue[ i ];
 
-			item.getElementsByClassName( 'item-queue' ).item( 0 ).innerHTML = emptyString;
+			item.querySelector( '.item-queue' ).innerHTML = emptyString;
 
 			// Remove queue mark from item
 			item.classList.remove( classToRemove );
@@ -1939,7 +1923,7 @@ let n = {
 				n.initSearch( n.lastSearchTerm = val );
 
 				// Select first result
-				results = document.getElementById( 'find-window-results' ).getElementsByClassName( 'playlist-item' );
+				results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 				if ( results.length )
 				{
@@ -1952,12 +1936,12 @@ let n = {
 		// Up key pressed
 		else if ( 38 === e.keyCode )
 		{
-			results = document.getElementById( 'find-window-results' ).getElementsByClassName( 'playlist-item' );
+			results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 			if ( results.length )
 			{
 				// Get selected item
-				selected = document.getElementById( 'find-window-results' ).getElementsByClassName( 'selected' )[ 0 ];
+				selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
 
 				// Find it's index in the parent's children
 				idx = Array.prototype.indexOf.call( results, selected );
@@ -1978,12 +1962,12 @@ let n = {
 		// Down key pressed
 		else if ( 40 === e.keyCode )
 		{
-			results = document.getElementById( 'find-window-results' ).getElementsByClassName( 'playlist-item' );
+			results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 			if ( results.length )
 			{
 				// Get selected item
-				selected = document.getElementById( 'find-window-results' ).getElementsByClassName( 'selected' )[ 0 ];
+				selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
 
 				// Find it's index in the parent's children
 				idx = Array.prototype.indexOf.call( results, selected );
@@ -2073,7 +2057,7 @@ let n = {
 	 */
 	getAllItems( playlist = n.activePlaylistId )
 	{
-		return document.getElementById( n.activePlaylistId ).getElementsByClassName( 'playlist-item' );
+		return document.getElementById( n.activePlaylistId ).querySelectorAll( '.playlist-item' );
 	},
 
 	/**
@@ -2195,8 +2179,6 @@ let n = {
 		const hash              = location.hash;
 		const search            = location.search;
 		let split               = [];
-		let len;
-		let i;
 		const accessTokenString = 'access_token=';
 		const codeString        = 'code=';
 		const tokenString       = 'token=';
@@ -2215,64 +2197,54 @@ let n = {
 			split = search.split( '?' ).pop().split( '&' );
 		}
 
-		// Check if we have authentication to process
-		if ( split )
+		for ( let i = split.length; i--; )
 		{
-			len = split.length;
-		}
+			let part = split[ i ];
 
-		// Process only if there is something to process
-		if ( len )
-		{
-			for ( i = len; i--; )
+			// Dropbox and Google Drive are returning directly the access token
+			if ( 0 === part.indexOf( accessTokenString ) )
 			{
-				let part = split[ i ];
+				let accessToken = part.split( equalString ).pop();
 
-				// Dropbox and Google Drive are returning directly the access token
-				if ( 0 === part.indexOf( accessTokenString ) )
+				n[ n.pref.tokenCloud ].accessToken = accessToken;
+
+				n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
+
+				break;
+			}
+			// Last.fm returns the token as "token" param and requires a special session token to be generated
+			else if ( 0 === part.indexOf( tokenString ) )
+			{
+				let token = part.split( equalString ).pop();
+
+				n[ n.pref.tokenCloud ].getAccessToken( token, xhr =>
 				{
-					let accessToken = part.split( equalString ).pop();
+					let response = JSON.parse( xhr.responseText );
 
-					n[ n.pref.tokenCloud ].accessToken = accessToken;
+					n[ n.pref.tokenCloud ].userName    = response.session.name;
+					n[ n.pref.tokenCloud ].accessToken = response.session.key;
 
-					n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
-
-					break;
-				}
-				// Last.fm returns the token as "token" param and requires a special session token to be generated
-				else if ( 0 === part.indexOf( tokenString ) )
+					n.pref.userName    = {
+						cloud   : n.pref.tokenCloud,
+						userName: response.session.name
+					};
+					n.pref.accessToken = {
+						cloud      : n.pref.tokenCloud,
+						accessToken: response.session.key
+					};
+				}, () =>
 				{
-					let token = part.split( equalString ).pop();
+					n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
+				} );
 
-					n[ n.pref.tokenCloud ].getAccessToken( token, xhr =>
-					{
-						let response = JSON.parse( xhr.responseText );
+				break;
+			}
+			// Box is returning code with which we should request the access token
+			else if ( 0 === part.indexOf( codeString ) )
+			{
+				n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
 
-						n[ n.pref.tokenCloud ].userName    = response.session.name;
-						n[ n.pref.tokenCloud ].accessToken = response.session.key;
-
-						n.pref.userName    = {
-							cloud   : n.pref.tokenCloud,
-							userName: response.session.name
-						};
-						n.pref.accessToken = {
-							cloud      : n.pref.tokenCloud,
-							accessToken: response.session.key
-						};
-					}, () =>
-					{
-						n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
-					} );
-
-					break;
-				}
-				// Box is returning code with which we should request the access token
-				else if ( 0 === part.indexOf( codeString ) )
-				{
-					n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
-
-					break;
-				}
+				break;
 			}
 		}
 
@@ -2333,7 +2305,7 @@ let n = {
 
 		// Attach menu events
 		let menuItems    = document.querySelectorAll( 'a[data-menulistener]' );
-		let prefTabs     = document.getElementsByClassName( 'preferences-item' );
+		let prefTabs     = document.querySelectorAll( '.preferences-item' );
 		let _onItemClick = function( e )
 		{
 			// Stop bubbling otherwise the window (if any) opened will be immediately closed
@@ -2359,16 +2331,15 @@ let n = {
 			let preferences = document.getElementById( 'preferences-container' ).children;
 
 			// Remove active class from active tab
-			document.getElementById( 'preferences-tabs' ).getElementsByClassName( 'active' )[ 0 ].classList.remove( 'active' );
+			document.getElementById( 'preferences-tabs' ).querySelector( '.active' ).classList.remove( 'active' );
 
 			// Add active class to clicked tab
 			this.classList.add( 'active' );
 
 			// Hide all tab contents
-			let len          = preferences.length;
 			const classToAdd = 'hidden';
 
-			for ( let i = len; i--; )
+			for ( let i = preferences.length; i--; )
 			{
 				preferences[ i ].classList.add( classToAdd );
 			}
@@ -2377,15 +2348,13 @@ let n = {
 			document.getElementById( 'preference-'.concat( this.dataset.preference ) ).classList.remove( 'hidden' );
 		};
 
-		len = menuItems.length;
-		for ( i = len; i--; )
+		for ( let i = menuItems.length; i--; )
 		{
 			menuItems[ i ].addEventListener( clickEvent, _onItemClick );
 		}
 
 		// Attach preferences items events
-		len = prefTabs.length;
-		for ( i = len; i--; )
+		for ( let i = prefTabs.length; i--; )
 		{
 			prefTabs[ i ].addEventListener( clickEvent, _onTabClick );
 		}
@@ -2409,7 +2378,7 @@ let n = {
 		document.body.addEventListener( clickEvent, n.closeAll );
 
 		// Catch click on .window and stop bubbling, so we do not close the window on click
-		document.getElementsByClassName( 'window' )[ 0 ].addEventListener( clickEvent, n.stopBubbling );
+		document.querySelector( '.window' ).addEventListener( clickEvent, n.stopBubbling );
 
 		// Listen for keyboard shortcuts and execute them if found.
 		document.body.addEventListener( keyDownEvent, e =>
@@ -2576,7 +2545,7 @@ let n = {
 			let idx        = parseInt( this.dataset.item, 10 );
 			let playlistId = this.dataset.playlist;
 			let item;
-			let bold       = document.getElementById( 'playlists' ).getElementsByClassName( 'bold' ).item( 0 );
+			let bold       = document.getElementById( 'playlists' ).querySelector( '.bold' );
 
 			// Remove bold from previous element, if available
 			if ( bold )
@@ -2593,14 +2562,14 @@ let n = {
 			if ( 'number' === typeof idx && !isNaN( idx ) )
 			{
 				//TODO: Get rid of this index thingy - too unstable if user changes positions of items
-				item = document.getElementById( playlistId ).getElementsByClassName( 'playlist-item' )[ idx ];
+				item = document.getElementById( playlistId ).querySelectorAll( '.playlist-item' )[ idx ];
 				n.setItemState( 'x', false, item );
 
 				// Check if item is first in the queue
 				if ( item === n.queue[ 0 ] )
 				{
 					// Remove queue number
-					item.getElementsByClassName( 'item-queue' ).item( 0 ).innerHTML = '';
+					item.querySelector( '.item-queue' ).innerHTML = '';
 
 					n.queue.splice( 0, 1 );
 
@@ -2634,13 +2603,13 @@ let n = {
 		// Change state of the item to paused when the player is paused
 		n.audio.addEventListener( 'pause', () =>
 		{
-			n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] );
+			n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] );
 		} );
 
 		// Play next item when current finnishes
 		n.audio.addEventListener( 'ended', function()
 		{
-			let item = document.getElementById( this.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ parseInt( this.dataset.item, 10 ) ];
+			let item = document.getElementById( this.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( this.dataset.item, 10 ) ];
 			let next = n.next( 'next', true );
 
 			// Remove bold from currently playing item
@@ -2723,21 +2692,14 @@ let n = {
 	initSearch( val )
 	{
 		let results          = document.getElementById( 'find-window-results' );
-		let items;
-		let i;
-		let j;
-		let len;
-		let termLen;
-		let terms            = [];
 		const mouseDownEvent = 'mousedown';
 		const dblClickEvent  = 'dblclick';
 		const _cleanup       = () =>
 		{
-			let oldResults = document.getElementById( 'find-window-results' ).getElementsByClassName( 'playlist-item' );
-			let len        = oldResults ? oldResults.length : 0;
+			let oldResults = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 			// Remove listeners from old results
-			for ( let i = len; i--; )
+			for ( let i = oldResults.length; i--; )
 			{
 				oldResults[ i ].removeEventListener( mouseDownEvent, n.onRowDown, false );
 				oldResults[ i ].removeEventListener( dblClickEvent, n.onRowDblClick, false );
@@ -2749,29 +2711,26 @@ let n = {
 
 		if ( val )
 		{
-			items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not(.hidden) section[data-url]' );
-			len   = items.length;
+			let items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not(.hidden) section[data-url]' );
 
 			// We'll search by all words, so we split them
-			terms = val.split( ' ' );
-
-			termLen = terms.length;
+			let terms = val.split( ' ' );
 
 			// Remove old search results
 			_cleanup();
 
 			// Loop through all playlist items
-			for ( i = 0; i < len; i++ )
+			for ( let i = 0; i < items.length; i++ )
 			{
 				let item  = items[ i ];
 				let url   = item.dataset.url.toLowerCase();
 				// By default we have a match
 				let match = true;
 				let term;
-				let title = item.getElementsByClassName( 'item-title' ).item( 0 ).innerHTML.toLowerCase();
+				let title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
 
 				// Loop through all search terms (words)
-				for ( j = termLen; j--; )
+				for ( let j = terms.length; j--; )
 				{
 					term = terms[ j ];
 
@@ -2923,12 +2882,11 @@ let n = {
 		// Continue only if there are playlists saved
 		if ( playlists )
 		{
-			let len           = playlists.length;
 			const errorString = 'error-loading-playlist';
 			const emptyString = '';
 
 			// Iterate through all the saved playlists
-			for ( let i = len; i--; )
+			for ( let i = playlists.length; i--; )
 			{
 				// Shorthand for current playlist
 				let playlist = playlists[ i ];
@@ -3003,13 +2961,12 @@ let n = {
 	loadPlaylistFromCloud()
 	{
 		let src      = document.getElementById( 'add-window-files' );
-		let selected = src.getElementsByClassName( 'active' );
-		let len      = selected.length;
+		let selected = src.querySelectorAll( '.active' );
 		let cloud    = src.dataset.cloud;
 
 		if ( cloud )
 		{
-			for ( let i = len; i--; )
+			for ( let i = selected.length; i--; )
 			{
 				n[ cloud ].loadPlaylist( selected[ i ] );
 			}
@@ -3025,7 +2982,7 @@ let n = {
 	loadPreferencesFromCloud()
 	{
 		let src      = document.getElementById( 'add-window-files' );
-		let selected = src.getElementsByClassName( 'active' );
+		let selected = src.querySelectorAll( '.active' );
 		let cloud    = src.dataset.cloud;
 
 		if ( selected.length && cloud )
@@ -3056,11 +3013,10 @@ let n = {
 	{
 		// Select playlist's items
 		let items  = document.getElementById( id ).querySelectorAll( '.playlist-item:not([data-cloud="local"])' );
-		let len    = items.length;
 		let toSave = [];
 
 		// Iterate all items
-		for ( let i = len; i--; )
+		for ( let i = items.length; i--; )
 		{
 			// Clone dataset object into a new one
 			toSave.push( Object.assign( {}, items[ i ].dataset ) );
@@ -3098,7 +3054,7 @@ let n = {
 
 		if ( tab )
 		{
-			n.renamePlaylist( tab.getElementsByTagName( 'span' ).item( 0 ) );
+			n.renamePlaylist( tab.querySelector( 'span' ) );
 		}
 	},
 
@@ -3214,7 +3170,7 @@ let n = {
 		// Put state classes to next item and play it if available
 		if ( next )
 		{
-			next.getElementsByClassName( 'playback-status' ).item( 0 ).dataset.icon = 'w';
+			next.querySelector( '.playback-status' ).dataset.icon = 'w';
 			n.play( next );
 		}
 		// Otherwise stop HTML Audio if it is paused (used to stop the
@@ -3284,7 +3240,7 @@ let n = {
 
 			// Reset content of the slide being hidden to the default, if it contains iframe (video). This will stop
 			// video if played.
-			if ( currentSlide.getElementsByTagName( 'iframe' ).length )
+			if ( currentSlide.querySelectorAll( 'iframe' ).length )
 			{
 				setTimeout( () =>
 				{
@@ -3379,17 +3335,16 @@ let n = {
 		// multi-selection)
 		if ( !e.ctrlKey && !e.shiftKey )
 		{
-			let items          = document.getElementById( 'add-window-files' ).getElementsByClassName( 'add-item' );
-			let len            = items.length;
+			let items          = document.getElementById( 'add-window-files' ).querySelectorAll( '.add-item' );
 			const activeString = 'active';
 
-			for ( let i = len; i--; )
+			for ( let i = items.length; i--; )
 			{
 				items[ i ].classList.remove( activeString );
 			}
 		}
 
-		n._selectItems.call( this, e, 'add-window-files', 'add-item', 'active' );
+		n._selectItems.call( this, e, 'add-window-files', '.add-item', 'active' );
 
 		// Apply windows state depending on if the item chosen is a file or folder
 		if ( 'false' === this.dataset.folder )
@@ -3415,7 +3370,7 @@ let n = {
 		// Otherwise load file depending on the type of the file window
 		else
 		{
-			let id = document.getElementsByClassName( 'window' )[ 0 ].id;
+			let id = document.querySelector( '.window' ).id;
 
 			switch ( id )
 			{
@@ -3509,7 +3464,7 @@ let n = {
 			x     = e.clientX;
 			// Get the difference between current mouse position and starting one
 			diff  = n.movingStartX - x;
-			items = document.getElementsByClassName( 'playlists-tabs-li' );
+			items = document.querySelectorAll( '.playlists-tabs-li' );
 
 			// Move the item in the right direction on the X axis
 			if ( 0 > diff )
@@ -3700,7 +3655,7 @@ let n = {
 	{
 		if (
 			document.getElementById( 'preference-hide-playlist-tabs' ).checked &&
-			2 === document.getElementsByClassName( 'playlists-tabs-li' ).length
+			2 === document.querySelectorAll( '.playlists-tabs-li' ).length
 		)
 		{
 			document.body.classList.add( 'one-tab' );
@@ -3731,7 +3686,7 @@ let n = {
 	 */
 	openFolder()
 	{
-		let selected = document.getElementById( 'add-window-files' ).getElementsByClassName( 'active' ).item( 0 );
+		let selected = document.getElementById( 'add-window-files' ).querySelector( '.active' );
 
 		document.getElementById( 'add-window-files' ).classList.add( 'hidden' );
 		document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
@@ -3897,7 +3852,7 @@ let n = {
 			}
 
 			// Select clicked item depending on the keyboard keys pressed
-			n._selectItems.call( this, e, n.activePlaylistId, 'playlist-item', 'selected' );
+			n._selectItems.call( this, e, n.activePlaylistId, '.playlist-item', 'selected' );
 
 			// Manage search results, if window is opened
 			if ( 'find-window-results' === this.parentNode.id )
@@ -3907,16 +3862,14 @@ let n = {
 				const selectorStart = 'section[data-url="';
 				const selectorEnd   = '"]';
 				let selected        = document.querySelectorAll( '#'.concat( n.activePlaylistId, ' .selected' ) );
-				let len             = selected.length;
 
 				// Deselect all selected items from the current playlist
-				for ( let i = len; i--; )
+				for ( let i = selected.length; i--; )
 				{
 					selected[ i ].classList.remove( selectedClass );
 				}
 
-				len = toSelect.length;
-				for ( let i = len; i--; )
+				for ( let i = toSelect.length; i--; )
 				{
 					document.getElementById( n.activePlaylistId ).querySelector( selectorStart.concat( toSelect[ i ].dataset.url, selectorEnd ) ).classList.add( selectedClass );
 				}
@@ -4028,7 +3981,7 @@ let n = {
 		if ( document.getElementById( 'preference-cursor-follows-playback' ).checked )
 		{
 			n._deselectItems();
-			n._selectItems.call( item, {}, n.activePlaylistId, 'playlist-item', 'selected' );
+			n._selectItems.call( item, {}, n.activePlaylistId, '.playlist-item', 'selected' );
 		}
 
 		let cloud = n.getCloud( item );
@@ -4548,7 +4501,7 @@ let n = {
 			n.queue.splice( idx, 1 );
 
 			// Remove queue number from users display
-			item.getElementsByClassName( 'item-queue' ).item( 0 ).innerHTML = '';
+			item.querySelector( '.item-queue' ).innerHTML = '';
 
 			// Remove queue mark from item if not queued again
 			if ( !~n.queue.indexOf( item ) )
@@ -4567,11 +4520,10 @@ let n = {
 	refreshPlaylists()
 	{
 		// Select all items from both active and inactive playlists
-		let items = document.getElementById( 'playlists' ).getElementsByClassName( 'playlist-item' );
-		let len   = items.length;
+		let items = document.getElementById( 'playlists' ).querySelectorAll( '.playlist-item' );
 
 		// Re-render items
-		for ( let i = len; i--; )
+		for ( let i = items.length; i--; )
 		{
 			n.renderItem( items[ i ] );
 		}
@@ -4644,7 +4596,7 @@ let n = {
 	 */
 	renderItem( item )
 	{
-		let durationContainer = item.getElementsByClassName( 'item-duration' );
+		let durationContainer = item.querySelectorAll( '.item-duration' );
 		let duration          = item.dataset.duration || '';
 
 		// Create duration container if not already created and fill it
@@ -4659,7 +4611,7 @@ let n = {
 		}
 
 		// Render formatted string if some info available
-		item.getElementsByClassName( 'item-title' ).item( 0 ).innerHTML = n.formatString( document.getElementById( 'preference-playlist-format' ).value, item );
+		item.querySelector( '.item-title' ).innerHTML = n.formatString( document.getElementById( 'preference-playlist-format' ).value, item );
 	},
 
 	/**
@@ -4668,10 +4620,9 @@ let n = {
 	renderKeyboardShortcuts()
 	{
 		// Remove previous rows, if any
-		let rows = document.getElementById( 'keyboard-shortcuts' ).getElementsByClassName( 'va' );
-		let len  = rows.length;
+		let rows = document.getElementById( 'keyboard-shortcuts' ).querySelectorAll( '.va' );
 
-		for ( let i = len; i--; )
+		for ( let i = rows.length; i--; )
 		{
 			let row = rows[ i ];
 			row.parentNode.removeChild( row );
@@ -4695,19 +4646,16 @@ let n = {
 		const splitString     = '+';
 		const joinString      = ' + ';
 
-		len = n.pref.keys.length;
-
-		for ( let i = len; i--; )
+		n.pref.keys.forEach( key =>
 		{
-			let key    = n.pref.keys[ i ];
 			let tr     = document.createElement( elementToCreate );
 			let action = document.getElementById( id ).querySelector( selectorStart.concat( key.action, selectorEnd ) ).innerHTML;
 			let keys   = key.key.split( splitString );
 
-			for ( let j = 0; j < keys.length; j++ )
+			keys.forEach( ( k, i ) =>
 			{
-				keys[ j ] = keyCodes[ keys[ j ] ];
-			}
+				keys[ i ] = keyCodes[ keys[ i ] ];
+			} );
 
 			keys = keys.join( joinString );
 
@@ -4715,7 +4663,7 @@ let n = {
 			n._prepareShortcutRow( tr, key.key, key.action, keys, action );
 
 			df.appendChild( tr );
-		}
+		} );
 
 		// Append the fragment to the DOM
 		insertBefore.parentNode.insertBefore( df, insertBefore );
@@ -4726,7 +4674,7 @@ let n = {
 	 */
 	restoreToDefaults()
 	{
-		let confirmation = document.getElementById( 'preferences-window-buttons' ).getElementsByClassName( 'float-left' );
+		let confirmation = document.getElementById( 'preferences-window-buttons' ).querySelectorAll( '.float-left' );
 
 		if ( confirmation.length )
 		{
@@ -4797,14 +4745,13 @@ let n = {
 
 		// Load all playlists
 		let playlists       = n.loadPlaylists();
-		let len             = playlists.length;
 		let notFound        = true;
 		let foundPosition   = -1;
 		const selectorStart = 'li[data-for="';
 		const selectorEnd   = '"]';
 
 		// Iterate all playlists
-		for ( let i = len; i--; )
+		for ( let i = playlists.length; i--; )
 		{
 			let playlist = playlists[ i ];
 			let id       = playlist.id;
@@ -4860,13 +4807,12 @@ let n = {
 	savePlaylists()
 	{
 		let toSave    = [];
-		let playlists = document.getElementsByClassName( 'playlists-tabs-li' );
-		let len       = playlists.length;
+		let playlists = document.querySelectorAll( '.playlists-tabs-li' );
 		let playlist;
 		const id      = 'add-playlist';
 
 		// Iterate through all playlists and make objects for each of them
-		for ( let i = len; i--; )
+		for ( let i = playlists.length; i--; )
 		{
 			let playlist = playlists[ i ];
 
@@ -4944,7 +4890,7 @@ let n = {
 	{
 		document.getElementById( 'add-window-cloud-chooser' ).className = 'hidden';
 		document.getElementById( 'add-window-files' ).className         = '';
-		document.getElementsByClassName( 'window' )[ 0 ].className      = 'window ' + service;
+		document.querySelector( '.window' ).className                   = 'window ' + service;
 
 		n[ service ].getFolderContents( '' );
 	},
@@ -4997,12 +4943,12 @@ let n = {
 	setItemState( state, selected, item )
 	{
 		// Get currently active item or selected one on the currently active playlist
-		item = item || document.getElementsByClassName( 'preloaded' ).item( 0 ) || n.activeItem || n.currentlySelectedItem;
+		item = item || document.querySelector( '.preloaded' ) || n.activeItem || n.currentlySelectedItem;
 
 		item.classList.remove( 'preloaded' );
 
 		// Get icon element in item
-		item = item.getElementsByClassName( 'playback-status' ).item( 0 );
+		item = item.querySelector( '.playback-status' );
 
 		// Continue only if item found
 		if ( item )
@@ -5021,8 +4967,8 @@ let n = {
 			// Apply icon if passed. Item to apply depends on the selected argument
 			if ( selected && 'string' === typeof state )
 			{
-				item                                                                    = n.currentlySelectedItem;
-				item.getElementsByClassName( 'playback-status' ).item( 0 ).dataset.icon = state;
+				item                                                  = n.currentlySelectedItem;
+				item.querySelector( '.playback-status' ).dataset.icon = state;
 			}
 			else if ( 'string' === typeof state )
 			{
@@ -5206,7 +5152,7 @@ let n = {
 
 			if ( 'number' === typeof idx && !isNaN( idx ) )
 			{
-				item = document.getElementById( playlistId ).getElementsByClassName( 'playlist-item' )[ idx ];
+				item = document.getElementById( playlistId ).querySelectorAll( '.playlist-item' )[ idx ];
 				item.classList.remove( 'bold' );
 			}
 
@@ -5296,11 +5242,9 @@ let n = {
 			return compiled;
 		}
 
-		document.getElementsByTagName( 'html' )[ 0 ].lang = n.pref.lang;
+		document.documentElement.lang = n.pref.lang;
 
 		let splashItems = n.lang.splash;
-		let len;
-		let i;
 
 		Object.keys( splashItems ).forEach( key =>
 		{
@@ -5349,9 +5293,8 @@ let n = {
 			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = actionItems[ key ];
 
 			let elements = document.getElementById( secondId ).querySelectorAll( dotString + key );
-			let len      = elements.length;
 
-			for ( i = len; i--; )
+			for ( let i = elements.length; i--; )
 			{
 				elements[ i ].innerHTML = n.lang.actions[ key ];
 			}
@@ -5368,10 +5311,9 @@ let n = {
 		let buttonItems = n.lang.buttons;
 		Object.keys( buttonItems ).forEach( key =>
 		{
-			let items = document.getElementsByClassName( key );
-			let len   = items.length;
+			let items = document.querySelectorAll( '.' + key );
 
-			for ( i = len; i--; )
+			for ( let i = items.length; i--; )
 			{
 				items[ i ].innerHTML = buttonItems[ key ];
 			}
@@ -5380,10 +5322,9 @@ let n = {
 		let validationItems = n.lang.validation;
 		Object.keys( validationItems ).forEach( key =>
 		{
-			let items = document.getElementsByClassName( key );
-			let len   = items.length;
+			let items = document.querySelectorAll( '.' + key );
 
-			for ( i = len; i--; )
+			for ( let i = items.length; i--; )
 			{
 				items[ i ].innerHTML = validationItems[ key ];
 			}
@@ -5392,10 +5333,9 @@ let n = {
 		let consoleItems = n.lang.console;
 		Object.keys( consoleItems ).forEach( key =>
 		{
-			let items = document.getElementsByClassName( key );
-			let len   = items.length;
+			let items = document.querySelectorAll( '.' + key );
 
-			for ( i = len; i--; )
+			for ( let i = items.length; i--; )
 			{
 				items[ i ].innerHTML = consoleItems[ key ];
 			}
@@ -5434,24 +5374,21 @@ let n = {
 		} );
 
 		// Add not supported text to all options which are not supported by the current browser
-		let notSupported = document.getElementsByClassName( 'not-supported' );
-		len              = notSupported.length;
-		for ( i = len; i--; )
+		let notSupported = document.querySelectorAll( '.not-supported' );
+		for ( let i = notSupported.length; i--; )
 		{
 			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
 		}
 
 		// Dropbox playlist convert text
-		let playlistConvert = document.getElementsByClassName( 'dropbox-convert-text' );
-		len                 = playlistConvert.length;
-		for ( i = len; i--; )
+		let playlistConvert = document.querySelectorAll( '.dropbox-convert-text' );
+		for ( let i = playlistConvert.length; i--; )
 		{
 			playlistConvert[ i ].innerHTML += n.lang.other[ 'dropbox-playlist-convert' ];
 		}
 
-		let clickHereItems = document.getElementsByClassName( 'click-here' );
-		len                = clickHereItems.length;
-		for ( i = len; i--; )
+		let clickHereItems = document.querySelectorAll( '.click-here' );
+		for ( let i = clickHereItems.length; i--; )
 		{
 			clickHereItems[ i ].innerHTML += n.lang.other[ 'click-here' ];
 		}
@@ -5468,8 +5405,7 @@ let n = {
 		}
 
 		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'a[data-notconnected]' );
-		len               = notConnecteds.length;
-		for ( i = len; i--; )
+		for ( let i = notConnecteds.length; i--; )
 		{
 			notConnecteds[ i ].dataset.notconnected = n.lang.other[ 'not-connected' ];
 		}
@@ -5485,8 +5421,7 @@ let n = {
 	updateBatteryStatus()
 	{
 		let batteryContainer = document.getElementById( 'battery-level-menu-handle' );
-		let levels           = document.getElementsByClassName( 'battery-level' );
-		let len              = levels.length;
+		let levels           = document.querySelectorAll( '.battery-level' );
 		let level            = n.battery.level;
 		let level1;
 		let level2;
@@ -5494,7 +5429,7 @@ let n = {
 		let lvl;
 		let threshold        = parseInt( document.getElementById( 'power-saver-state' ).value, 10 ) / 100;
 
-		for ( let i = len; i--; )
+		for ( let i = levels.length; i--; )
 		{
 			lvl = levels[ i ];
 			lvl.classList.remove( 'battery-level-green-full' );
@@ -5653,27 +5588,19 @@ let n = {
 	 */
 	updateQueueStates()
 	{
-		// Shorthand for queues array
-		let queue = n.queue;
-		let len   = queue.length;
-
-		// Iterate through all queue items
-		for ( let i = len; i--; )
+		n.queue.forEach( ( item, i, queue ) =>
 		{
-			// Shorthand for current item
-			let item = queue[ i ];
-
 			// Get item's number container
-			let q = item.getElementsByClassName( 'item-queue' ).item( 0 );
+			let q = item.querySelector( '.item-queue' );
 
 			// Set item's number container with the new value if not
 			//already set (in case of the same item added more than once
 			//in the queue) and it's not being processed in the playback at the moment.
-			if ( i === queue.indexOf( item ) && !item.getElementsByClassName( 'playback-status' ).item( 0 ).dataset.icon )
+			if ( i === queue.indexOf( item ) && !item.querySelector( '.playback-status' ).dataset.icon )
 			{
 				q.innerHTML = i + 1;
 			}
-		}
+		} );
 	},
 
 	/**
@@ -5753,7 +5680,7 @@ let n = {
 	window( cls )
 	{
 		// Get window element to which will apply classes
-		let window = document.getElementsByClassName( 'window' )[ 0 ];
+		let window = document.querySelector( '.window' );
 
 		window.classList.remove( 'visibility-hidden' );
 

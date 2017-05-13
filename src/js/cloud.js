@@ -432,7 +432,7 @@ class Cloud
 
 				this.urlManager.add( item.dataset.url, objectUrl );
 
-				if ( document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ n.audio.dataset.item ] !== item )
+				if ( document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ n.audio.dataset.item ] !== item )
 				{
 					n.setItemState( null, false, item );
 				}
@@ -458,7 +458,7 @@ class Cloud
 				audio.src = objectUrl;
 				audio.load();
 
-				let itm = document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ];
+				let itm = document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ];
 
 				if ( itm === item )
 				{
@@ -558,7 +558,7 @@ class Cloud
 			// Reset playback state, as we finished loading
 			n.setItemState( null, false, item );
 
-			let itm = document.getElementById( n.audio.dataset.playlist ).getElementsByClassName( 'playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ];
+			let itm = document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ];
 
 			// When fast switching items we receive more calls to this handler and we should process only the one that
 			// matters
@@ -597,7 +597,7 @@ class Cloud
 
 		n.lastfm.scrobble();
 
-		let items = item.parentNode.getElementsByClassName( 'playlist-item' );
+		let items = item.parentNode.querySelectorAll( '.playlist-item' );
 
 		// Get the index of the focused item and tell the audio element which item is being played, so we can later get
 		// it
@@ -627,7 +627,7 @@ class Cloud
 		{
 			n.lastfm.scrobble();
 
-			let items = item.parentNode.getElementsByClassName( 'playlist-item' );
+			let items = item.parentNode.querySelectorAll( '.playlist-item' );
 
 			// Get the index of the focused item and tell the audio element which item is being played, so we can later
 			// get it
