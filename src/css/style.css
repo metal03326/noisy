@@ -455,33 +455,43 @@ body
 {
 	float     : left;
 	padding   : 4px 0 0 5px;
-	display   : none;
 	font-size : 16px;
 	color     : #fff;
 }
 
-/* TODO: Check for local and find window buttons do we need to ever show
-hem and remove them from CSS rules if not, or even from DOM if possible */
-#preferences-window-content,
-#about-window-content,
-#find-window-content,
-#connect-window-content,
-#add-window-content,
-#welcome-window-content,
-#local-window-content,
-#youtube-search-window-content,
-#preferences-window-buttons,
-#about-window-buttons,
-#find-window-buttons,
-#connect-window-buttons,
-#add-window-buttons,
-#save-playlist-window-buttons,
-#load-playlist-window-buttons,
-#save-preferences-window-buttons,
-#load-preferences-window-buttons,
-#welcome-window-buttons,
-#local-window-buttons,
-#youtube-search-window-buttons
+.window:not(#preferences-window) #preferences-window-title,
+.window:not(#preferences-window) #preferences-window-content,
+.window:not(#preferences-window) #preferences-window-buttons,
+.window:not(#about-window) #about-window-title,
+.window:not(#about-window) #about-window-content,
+.window:not(#about-window) #about-window-buttons,
+.window:not(#find-window) #find-window-title,
+.window:not(#find-window) #find-window-content,
+.window:not(#connect-window) #connect-window-title,
+.window:not(#connect-window) #connect-window-content,
+.window:not(#connect-window) #connect-window-buttons,
+.window:not(#add-window) #add-window-title,
+.window:not(#add-window) #add-window-content,
+.window:not(#add-window) #add-window-buttons,
+.window:not(#welcome-window) #welcome-window-title,
+.window:not(#welcome-window) #welcome-window-content,
+.window:not(#welcome-window) #welcome-window-buttons,
+.window:not(#local-window) #local-window-title,
+.window:not(#local-window) #local-window-content,
+.window:not(#youtube-search-window) #youtube-search-window-title,
+.window:not(#youtube-search-window) #youtube-search-window-content,
+.window:not(#save-playlist-window) #save-playlist-window-title,
+.window:not(#save-playlist-window) #save-playlist-window-content,
+.window:not(#save-playlist-window) #save-playlist-window-buttons,
+.window:not(#load-playlist-window) #load-playlist-window-title,
+.window:not(#load-playlist-window) #load-playlist-window-content,
+.window:not(#load-playlist-window) #load-playlist-window-buttons,
+.window:not(#save-preferences-window) #save-preferences-window-title,
+.window:not(#save-preferences-window) #save-preferences-window-content,
+.window:not(#save-preferences-window) #save-preferences-window-buttons,
+.window:not(#load-preferences-window) #load-preferences-window-title,
+.window:not(#load-preferences-window) #load-preferences-window-content,
+.window:not(#load-preferences-window) #load-preferences-window-buttons
 {
 	display : none;
 }
@@ -490,58 +500,6 @@ hem and remove them from CSS rules if not, or even from DOM if possible */
 #preference-performance
 {
 	padding : 5px;
-}
-
-#preferences-window,
-#preferences-window #preferences-window-title,
-#preferences-window #preferences-window-content,
-#preferences-window #preferences-window-buttons,
-#about-window,
-#about-window #about-window-title,
-#about-window #about-window-content,
-#about-window #about-window-buttons,
-#find-window,
-#find-window #find-window-title,
-#find-window #find-window-content,
-#find-window #find-window-buttons,
-#connect-window,
-#connect-window #connect-window-title,
-#connect-window #connect-window-content,
-#connect-window #connect-window-buttons,
-#add-window,
-#add-window #add-window-title,
-#add-window #add-window-content,
-#add-window #add-window-buttons,
-#save-playlist-window,
-#save-playlist-window #save-playlist-window-title,
-#save-playlist-window #add-window-content,
-#save-playlist-window #save-playlist-window-buttons,
-#load-playlist-window,
-#load-playlist-window #load-playlist-window-title,
-#load-playlist-window #add-window-content,
-#load-playlist-window #load-playlist-window-buttons,
-#save-preferences-window,
-#save-preferences-window #save-preferences-window-title,
-#save-preferences-window #add-window-content,
-#save-preferences-window #save-preferences-window-buttons,
-#load-preferences-window,
-#load-preferences-window #load-preferences-window-title,
-#load-preferences-window #add-window-content,
-#load-preferences-window #load-preferences-window-buttons,
-#welcome-window,
-#welcome-window #welcome-window-title,
-#welcome-window #welcome-window-content,
-#welcome-window #welcome-window-buttons,
-#local-window,
-#local-window #local-window-title,
-#local-window #local-window-content,
-#local-window #local-window-buttons,
-#youtube-search-window,
-#youtube-search-window #youtube-search-window-title,
-#youtube-search-window #youtube-search-window-content,
-#youtube-search-window #youtube-search-window-buttons
-{
-	display : block;
 }
 
 #about-window,
@@ -1556,7 +1514,8 @@ h6
 	top          : 5px;
 }
 
-.visibility-hidden
+.visibility-hidden,
+.window:not([id])
 {
 	opacity    : 0;
 	visibility : hidden;

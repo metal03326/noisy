@@ -1545,11 +1545,12 @@ let n = {
 			// Timeout is needed for the CSS transition to finish before hiding the window
 			setTimeout( () =>
 			{
-				window.id = '';
+				window.removeAttribute( 'id' );
 			}, 300 );
 
 			// Remove other classes from the window
-			document.querySelector( '.window' ).className = 'window visibility-hidden';
+			//todo: Do we actually change this class somewhere?
+			window.className = 'window';
 
 			n.clearWindow();
 
@@ -5673,8 +5674,6 @@ let n = {
 	{
 		// Get window element to which will apply classes
 		let window = document.querySelector( '.window' );
-
-		window.classList.remove( 'visibility-hidden' );
 
 		switch ( cls )
 		{
