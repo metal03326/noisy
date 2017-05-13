@@ -992,7 +992,7 @@ let n = {
 
 			if ( cloud.isAuthenticated )
 			{
-				document.getElementById( 'add-window-files' ).classList.add( 'hidden' );
+				document.getElementById( 'add-window-files' ).hidden = true;
 				document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
 				n.selectService( this.dataset.cloud );
 			}
@@ -1235,14 +1235,7 @@ let n = {
 
 		counter.innerHTML = '';
 
-		if ( state && !n.powerSaveMode )
-		{
-			counter.classList.remove( 'hidden' );
-		}
-		else
-		{
-			counter.classList.add( 'hidden' );
-		}
+		counter.hidden = !state || n.powerSaveMode;
 	},
 
 	/**
@@ -1265,7 +1258,7 @@ let n = {
 
 		if ( el )
 		{
-			document.getElementById( el.dataset.for ).parentNode.classList.add( 'hidden' );
+			document.getElementById( el.dataset.for ).parentNode.hidden = true;
 			el.classList.remove( 'active' );
 		}
 
@@ -1273,7 +1266,7 @@ let n = {
 		tab.classList.add( 'active' );
 
 		// Show playlist for the clicked tab
-		document.getElementById( tab.dataset.for ).parentNode.classList.remove( 'hidden' );
+		document.getElementById( tab.dataset.for ).parentNode.hidden = false;
 
 		n.saveActivePlaylistIdDelayed();
 	},
@@ -1478,15 +1471,15 @@ let n = {
 	{
 		let source = document.getElementById( 'add-window-files' );
 
-		document.getElementById( 'add-window-cloud-chooser' ).className = '';
+		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
 
-		source.className = 'hidden';
+		source.hidden = true;
 
 		delete source.dataset.path;
 		delete source.dataset.cloud;
 		delete source.dataset.filter;
 
-		document.getElementById( 'add-window-files' ).classList.remove( 'hidden' );
+		document.getElementById( 'add-window-files' ).hidden = false;
 		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
@@ -1617,7 +1610,7 @@ let n = {
 		// Create the playlist
 		let playlist = document.createElement( 'li' );
 
-		playlist.classList.add( 'hidden' );
+		playlist.hidden    = true;
 		playlist.innerHTML = '<article id="'.concat( id, '" data-name="', name, '" class="row playlist scroll-y" onscroll="n.saveActivePlaylistIdDelayed()"></article>' );
 
 		document.getElementById( 'playlists' ).appendChild( playlist );
@@ -1690,8 +1683,8 @@ let n = {
 		// screen
 		if ( document.getElementById( 'add-playlist' ) === toActivate )
 		{
-			toActivate = null;
-			document.getElementById( 'playlist-hints' ).classList.remove( 'hidden' );
+			toActivate                                         = null;
+			document.getElementById( 'playlist-hints' ).hidden = false;
 		}
 
 		// Should continue only if both tab and playlist elements are found
@@ -2329,6 +2322,7 @@ let n = {
 
 			// Get all preference tabs contents
 			let preferences = document.getElementById( 'preferences-container' ).children;
+			let len         = preferences.length;
 
 			// Remove active class from active tab
 			document.getElementById( 'preferences-tabs' ).querySelector( '.active' ).classList.remove( 'active' );
@@ -2337,15 +2331,13 @@ let n = {
 			this.classList.add( 'active' );
 
 			// Hide all tab contents
-			const classToAdd = 'hidden';
-
-			for ( let i = preferences.length; i--; )
+			for ( let i = len; i--; )
 			{
-				preferences[ i ].classList.add( classToAdd );
+				preferences[ i ].hidden = true;
 			}
 
 			// Show content for selected tab
-			document.getElementById( 'preference-'.concat( this.dataset.preference ) ).classList.remove( 'hidden' );
+			document.getElementById( 'preference-'.concat( this.dataset.preference ) ).hidden = false;
 		};
 
 		for ( let i = menuItems.length; i--; )
@@ -2711,7 +2703,7 @@ let n = {
 
 		if ( val )
 		{
-			let items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not(.hidden) section[data-url]' );
+			let items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not([hidden]) section[data-url]' );
 
 			// We'll search by all words, so we split them
 			let terms = val.split( ' ' );
@@ -3688,7 +3680,7 @@ let n = {
 	{
 		let selected = document.getElementById( 'add-window-files' ).querySelector( '.active' );
 
-		document.getElementById( 'add-window-files' ).classList.add( 'hidden' );
+		document.getElementById( 'add-window-files' ).hidden = true;
 		document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
 
 		n[ selected.dataset.cloud ].getFolderContents( selected.dataset.path );
@@ -4888,9 +4880,9 @@ let n = {
 	 */
 	selectService( service )
 	{
-		document.getElementById( 'add-window-cloud-chooser' ).className = 'hidden';
-		document.getElementById( 'add-window-files' ).className         = '';
-		document.querySelector( '.window' ).className                   = 'window ' + service;
+		document.getElementById( 'add-window-cloud-chooser' ).hidden = true;
+		document.getElementById( 'add-window-files' ).hidden         = false;
+		document.querySelector( '.window' ).className                = 'window ' + service;
 
 		n[ service ].getFolderContents( '' );
 	},

@@ -685,11 +685,6 @@ button
 	overflow-y: auto;
 }
 
-.hidden
-{
-	display: none !important;
-}
-
 .cf:before,
 .cf:after
 {
@@ -1341,14 +1336,12 @@ h6
 
 #add-window #add-window-cloud-chooser
 {
-	display: inline-block;
 	position: relative;
 	left: 110px;
 }
 
 #add-window-cloud-chooser
 {
-	display: inline-block;
 	position: relative;
 	left: 165px;
 }
@@ -1611,24 +1604,6 @@ h6
 .cancel-action #cancel-action
 {
 	display: inline;
-}
-
-.visiblility-hidden
-{
-	opacity: 0;
-	visibility: hidden;
-}
-
-@-webkit-keyframes spin
-{
-	from
-	{
-		-webkit-transform: rotate(0deg);
-	}
-	to
-	{
-		-webkit-transform: rotate(360deg);
-	}
 }
 
 @keyframes spin

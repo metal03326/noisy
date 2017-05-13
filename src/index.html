@@ -37,22 +37,19 @@
 	<body>
 		<div id="splash" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:9999;background:#000;color:#fff">
 			<span id="initializing-noisy" style="width: 100%;position:absolute;top:90%;text-align:center">Initializing Noisy...</span>
-			<div class="hidden" style="width:770px;height:170px;position:absolute;top:50%;left:50%;margin-left:-385px;margin-top:-85px;text-align:center;">
+			<div hidden style="width:770px;height:170px;position:absolute;top:50%;left:50%;margin-left:-385px;margin-top:-85px;text-align:center;">
                 <div data-icon=">" style="font-size: 96px;"></div>
                 <div id="splash-screen-text">
                     If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){}location.replace('//'+location.host+'/')})()" style="text-decoration:none;color:red;">leaving it</a>. If not you can <a href="javascript:localStorage.removeItem('preferences'),location.reload()" style="text-decoration:none;color:red;">click here to delete the settings</a>. If that doesn't help, try <a href="javascript:localStorage.removeItem('playlists'),location.reload()" style="text-decoration:none;color:red;">deleting the playlists</a>, too.
                 </div>
+                <script>
+					window.splashTimeout = setTimeout( function()
+					{
+						this.hidden = false;
+					}.bind( document.currentScript.parentNode ), 10000 );
+                </script>
             </div>
 		</div>
-		<script>
-			window.splashTimeout = setTimeout( function(){
-				var splash = document.querySelector( '#splash div' );
-				if ( splash )
-				{
-					splash.className = "";
-				}
-			}, 10000 );
-		</script>
 		<div id="themes-style-tag-container"></div>
 		<header id="header">
             <div id="header-left" tabindex="0">
@@ -106,7 +103,7 @@
                 </nav>
             </div>
             <div id="header-right">
-                <a href="javascript:" onclick="n.showSearch(event)" class="search-in-playlist hidden" data-icon="#"></a>
+                <a href="javascript:" onclick="n.showSearch(event)" class="search-in-playlist" hidden data-icon="#"></a>
                 <a href="javascript:" onclick="n.showPreferences(event)" data-icon="$" class="nav-ul-a"></a>
             </div>
 		</header>
@@ -211,7 +208,7 @@
                             </label><br />&nbsp;<br />
                             <a href="javascript:" id="preference-general-help"><span data-icon="H"></span></a>
                         </div>
-                        <div id="preference-appearance" class="hidden">
+                        <div id="preference-appearance" hidden>
                             <table id="appearance-table">
                                 <tr>
                                     <td class="appearance-table-left">
@@ -263,7 +260,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div id="preference-keyboard" class="hidden">
+                        <div id="preference-keyboard" hidden>
                             <table id="keyboard-shortcuts">
                                 <tr>
                                     <th id="preference-keyboard-shortcut"></th>
@@ -301,7 +298,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div id="preference-performance" class="hidden">
+                        <div id="preference-performance" hidden>
                             <label>
                                 <input id="preference-enable-powersaver" type="checkbox" />
                                 <span id="preference-performance-powersaver"></span> <a href="javascript:" id="preference-powersaver-help"><span data-icon="H"></span></a>
@@ -428,14 +425,14 @@
                             <span id="local-text"></span>
 						</a>
 					</div>
-					<div id="add-window-files" class="hidden"></div>
+					<div id="add-window-files" hidden></div>
 					<div id="loading-folder-contents" class="visibility-hidden"><div id="loading-folder-contents-icon" data-icon="w"></div></div>
 				</div>
 				<div id="welcome-window-content"></div>
 				<div id="local-window-content">
                     <span id="choose-files-to-play"></span>
                     <div id="file-input-methods">
-                        <input type="file" multiple id="selected-playback-files" class="hidden" onchange="n.onFilesSupplied(this)" />
+                        <input type="file" multiple id="selected-playback-files" hidden onchange="n.onFilesSupplied(this)" />
                         <button onclick="document.getElementById('selected-playback-files').click()" id="selected-playback-files-trigger"></button>
                         <div id="file-upload-method-or"></div>
                         <div id="drop-zone"></div>
@@ -463,7 +460,7 @@
                         <button onclick="n.showLoadPreferences()" id="button-import-preferences"></button>
                     </div>
 				</div>
-				<div id="find-window-buttons" class="hidden"></div>
+				<div id="find-window-buttons" hidden></div>
 				<div id="connect-window-buttons">
 					<button onclick="n.connectTo()" class="button-connect"></button>
 				</div>
@@ -493,8 +490,8 @@
                     <span id="welcome-slide-counter"></span>
                     <button onclick="n.changeSlide(1)" id="welcome-slide-next"><div data-icon="@" class="rotate90"></div></button>
 				</div>
-				<div id="local-window-buttons" class="hidden"></div>
-				<div id="youtube-search-window-buttons" class="hidden"></div>
+				<div id="local-window-buttons" hidden></div>
+				<div id="youtube-search-window-buttons" hidden></div>
 			</div>
 		</div>
 		<script src="js/libs/md5.js"></script>

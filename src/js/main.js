@@ -174,7 +174,7 @@ window.onload = () =>
 		// Timeouts are needed because we want to hide initial animations of the player
 		setTimeout( () =>
 		{
-			splash.classList.add( 'visiblility-hidden' );
+			splash.classList.add( 'visibility-hidden' );
 
 			setTimeout( () =>
 			{
