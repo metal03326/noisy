@@ -603,23 +603,13 @@ let n = {
 	applyTheme()
 	{
 		// Get selected theme
-		let theme           = document.getElementById( 'preference-theme' ).value;
+		let theme             = document.getElementById( 'preference-theme' ).value;
 		// Style tag string to be appended in the end
-		let styles          = '';
-		// CSS selector being read from themes object
-		let selector;
-		// CSS rule (eg display: block) to be concatenated in the style string
-		let rule;
-		// Object containing all CSS rules for selected theme
-		let rules;
-		// Object containing all CSS rules for all themes for the current selector
-		let selectorRules;
-		// Object containing all CSS rules for selected theme and selector
-		let selectedRule;
-		let openRuleString  = '{';
-		let columnString    = ':';
-		let newLineString   = ';';
-		let closeRuleString = '}';
+		let styles            = '';
+		const openRuleString  = '{';
+		const columnString    = ':';
+		const newLineString   = ';';
+		const closeRuleString = '}';
 
 		// Default theme is inside the style.css, so we don't need to process themes.js if user have chosen it
 		if ( 'default' !== theme )
@@ -628,7 +618,7 @@ let n = {
 			Object.keys( themes ).forEach( selector =>
 			{
 				// Get the object of theme rules
-				selectorRules = themes[ selector ];
+				let selectorRules = themes[ selector ];
 
 				// Loop them
 				Object.keys( selectorRules ).forEach( selectedRule =>
@@ -637,7 +627,7 @@ let n = {
 					if ( ~selectedRule.indexOf( theme ) )
 					{
 						// Get rules for current theme
-						rules = selectorRules[ selectedRule ];
+						let rules = selectorRules[ selectedRule ];
 						styles += selector.concat( openRuleString );
 
 						// Loop through all the rules for this theme and append them to the styles string
