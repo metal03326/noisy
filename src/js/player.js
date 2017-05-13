@@ -673,21 +673,21 @@ let n = {
 			'add-window'             : {
 				all()
 				{
-					let buttons = document.getElementById( 'add-window-buttons' ).getElementsByTagName( 'button' );
+					let buttons = document.getElementById( 'add-window-buttons' ).querySelectorAll( 'button' );
 
 					buttons[ 0 ].disabled = false;
 					buttons[ 1 ].disabled = false;
 				},
 				file()
 				{
-					let buttons = document.getElementById( 'add-window-buttons' ).getElementsByTagName( 'button' );
+					let buttons = document.getElementById( 'add-window-buttons' ).querySelectorAll( 'button' );
 
 					buttons[ 0 ].disabled = false;
 					buttons[ 1 ].disabled = true;
 				},
 				'default'()
 				{
-					let buttons = document.getElementById( 'add-window-buttons' ).getElementsByTagName( 'button' );
+					let buttons = document.getElementById( 'add-window-buttons' ).querySelectorAll( 'button' );
 
 					buttons[ 0 ].disabled = true;
 					buttons[ 1 ].disabled = true;
@@ -847,7 +847,7 @@ let n = {
 
 		// Attach event listeners to the tabs
 		let tabs             = document.querySelectorAll( '.playlists-tabs-li' );
-		let inputs           = document.getElementsByTagName( 'input' );
+		let inputs           = document.querySelectorAll( 'input' );
 		let icons            = document.querySelectorAll( '.cloud-icon' );
 		let checkboxes       = document.querySelectorAll( '#preference-cursor-follows-playback,#preference-playback-follows-cursor' );
 		let len              = tabs.length;
@@ -1618,7 +1618,7 @@ let n = {
 		tab.tabIndex  = 0;
 		tab.innerHTML = '<span>'.concat( name, '</span> <a href="javascript:;" class="playlist-edit"><span data-icon="!"></span></a> <a href="javascript:;" class="playlist-remove">&times;</a>' );
 
-		let triggers = tab.getElementsByTagName( 'a' );
+		let triggers = tab.querySelectorAll( 'a' );
 
 		triggers[ 0 ].addEventListener( 'click', n.renamePlaylist );
 		triggers[ 1 ].addEventListener( 'click', n.deletePlaylist );
@@ -1713,7 +1713,7 @@ let n = {
 		if ( tab && playlist )
 		{
 			// Remove event listeners
-			let triggers = tab.getElementsByTagName( 'a' );
+			let triggers = tab.querySelectorAll( 'a' );
 
 			triggers[ 0 ].removeEventListener( 'click', n.renamePlaylist, false );
 			triggers[ 1 ].removeEventListener( 'click', n.deletePlaylist, false );
@@ -3099,7 +3099,7 @@ let n = {
 
 		if ( tab )
 		{
-			n.renamePlaylist( tab.getElementsByTagName( 'span' ).item( 0 ) );
+			n.renamePlaylist( tab.querySelector( 'span' ) );
 		}
 	},
 
@@ -3285,7 +3285,7 @@ let n = {
 
 			// Reset content of the slide being hidden to the default, if it contains iframe (video). This will stop
 			// video if played.
-			if ( currentSlide.getElementsByTagName( 'iframe' ).length )
+			if ( currentSlide.querySelectorAll( 'iframe' ).length )
 			{
 				setTimeout( () =>
 				{
@@ -5297,7 +5297,7 @@ let n = {
 			return compiled;
 		}
 
-		document.getElementsByTagName( 'html' )[ 0 ].lang = n.pref.lang;
+		document.documentElement.lang = n.pref.lang;
 
 		let splashItems = n.lang.splash;
 		let len;
