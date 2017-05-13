@@ -6,14 +6,14 @@
   "author": "metal03326",
   "license": "GPLv3",
   "scripts": {
-    "dev": "lite-server",
+    "start": "serve -p 80 -u -s -n ./src/",
     "build": "node ./build/builder.js"
   },
   "devDependencies": {
     "clean-css": "^4.0.12",
     "fs-extra": "^3.0.1",
     "html-minifier": "^3.4.3",
-    "lite-server": "^2.3.0",
+    "serve": "^5.1.5",
     "uglify-js": "^2.8.22"
   }
 }
