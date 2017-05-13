@@ -192,7 +192,7 @@ let pref = {
 		// Disable counter update if user said so
 		if ( !this.counter )
 		{
-			document.getElementById( 'footer-counter' ).classList.add( 'hidden' );
+			document.getElementById( 'footer-counter' ).hidden = true;
 		}
 
 		// Un-check Power Saver checkbox if it's not supported by the browser

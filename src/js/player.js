@@ -603,23 +603,13 @@ let n = {
 	applyTheme()
 	{
 		// Get selected theme
-		let theme           = document.getElementById( 'preference-theme' ).value;
+		let theme             = document.getElementById( 'preference-theme' ).value;
 		// Style tag string to be appended in the end
-		let styles          = '';
-		// CSS selector being read from themes object
-		let selector;
-		// CSS rule (eg display: block) to be concatenated in the style string
-		let rule;
-		// Object containing all CSS rules for selected theme
-		let rules;
-		// Object containing all CSS rules for all themes for the current selector
-		let selectorRules;
-		// Object containing all CSS rules for selected theme and selector
-		let selectedRule;
-		let openRuleString  = '{';
-		let columnString    = ':';
-		let newLineString   = ';';
-		let closeRuleString = '}';
+		let styles            = '';
+		const openRuleString  = '{';
+		const columnString    = ':';
+		const newLineString   = ';';
+		const closeRuleString = '}';
 
 		// Default theme is inside the style.css, so we don't need to process themes.js if user have chosen it
 		if ( 'default' !== theme )
@@ -628,7 +618,7 @@ let n = {
 			Object.keys( themes ).forEach( selector =>
 			{
 				// Get the object of theme rules
-				selectorRules = themes[ selector ];
+				let selectorRules = themes[ selector ];
 
 				// Loop them
 				Object.keys( selectorRules ).forEach( selectedRule =>
@@ -637,7 +627,7 @@ let n = {
 					if ( ~selectedRule.indexOf( theme ) )
 					{
 						// Get rules for current theme
-						rules = selectorRules[ selectedRule ];
+						let rules = selectorRules[ selectedRule ];
 						styles += selector.concat( openRuleString );
 
 						// Loop through all the rules for this theme and append them to the styles string
@@ -992,7 +982,7 @@ let n = {
 
 			if ( cloud.isAuthenticated )
 			{
-				document.getElementById( 'add-window-files' ).classList.add( 'hidden' );
+				document.getElementById( 'add-window-files' ).hidden = true;
 				document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
 				n.selectService( this.dataset.cloud );
 			}
@@ -1235,14 +1225,7 @@ let n = {
 
 		counter.innerHTML = '';
 
-		if ( state && !n.powerSaveMode )
-		{
-			counter.classList.remove( 'hidden' );
-		}
-		else
-		{
-			counter.classList.add( 'hidden' );
-		}
+		counter.hidden = !state || n.powerSaveMode;
 	},
 
 	/**
@@ -1265,7 +1248,7 @@ let n = {
 
 		if ( el )
 		{
-			document.getElementById( el.dataset.for ).parentNode.classList.add( 'hidden' );
+			document.getElementById( el.dataset.for ).parentNode.hidden = true;
 			el.classList.remove( 'active' );
 		}
 
@@ -1273,7 +1256,7 @@ let n = {
 		tab.classList.add( 'active' );
 
 		// Show playlist for the clicked tab
-		document.getElementById( tab.dataset.for ).parentNode.classList.remove( 'hidden' );
+		document.getElementById( tab.dataset.for ).parentNode.hidden = false;
 
 		n.saveActivePlaylistIdDelayed();
 	},
@@ -1478,15 +1461,15 @@ let n = {
 	{
 		let source = document.getElementById( 'add-window-files' );
 
-		document.getElementById( 'add-window-cloud-chooser' ).className = '';
+		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
 
-		source.className = 'hidden';
+		source.hidden = true;
 
 		delete source.dataset.path;
 		delete source.dataset.cloud;
 		delete source.dataset.filter;
 
-		document.getElementById( 'add-window-files' ).classList.remove( 'hidden' );
+		document.getElementById( 'add-window-files' ).hidden = false;
 		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
@@ -1552,11 +1535,12 @@ let n = {
 			// Timeout is needed for the CSS transition to finish before hiding the window
 			setTimeout( () =>
 			{
-				window.id = '';
+				window.removeAttribute( 'id' );
 			}, 300 );
 
 			// Remove other classes from the window
-			document.querySelector( '.window' ).className = 'window visibility-hidden';
+			//todo: Do we actually change this class somewhere?
+			window.className = 'window';
 
 			n.clearWindow();
 
@@ -1617,7 +1601,7 @@ let n = {
 		// Create the playlist
 		let playlist = document.createElement( 'li' );
 
-		playlist.classList.add( 'hidden' );
+		playlist.hidden    = true;
 		playlist.innerHTML = '<article id="'.concat( id, '" data-name="', name, '" class="row playlist scroll-y" onscroll="n.saveActivePlaylistIdDelayed()"></article>' );
 
 		document.getElementById( 'playlists' ).appendChild( playlist );
@@ -1690,8 +1674,8 @@ let n = {
 		// screen
 		if ( document.getElementById( 'add-playlist' ) === toActivate )
 		{
-			toActivate = null;
-			document.getElementById( 'playlist-hints' ).classList.remove( 'hidden' );
+			toActivate                                         = null;
+			document.getElementById( 'playlist-hints' ).hidden = false;
 		}
 
 		// Should continue only if both tab and playlist elements are found
@@ -2329,6 +2313,7 @@ let n = {
 
 			// Get all preference tabs contents
 			let preferences = document.getElementById( 'preferences-container' ).children;
+			let len         = preferences.length;
 
 			// Remove active class from active tab
 			document.getElementById( 'preferences-tabs' ).querySelector( '.active' ).classList.remove( 'active' );
@@ -2337,15 +2322,13 @@ let n = {
 			this.classList.add( 'active' );
 
 			// Hide all tab contents
-			const classToAdd = 'hidden';
-
-			for ( let i = preferences.length; i--; )
+			for ( let i = len; i--; )
 			{
-				preferences[ i ].classList.add( classToAdd );
+				preferences[ i ].hidden = true;
 			}
 
 			// Show content for selected tab
-			document.getElementById( 'preference-'.concat( this.dataset.preference ) ).classList.remove( 'hidden' );
+			document.getElementById( 'preference-'.concat( this.dataset.preference ) ).hidden = false;
 		};
 
 		for ( let i = menuItems.length; i--; )
@@ -2711,7 +2694,7 @@ let n = {
 
 		if ( val )
 		{
-			let items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not(.hidden) section[data-url]' );
+			let items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not([hidden]) section[data-url]' );
 
 			// We'll search by all words, so we split them
 			let terms = val.split( ' ' );
@@ -3688,7 +3671,7 @@ let n = {
 	{
 		let selected = document.getElementById( 'add-window-files' ).querySelector( '.active' );
 
-		document.getElementById( 'add-window-files' ).classList.add( 'hidden' );
+		document.getElementById( 'add-window-files' ).hidden = true;
 		document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
 
 		n[ selected.dataset.cloud ].getFolderContents( selected.dataset.path );
@@ -4888,9 +4871,9 @@ let n = {
 	 */
 	selectService( service )
 	{
-		document.getElementById( 'add-window-cloud-chooser' ).className = 'hidden';
-		document.getElementById( 'add-window-files' ).className         = '';
-		document.querySelector( '.window' ).className                   = 'window ' + service;
+		document.getElementById( 'add-window-cloud-chooser' ).hidden = true;
+		document.getElementById( 'add-window-files' ).hidden         = false;
+		document.querySelector( '.window' ).className                = 'window ' + service;
 
 		n[ service ].getFolderContents( '' );
 	},
@@ -5681,8 +5664,6 @@ let n = {
 	{
 		// Get window element to which will apply classes
 		let window = document.querySelector( '.window' );
-
-		window.classList.remove( 'visibility-hidden' );
 
 		switch ( cls )
 		{

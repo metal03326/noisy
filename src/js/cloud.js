@@ -283,7 +283,7 @@ class Cloud
 
 			n.applyWindowState( 'semi' );
 
-			document.getElementById( 'add-window-files' ).classList.remove( 'hidden' );
+			document.getElementById( 'add-window-files' ).hidden = false;
 			document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 		}, () =>
 		{
