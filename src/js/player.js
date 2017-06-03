@@ -5,10 +5,16 @@
  * @version n.version
  */
 
+/*
+ button:hover
+ currentColor
+ */
+
 'use strict';
 /* HIGH PRIORITY */
 //TODO: Check Teddy for a problem with now playing of Five Finger Death Punch - Wrong Side of Heaven. It says invalid
-// signiture supplied TODO: Implement Drag and Drop Directories under Chrome
+// signiture supplied
+//TODO: Implement Drag and Drop Directories under Chrome
 
 /* NORMAL PRIORITY */
 //TODO: Make a page with things to be dropped and when (approximately)
@@ -380,7 +386,7 @@ let n = {
 		n.cancelAction = false;
 
 		// Show stop icon in the footer
-		document.getElementById( 'footer' ).classList.add( 'cancel-action' );
+		document.getElementById( 'cancel-action' ).hidden = false;
 
 		// Create a new playlist, if the user hasn't created/selected any
 		if ( !playlistId )
@@ -443,7 +449,7 @@ let n = {
 			n.cancelAction = false;
 
 			// And finally remove the stop icon
-			document.getElementById( 'footer' ).classList.remove( 'cancel-action' );
+			document.getElementById( 'cancel-action' ).hidden = true;
 		} );
 
 		// Close the window (user can monitor the process in the status bar)
@@ -982,7 +988,6 @@ let n = {
 
 			if ( cloud.isAuthenticated )
 			{
-				document.getElementById( 'add-window-files' ).hidden = true;
 				document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
 				n.selectService( this.dataset.cloud );
 			}
@@ -1015,14 +1020,7 @@ let n = {
 					// Left
 					case 37:
 						// Get selected tab
-						tab = document.querySelector( 'li[data-for="'.concat( n.activePlaylistId, '"]' ) );
-
-						// Get first tab if no active tab found
-						if ( !tab )
-						{
-							tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'li:not(#add-playlist)' );
-							tab  = tabs.item( 0 );
-						}
+						tab = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"]' ) ) || document.getElementById( 'playlists-tabs' ).querySelector( 'div[data-for]' );
 
 						// If we have one
 						if ( tab )
@@ -1049,12 +1047,12 @@ let n = {
 					// Right
 					case 39:
 						// Get selected tab
-						tab = document.querySelector( 'li[data-for="'.concat( n.activePlaylistId, '"]' ) );
+						tab = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"]' ) );
 
 						// Get last tab if no active tab found
 						if ( !tab )
 						{
-							tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'li:not(#add-playlist)' );
+							tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'div[data-for]' );
 							tab  = tabs.item( tabs.length - 1 );
 						}
 
@@ -1248,7 +1246,7 @@ let n = {
 
 		if ( el )
 		{
-			document.getElementById( el.dataset.for ).parentNode.hidden = true;
+			document.getElementById( el.dataset.for ).hidden = true;
 			el.classList.remove( 'active' );
 		}
 
@@ -1256,7 +1254,7 @@ let n = {
 		tab.classList.add( 'active' );
 
 		// Show playlist for the clicked tab
-		document.getElementById( tab.dataset.for ).parentNode.hidden = false;
+		document.getElementById( tab.dataset.for ).hidden = false;
 
 		n.saveActivePlaylistIdDelayed();
 	},
@@ -1348,13 +1346,13 @@ let n = {
 						accessToken: null
 					};
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'a[data-cloud="' + cloud.codeName + '"]' ).dataset.notconnected = n.lang.other[ 'not-connected' ];
+					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud.codeName + '"]' ).dataset.notconnected = n.lang.other[ 'not-connected' ];
 				} );
 			}
 			else
 			{
 				// Visualy disable the icon in file chooser for that cloud
-				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'a[data-cloud="' + cloud + '"]' );
+				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud + '"]' );
 
 				if ( icon )
 				{
@@ -1463,13 +1461,10 @@ let n = {
 
 		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
 
-		source.hidden = true;
-
 		delete source.dataset.path;
 		delete source.dataset.cloud;
 		delete source.dataset.filter;
 
-		document.getElementById( 'add-window-files' ).hidden = false;
 		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
@@ -1579,13 +1574,13 @@ let n = {
 		name = name.trim();
 
 		// Create the tab
-		let tab = document.createElement( 'li' );
+		let tab = document.createElement( 'div' );
 
 		tab.dataset.for  = id;
 		tab.dataset.name = name;
-		tab.classList.add( 'playlists-tabs-li' );
-		tab.tabIndex  = 0;
-		tab.innerHTML = '<span>'.concat( name, '</span> <a href="javascript:;" class="playlist-edit"><span data-icon="!"></span></a> <a href="javascript:;" class="playlist-remove">&times;</a>' );
+		tab.className    = 'playlists-tabs-li flex';
+		tab.tabIndex     = 0;
+		tab.innerHTML    = '<span>'.concat( name, '</span> <a href="javascript:;" class="playlist-edit"><span data-icon="!"></span></a> <a href="javascript:;" class="playlist-remove">&times;</a>' );
 
 		let triggers = tab.querySelectorAll( 'a' );
 
@@ -1599,12 +1594,15 @@ let n = {
 		tab.addEventListener( 'keydown', n.onTabKeyDown );
 
 		// Create the playlist
-		let playlist = document.createElement( 'li' );
+		let playlist = document.createElement( 'article' );
 
-		playlist.hidden    = true;
-		playlist.innerHTML = '<article id="'.concat( id, '" data-name="', name, '" class="row playlist scroll-y" onscroll="n.saveActivePlaylistIdDelayed()"></article>' );
+		playlist.hidden       = true;
+		playlist.id           = id;
+		playlist.dataset.name = name;
+		playlist.className    = 'playlist scroll-y';
+		playlist.setAttribute( 'onscroll', 'n.saveActivePlaylistIdDelayed()' );
 
-		document.getElementById( 'playlists' ).appendChild( playlist );
+		document.getElementById( 'playlist-hints' ).insertAdjacentElement( 'beforebegin', playlist );
 
 		// Save the playlist if needed
 		if ( save )
@@ -1799,7 +1797,7 @@ let n = {
 	error( section, data = '' )
 	{
 		n.console.innerHTML += '<div class="nb-error"><span class="'.concat( section, '">', n.lang.console[ section ], '</span>', data, '</div>' );
-		document.getElementById( 'header-right' ).lastElementChild.classList.add( 'nb-error' );
+		document.getElementById( 'color-bulb' ).classList.add( 'nb-error' );
 	},
 
 	/**
@@ -1817,7 +1815,7 @@ let n = {
 		const tabIndexString    = 'tabindex';
 		const cloudString       = 'dropbox';
 		const cannotPlayClass   = 'can-not-play';
-		const initialHTML       = '<div class="playback-options"><div class="item-queue"></div><div class="playback-status"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="item-title"></div>';
+		const initialHTML       = '<div class="playback-options"><div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div><div class="item-queue"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
 		const playlistItemClass = 'playlist-item';
 		const dblClickEvent     = 'dblclick';
 		const mouseDownEvent    = 'mousedown';
@@ -2276,7 +2274,7 @@ let n = {
 					playlist.scrollTop = scrollTop;
 				}, 0 );
 
-				n.changePlaylist( document.querySelector( 'li[data-for="'.concat( n.pref.activePlaylistId, '"]' ) ) );
+				n.changePlaylist( document.querySelector( 'div[data-for="'.concat( n.pref.activePlaylistId, '"]' ) ) );
 			}
 			else
 			{
@@ -2288,7 +2286,7 @@ let n = {
 		n.attachEvents();
 
 		// Attach menu events
-		let menuItems    = document.querySelectorAll( 'a[data-menulistener]' );
+		let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
 		let prefTabs     = document.querySelectorAll( '.preferences-item' );
 		let _onItemClick = function( e )
 		{
@@ -2398,7 +2396,7 @@ let n = {
 				// Focus the tab in which the active item is
 				if ( id !== n.activePlaylistId )
 				{
-					n.changePlaylist( document.querySelector( 'li[data-for="'.concat( id, '"]' ) ) );
+					n.changePlaylist( document.querySelector( 'div[data-for="'.concat( id, '"]' ) ) );
 				}
 
 				// Scroll item into view
@@ -2432,7 +2430,7 @@ let n = {
 		document.getElementById( 'playlists-tabs' ).addEventListener( keyDownEvent, e =>
 		{
 			let keyCode  = e.keyCode;
-			let renaming = document.querySelector( 'li[data-for="'.concat( n.activePlaylistId, '"] span.renaming' ) );
+			let renaming = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] span.renaming' ) );
 
 			// Shouldn't do anything if we are not renaming
 			if ( !renaming )
@@ -2493,7 +2491,7 @@ let n = {
 			rules = [
 				//TODO: Make separate rules for all the animations, because this wildcard selector is far from optimal
 				'*:not(.delete-icon){transition: all .3s linear}',
-				'.playback-status[data-icon=\'w\'],#loading-folder-contents-icon,#youtube-search-window-content:empty:after{width: 30px;height: 30px;-webkit-animation-name: spin;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: linear;animation-name: spin;animation-duration: 1s;animation-iteration-count: infinite;animation-timing-function: linear}'
+				'.playback-status[data-icon="w"],#loading-folder-contents-icon,#youtube-search-window-content:empty:after{width: 30px;height: 30px;-webkit-animation-name: spin;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: linear;animation-name: spin;animation-duration: 1s;animation-iteration-count: infinite;animation-timing-function: linear}'
 			];
 		}
 
@@ -2694,7 +2692,7 @@ let n = {
 
 		if ( val )
 		{
-			let items = document.getElementById( 'playlists' ).querySelectorAll( 'li:not([hidden]) section[data-url]' );
+			let items = document.getElementById( 'playlists' ).querySelectorAll( 'div:not([hidden]) section[data-url]' );
 
 			// We'll search by all words, so we split them
 			let terms = val.split( ' ' );
@@ -2860,7 +2858,7 @@ let n = {
 	 */
 	loadAndRenderPlaylists()
 	{
-		let playlists = n.loadPlaylists();
+		let playlists = [];//n.loadPlaylists();
 
 		// Continue only if there are playlists saved
 		if ( playlists )
@@ -2902,7 +2900,7 @@ let n = {
 			return;
 		}
 
-		let tab = document.querySelector( 'li[data-for="'.concat( playlist.id, '"]' ) );
+		let tab = document.querySelector( 'div[data-for="'.concat( playlist.id, '"]' ) );
 
 		if ( tab )
 		{
@@ -3671,7 +3669,6 @@ let n = {
 	{
 		let selected = document.getElementById( 'add-window-files' ).querySelector( '.active' );
 
-		document.getElementById( 'add-window-files' ).hidden = true;
 		document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
 
 		n[ selected.dataset.cloud ].getFolderContents( selected.dataset.path );
@@ -4005,7 +4002,7 @@ let n = {
 	 */
 	playlistNameCheck()
 	{
-		let title  = document.querySelector( 'li[data-for="'.concat( n.activePlaylistId, '"] span' ) );
+		let title  = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] span' ) );
 		let name   = title.innerHTML.trim();
 		let rename = title.dataset.rename;
 
@@ -4585,7 +4582,7 @@ let n = {
 		// Create duration container if not already created and fill it
 		if ( !durationContainer.length )
 		{
-			item.innerHTML += '<div class="float-right">'.concat( '<span class="item-duration">', duration, '</span>', '<div class="delete-icon" tabindex="-1" data-icon="m"></div></div>' );
+			item.innerHTML += ''.concat( '<span class="item-duration">', duration, '</span>', '<div class="delete-icon" tabindex="-1" data-icon="m"></div>' );
 		}
 		// Otherwise just fill the already there duration element
 		else
@@ -4657,11 +4654,11 @@ let n = {
 	 */
 	restoreToDefaults()
 	{
-		let confirmation = document.getElementById( 'preferences-window-buttons' ).querySelectorAll( '.float-left' );
+		let confirmation = document.querySelector( '#preferences-window-buttons .confirmation' );
 
-		if ( confirmation.length )
+		if ( confirmation )
 		{
-			confirmation[ 0 ].classList.remove( 'confirmation' );
+			confirmation.classList.remove( 'confirmation' );
 		}
 
 		localStorage.removeItem( 'preferences' );
@@ -4730,7 +4727,7 @@ let n = {
 		let playlists       = n.loadPlaylists();
 		let notFound        = true;
 		let foundPosition   = -1;
-		const selectorStart = 'li[data-for="';
+		const selectorStart = 'div[data-for="';
 		const selectorEnd   = '"]';
 
 		// Iterate all playlists
@@ -4872,7 +4869,6 @@ let n = {
 	selectService( service )
 	{
 		document.getElementById( 'add-window-cloud-chooser' ).hidden = true;
-		document.getElementById( 'add-window-files' ).hidden         = false;
 		document.querySelector( '.window' ).className                = 'window ' + service;
 
 		n[ service ].getFolderContents( '' );
@@ -4891,9 +4887,9 @@ let n = {
 
 		if ( clear )
 		{
-			footerText.innerHTML = '';
-			n.cancelAction       = true;
-			document.getElementById( 'footer' ).classList.remove( 'cancel-action' );
+			footerText.innerHTML                              = '';
+			n.cancelAction                                    = true;
+			document.getElementById( 'cancel-action' ).hidden = true;
 		}
 		else
 		{
@@ -4976,7 +4972,7 @@ let n = {
 			// Change volume icon if the bar to set progress is volume bar
 			if ( document.getElementById( 'volume' ) === bar && !n.audio.muted )
 			{
-				bar.parentNode.previousElementSibling.children[ 0 ].dataset.icon = Math.min( 4, Math.round( n.audio.volume / 0.25 ) + 1 );
+				document.getElementById( 'trigger-mute' ).dataset.icon = Math.min( 3, Math.round( n.audio.volume / 0.33 ) + 1 );
 			}
 
 			// Set progress bar's progress
@@ -5044,7 +5040,7 @@ let n = {
 		n.window( 'preferences-window' );
 
 		// Remove colors of the button (mark messages as read)
-		let trigger = document.getElementById( 'header-right' ).lastElementChild;
+		let trigger = document.getElementById( 'color-bulb' );
 
 		trigger.classList.remove( 'nb-error' );
 		trigger.classList.remove( 'nb-warn' );
@@ -5257,7 +5253,7 @@ let n = {
 
 		let preferenceItems = n.lang.preferences;
 		let id              = 'preferences-tabs';
-		let selectorStart   = 'a[data-preference="';
+		let selectorStart   = 'button[data-preference="';
 		const selectorEnd   = '"]';
 		Object.keys( preferenceItems ).forEach( key =>
 		{
@@ -5387,7 +5383,7 @@ let n = {
 			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher' ];
 		}
 
-		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'a[data-notconnected]' );
+		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-notconnected]' );
 		for ( let i = notConnecteds.length; i--; )
 		{
 			notConnecteds[ i ].dataset.notconnected = n.lang.other[ 'not-connected' ];
@@ -5514,7 +5510,7 @@ let n = {
 	updateFound()
 	{
 		n.console.innerHTML += '<div class="nb-update"><span class="update">'.concat( n.lang.console.update, '</span></div>' );
-		document.getElementById( 'header-right' ).lastElementChild.classList.add( 'nb-update' );
+		document.getElementById( 'color-bulb' ).classList.add( 'nb-update' );
 	},
 
 	/**
@@ -5653,7 +5649,7 @@ let n = {
 	warn( section, data = '' )
 	{
 		n.console.innerHTML += '<div class="nb-warn"><span class="'.concat( section, '">', n.lang.console[ section ], '</span>', data, '</div>' );
-		document.getElementById( 'header-right' ).lastElementChild.classList.add( 'nb-warn' );
+		document.getElementById( 'color-bulb' ).classList.add( 'nb-warn' );
 	},
 
 	/**

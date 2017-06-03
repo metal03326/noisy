@@ -1,5 +1,5 @@
 let themes = {
-	a                                                                                                              : {
+	'a,.link'                                                                        : {
 		forum: {
 			color: '#302F2F'
 		},
@@ -13,7 +13,7 @@ let themes = {
 			color: '#A03B3B'
 		}
 	},
-	'.battery-level,#battery-cap'                                                                                  : {
+	'.battery-level,#battery-cap'                                                    : {
 		forum: {
 			background: '#302F2F'
 		},
@@ -27,7 +27,7 @@ let themes = {
 			background: '#A03B3B'
 		}
 	},
-	body                                                                                                           : {
+	body                                                                             : {
 		blue    : {
 			background: '#2B5177'
 		},
@@ -56,7 +56,7 @@ let themes = {
 			background: '#CE4040'
 		}
 	},
-	'#header,#footer,#playlists-tabs,.search-in-playlist'                                                          : {
+	'#header,#footer,#playlists-tabs'                            : {
 		forum: {
 			color: '#302F2F'
 		},
@@ -70,37 +70,7 @@ let themes = {
 			color: '#A03B3B'
 		}
 	},
-	'.nav-ul-li:hover,#header-left:hover,.search-in-playlist:hover,#header-right .nav-ul-a:hover,.menu-ul-li:hover': {
-		blue    : {
-			background: '#3D84CC'
-		},
-		forum   : {
-			background: '#F1F1F1'
-		},
-		grey    : {
-			background: '#E7E7E7'
-		},
-		green   : {
-			background: '#B7DB9B'
-		},
-		contrast: {
-			background: '#fffd00'
-			, color   : '#000'
-		},
-		orange  : {
-			background: '#FFB557'
-		},
-		pink    : {
-			background: '#FDE7F1'
-		},
-		purple  : {
-			background: '#C470C9'
-		},
-		red     : {
-			background: '#F55252'
-		}
-	},
-	'.playlists-tabs-li'                                                                                           : {
+	'.playlists-tabs-li'                                                             : {
 		blue    : {
 			background: '#355D85'
 		},
@@ -129,7 +99,7 @@ let themes = {
 			background: '#BD3636'
 		}
 	},
-	'.playlists-tabs-li.active'                                                                                    : {
+	'.playlists-tabs-li.active'                                                      : {
 		blue                 : {
 			background: '#3B78B6'
 		},
@@ -156,7 +126,7 @@ let themes = {
 			background: '#F18282'
 		}
 	},
-	'.playlist'                                                                                                    : {
+	'.playlist'                                                                      : {
 		blue    : {
 			background: '#44709C'
 		},
@@ -185,7 +155,7 @@ let themes = {
 			background: '#FFBEBE'
 		}
 	},
-	'.playlist-item'                                                                                               : {
+	'.playlist-item'                                                                 : {
 		forum   : {
 			color: '#000'
 		},
@@ -206,7 +176,7 @@ let themes = {
 			color: '#A03B3B'
 		}
 	},
-	'.playlist-item:nth-of-type(odd)'                                                                              : {
+	'.playlist-item:nth-of-type(odd)'                                                : {
 		blue  : {
 			background: '#355D85'
 		},
@@ -232,7 +202,7 @@ let themes = {
 			background: '#F18282'
 		}
 	},
-	'.playlist-item:nth-of-type(even)'                                                                             : {
+	'.playlist-item:nth-of-type(even)'                                               : {
 		blue  : {
 			background: '#376A9C'
 		},
@@ -258,7 +228,7 @@ let themes = {
 			background: '#F56E6E'
 		}
 	},
-	'.playlist-item.selected'                                                                                      : {
+	'.playlist-item.selected'                                                        : {
 		blue           : {
 			background: '#569BDF'
 		},
@@ -289,7 +259,7 @@ let themes = {
 			background: '#EC3C3C'
 		}
 	},
-	'.window'                                                                                                      : {
+	'.window'                                                                        : {
 		blue    : {
 			'border-color': '#174575'
 		},
@@ -318,7 +288,7 @@ let themes = {
 			'border-color': '#C53232'
 		}
 	},
-	'#preferences-tabs'                                                                                            : {
+	'#preferences-tabs'                                                              : {
 		blue    : {
 			'border-color': '#6EAAE6'
 			, background  : '#7BB4EC'
@@ -356,7 +326,7 @@ let themes = {
 			, background  : '#FAA3A3'
 		}
 	},
-	'.preferences-item.active'                                                                                     : {
+	':root .preferences-item.active'                                                       : {
 		blue            : {
 			background: '#3E86CF'
 		},
@@ -389,12 +359,12 @@ let themes = {
 			background: '#F55252'
 		}
 	},
-	'#preference-general-help,#preference-language-help,.help-icon'                                                : {
+	'#preference-general-help,#preference-language-help,.help-icon'                  : {
 		contrast: {
 			color: '#fffd00'
 		}
 	},
-	'#find-window-results'                                                                                         : {
+	'#find-window-results'                                                           : {
 		blue    : {
 			background: '#355D85'
 		},
@@ -423,7 +393,7 @@ let themes = {
 			background: '#FCDCDC'
 		}
 	},
-	'#window-title'                                                                                                : {
+	'#window-title'                                                                  : {
 		blue    : {
 			background: '#174575'
 		},
@@ -452,7 +422,7 @@ let themes = {
 			background: '#C53232'
 		}
 	},
-	'#window-buttons'                                                                                              : {
+	'#window-buttons'                                                                : {
 		blue    : {
 			'border-color': '#6EAAE6'
 			, background  : '#ABCEF1'
@@ -490,7 +460,7 @@ let themes = {
 			, background  : '#FFB0B0'
 		}
 	},
-	'#volume,#progress'                                                                                            : {
+	'#volume,#progress'                                                              : {
 		blue    : {
 			background: '#355D85'
 		},
@@ -519,7 +489,7 @@ let themes = {
 			background: '#FCDCDC'
 		}
 	},
-	'#volume-progress,#playback-progress'                                                                          : {
+	'#volume-progress,#playback-progress'                                            : {
 		blue  : {
 			background: '#5A92CA'
 		},
@@ -539,7 +509,7 @@ let themes = {
 			background: '#F18282'
 		}
 	},
-	'.add-item.active'                                                                                             : {
+	'.add-item.active'                                                               : {
 		blue                       : {
 			background: '#1E6CB9'
 		},
@@ -565,7 +535,7 @@ let themes = {
 			background: '#F18282'
 		}
 	},
-	'.add-item span'                                                                                               : {
+	'.add-item span'                                                                 : {
 		blue    : {
 			color: '#1861AA'
 		},
@@ -588,7 +558,7 @@ let themes = {
 			color: '#CC1A1A'
 		}
 	},
-	'.add-item.active span'                                                                                        : {
+	'.add-item.active span'                                                          : {
 		forum   : {
 			color: '#C7C7C7'
 		},
@@ -614,7 +584,7 @@ let themes = {
 			color: '#F5DEDE'
 		}
 	},
-	h6                                                                                                             : {
+	h6                                                                               : {
 		blue    : {
 			color: '#0C4885'
 		},
@@ -643,7 +613,7 @@ let themes = {
 			color: '#B31212'
 		}
 	},
-	'#playlist-hints'                                                                                              : {
+	'#playlist-hints'                                                                : {
 		forum : {
 			color: '#302F2F'
 		},
@@ -660,38 +630,47 @@ let themes = {
 			color: '#A03B3B'
 		}
 	},
-	'#console-title'                                                                                               : {
+	'#console-title'                                                                 : {
 		blue    : {
-			background: '#ABCEF1'
+			background        : '#ABCEF1',
+			'border-top-color': '#6EAAE6'
 		},
 		forum   : {
-			background: '#ECECEC'
+			background        : '#ECECEC',
+			'border-top-color': '#CFCFCF'
 		},
 		grey    : {
-			background: '#E2E2E2'
+			background        : '#E2E2E2',
+			'border-top-color': '#B9B9B9'
 		},
 		green   : {
-			background: '#C9F0B6'
+			background        : '#C9F0B6',
+			'border-top-color': '#B0E4B0'
 		},
 		contrast: {
-			background: '#fffd00'
+			background        : '#fffd00',
+			'border-top-color': '#fffd00'
 		},
 		orange  : {
-			background: '#FFD8A6'
+			background        : '#FFD8A6',
+			'border-top-color': '#F8BC6E'
 		},
 		pink    : {
-			background: '#FCDDEB'
+			background        : '#FCDDEB',
+			'border-top-color': '#FFC0DC'
 		},
 		purple  : {
-			background: '#E6BAE7'
+			background        : '#E6BAE7',
+			'border-top-color': '#CE86CF'
 		},
 		red     : {
-			'border-bottom': '1px solid #000'
-			, background   : '#FFB0B0'
-			, color        : '#000'
+			'border-bottom'   : '1px solid #000',
+			background        : '#FFB0B0',
+			color             : '#000',
+			'border-top-color': '#F57A7A'
 		}
 	},
-	'#add-playlist'                                                                                                : {
+	'#add-playlist'                                                                  : {
 		blue    : {
 			background      : '#3E86CF'
 			, 'border-color': '#2B5177'
@@ -730,7 +709,7 @@ let themes = {
 			, 'border-color': '#CE4040'
 		}
 	},
-	'.menu-ul-li'                                                                                                  : {
+	'.menu-ul-li'                                                                    : {
 		blue    : {
 			background: '#2B5177'
 		},
@@ -759,36 +738,7 @@ let themes = {
 			background: '#CE4040'
 		}
 	},
-	'#console-panel'                                                                                               : {
-		blue    : {
-			'border-color': '#6EAAE6'
-		},
-		forum   : {
-			'border-color': '#CFCFCF'
-		},
-		grey    : {
-			'border-color': '#B9B9B9'
-		},
-		green   : {
-			'border-color': '#B0E4B0'
-		},
-		contrast: {
-			'border-color': '#fffd00'
-		},
-		orange  : {
-			'border-color': '#F8BC6E'
-		},
-		pink    : {
-			'border-color': '#FFC0DC'
-		},
-		purple  : {
-			'border-color': '#CE86CF'
-		},
-		red     : {
-			'border-color': '#F57A7A'
-		}
-	},
-	'#window-content'                                                                                              : {
+	'#window-content'                                                                : {
 		'blue,contrast': {
 			background: '#598DC0'
 			, color   : '#fff'
@@ -818,7 +768,7 @@ let themes = {
 			background: '#F18080'
 		}
 	},
-	'.css3-selectbox select'                                                                                       : {
+	'.css3-selectbox select'                                                         : {
 		blue            : {
 			background: '#D3E9FF'
 		},
@@ -842,7 +792,7 @@ let themes = {
 			background: '#F7D4D4'
 		}
 	},
-	'.css3-selectbox:before'                                                                                       : {
+	'.css3-selectbox:before'                                                         : {
 		blue            : {
 			'border-color': '#D3E9FF'
 			, color       : '#D3E9FF'
@@ -863,7 +813,7 @@ let themes = {
 			'border-color': '#F7D4D4'
 		}
 	},
-	'.css3-selectbox:after'                                                                                        : {
+	'.css3-selectbox:after'                                                          : {
 		blue    : {
 			color           : '#598DC0'
 			, 'border-color': '#6B6B83'
@@ -900,7 +850,7 @@ let themes = {
 			, 'border-color': '#F07676'
 		}
 	},
-	'.css3-selectbox.top-bar select'                                                                               : {
+	'.css3-selectbox.top-bar select'                                                 : {
 		blue            : {
 			background: '#3E86CF'
 		},
@@ -934,7 +884,7 @@ let themes = {
 			background: '#F55252'
 		}
 	},
-	'.css3-selectbox.top-bar:before'                                                                               : {
+	'.css3-selectbox.top-bar:before'                                                 : {
 		blue            : {
 			'border-color': '#3E86CF'
 		},
@@ -963,7 +913,7 @@ let themes = {
 			'border-color': '#F55252'
 		}
 	},
-	'.css3-selectbox.top-bar:after'                                                                                : {
+	'.css3-selectbox.top-bar:after'                                                  : {
 		'forum,contrast': {
 			color           : '#000'
 			, 'border-color': '#C7C7C7'
@@ -993,7 +943,7 @@ let themes = {
 			'border-color': '#FAD2D2'
 		}
 	},
-	'.window-title-span'                                                                                           : {
+	'.window-title-span'                                                             : {
 		forum: {
 			color: '#000'
 		},
@@ -1004,7 +954,7 @@ let themes = {
 			color: '#A03B3B'
 		}
 	},
-	'#connected-table tr td:first-child'                                                                           : {
+	'#connected-table tr td:first-child'                                             : {
 		blue    : {
 			color: '#1861AA'
 		},
@@ -1027,7 +977,7 @@ let themes = {
 			color: '#CC1A1A'
 		}
 	},
-	button                                                                                                         : {
+	'button,.button'                                                                 : {
 		blue                  : {
 			background: '#D3E9FF'
 		},
@@ -1050,7 +1000,7 @@ let themes = {
 			background: '#F7D4D4'
 		}
 	},
-	'#keyboard-shortcuts button:not(#shortcut-add)'                                                                : {
+	'#keyboard-shortcuts button:not(#shortcut-add)'                                  : {
 		blue  : {
 			color: '#3D84CC'
 		},
@@ -1073,7 +1023,7 @@ let themes = {
 			color: '#F55252'
 		}
 	},
-	'#translation-contributors'                                                                                    : {
+	'#translation-contributors'                                                      : {
 		blue    : {
 			background: '#6EA8E2'
 		},
@@ -1103,7 +1053,7 @@ let themes = {
 			background: '#FFB0B0'
 		}
 	},
-	'.tooltip:hover:after'                                                                                         : {
+	'.tooltip:hover:after'                                                           : {
 		blue        : {
 			background: 'rgba(12,50,107,.9)'
 		},
@@ -1134,7 +1084,7 @@ let themes = {
 			background: 'rgba(162,21,21,.9)'
 		}
 	},
-	'.tooltip:hover:before'                                                                                        : {
+	'.tooltip:hover:before'                                                          : {
 		blue        : {
 			'border-color': 'rgba(12,50,107,.9) transparent'
 		},
@@ -1160,7 +1110,7 @@ let themes = {
 			'border-color': 'rgba(162,21,21,.9) transparent'
 		}
 	},
-	'#init-search'                                                                                                 : {
+	'#init-search'                                                                   : {
 		grey : {
 			background: '#E7E7E7'
 		},
@@ -1171,17 +1121,17 @@ let themes = {
 			background: '#FFF0F8'
 		}
 	},
-	'#window-close'                                                                                                : {
+	'#window-close'                                                                  : {
 		green: {
 			color: '#fff'
 		}
 	},
-	'.playlists-tabs-li.active a,.menu-ul-li:hover,.nav-ul-li:hover a'                                             : {
+	'.playlists-tabs-li.active a,.menu-ul-li:hover,.nav-ul-li:hover a'               : {
 		contrast: {
 			color: '#000'
 		}
 	},
-	'#drop-zone.hover'                                                                                             : {
+	'#drop-zone.hover'                                                               : {
 		blue    : {
 			'border-color': '#006400'
 		},
@@ -1189,7 +1139,7 @@ let themes = {
 			'border-color': '#fffd00'
 		}
 	},
-	'#footer-counter'                                                                                              : {
+	'#footer-counter'                                                                : {
 		blue    : {
 			'border-color': '#6B6B83'
 		},
@@ -1212,12 +1162,12 @@ let themes = {
 			'border-color': '#F07676'
 		}
 	},
-	'.selected.is-in-queue .item-queue'                                                                            : {
+	'.selected.is-in-queue .item-queue'                                              : {
 		'forum,grey,contrast,pink': {
 			'color': '#fff'
 		}
 	},
-	'.favicon'                                                                                                     : {
+	'.favicon'                                                                       : {
 		contrast: {
 			background: '#fff'
 		}
