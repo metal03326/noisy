@@ -71,9 +71,12 @@
         </div>
         <div id="the-menu">
             <div id="connect" data-menulistener="connect" class="menu-ul-li" tabindex="0" data-icon="<"></div>
-            <div id="showAddFileFolder" data-menulistener="showAddFileFolder" class="menu-ul-li" tabindex="0" data-icon="="></div>
-            <div id="showSavePlaylist" data-menulistener="showSavePlaylist" class="menu-ul-li" tabindex="0" data-icon="9"></div>
-            <div id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0" data-icon="8"></div>
+            <div id="showAddFileFolder" data-menulistener="showAddFileFolder" class="menu-ul-li" tabindex="0"
+                 data-icon="="></div>
+            <div id="showSavePlaylist" data-menulistener="showSavePlaylist" class="menu-ul-li" tabindex="0"
+                 data-icon="9"></div>
+            <div id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0"
+                 data-icon="8"></div>
             <div id="showAbout" data-menulistener="showAbout" class="menu-ul-li" tabindex="0" data-icon=";"></div>
             <div id="showWelcome" data-menulistener="showWelcome" class="menu-ul-li" tabindex="0" data-icon="6"></div>
         </div>
@@ -99,7 +102,7 @@
                         <i id="mark50" title="50%">|</i></div>
                 </div>
             </div>
-            <div class="nav-ul-li css3-selectbox top-bar">
+            <label class="select top-bar">
                 <select id="playback-order">
                     <option id="playback-order-default"></option>
                     <option id="playback-order-repeat-playlist"></option>
@@ -107,7 +110,7 @@
                     <option id="playback-order-random"></option>
                     <option id="playback-order-stop-after-current"></option>
                 </select>
-            </div>
+            </label>
             <div data-menulistener="showSearch" data-icon="#" hidden></div>
             <div id="color-bulb" data-menulistener="showPreferences" data-icon="$"></div>
         </div>
@@ -250,7 +253,7 @@
                         </div>
                         <div class="flex-column flex-item-full">
                             <div>
-                                <span class="css3-selectbox">
+                                <label class="select">
                                     <select id="preference-theme" onchange="n.onStyleChange(this);">
                                         <option value="blue"></option>
                                         <option value="default"></option>
@@ -263,16 +266,16 @@
                                         <option value="purple"></option>
                                         <option value="red"></option>
                                     </select>
-                                </span>
+                                </label>
                             </div>
                             <div>
-                                <span class="css3-selectbox">
+                                <label class="select">
                                     <select id="preference-user-language"
                                             onchange="n.onLanguageChange(this);">
                                         <option value="bg">Български</option>
                                         <option value="en">English</option>
                                     </select>
-                                </span>
+                                </label>
                                 <i id="preference-language-help"><span data-icon="H"></span></i>
                             </div>
                             <div id="translation-contributors">
@@ -301,7 +304,7 @@
                                     <span class="exists-text"></span>
                                 </td>
                                 <td>
-                                            <span class="css3-selectbox">
+                                            <label class="select">
                                                 <select id="actions">
                                                     <option value="play"></option>
                                                     <option value="pause"></option>
@@ -318,7 +321,7 @@
                                                     <option value="toggleMute"></option>
                                                     <option value="removeFromPlaylist"></option>
                                                 </select>
-                                            </span>
+                                            </label>
                                 </td>
                                 <td>
                                     <button id="shortcut-add" class="button-add"></button>
@@ -336,7 +339,7 @@
                         </label>
                         <div>
                             <span id="preference-performance-powersaver-threshold"></span>
-                            <span class="css3-selectbox">
+                            <label class="select">
                                 <select id="power-saver-state" onchange="n.onPowerSaverStateChange(this);">
                                     <option>5</option>
                                     <option>10</option>
@@ -346,7 +349,7 @@
                                     <option>75</option>
                                     <option>100</option>
                                 </select>
-                            </span>
+                            </label>
                             %
                         </div>
                         <div id="preference-performance-notes"></div>
@@ -478,13 +481,13 @@
                 </tr>
             </table>
             <span id="make-connection-to"></span>
-            <span class="css3-selectbox">
-                        <select id="connect-to">
-                            <option value="dropbox">Dropbox</option>
-                            <option value="googledrive">Google Drive</option>
-                            <option value="lastfm">Last.fm</option>
-                        </select>
-                    </span>
+            <label class="select">
+                <select id="connect-to">
+                    <option value="dropbox">Dropbox</option>
+                    <option value="googledrive">Google Drive</option>
+                    <option value="lastfm">Last.fm</option>
+                </select>
+            </label>
         </div>
         <div id="add-window-content" class="no-selection flex">
             <div id="add-window-cloud-chooser" class="flex flex-item-full">

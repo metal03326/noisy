@@ -6,7 +6,9 @@
 	font-style  : normal;
 }
 
-[data-icon]:before
+[data-icon]:before,
+.select:after,
+.confirmation .delete-icon:before
 {
 	font-family             : 'Noisy';
 	content                 : attr(data-icon);
@@ -23,15 +25,7 @@
 /* Special case for delete confirmation */
 .confirmation .delete-icon:before
 {
-	font-family             : 'Noisy';
-	content                 : 'o';
-	speak                   : none;
-	font-weight             : normal;
-	font-variant            : normal;
-	text-transform          : none;
-	line-height             : 1;
-	-webkit-font-smoothing  : antialiased;
-	-moz-osx-font-smoothing : grayscale;
+	content : 'o';
 }
 
 /*Common theme rules*/
@@ -91,21 +85,15 @@ details a
 	color : #144cc2;
 }
 
-.css3-selectbox select
+.select select
 {
 	background : #f8f8f8;
-	color      : #454545;
-	height     : 19px;
+	color      : currentColor;
 }
 
-.css3-selectbox:before
+.select.top-bar select
 {
-	color : #f8f8f8;
-}
-
-.nav-ul-li.css3-selectbox:hover
-{
-	background : transparent;
+	background : #666;
 }
 
 #drop-zone.hover
@@ -113,7 +101,6 @@ details a
 	border-color : #0a0;
 }
 
-.nav-ul-li:hover,
 #battery-level-menu-handle:hover,
 .menu-ul-li:hover,
 [data-menulistener]:hover
@@ -125,11 +112,6 @@ details a
 {
 	background : #666;
 	color      : #fff;
-}
-
-.css3-selectbox.top-bar:before
-{
-	border-color : #666;
 }
 
 /*End of common theme rules*/
@@ -179,13 +161,11 @@ body
 	padding : 6px 12px;
 }
 
-.nav-ul-li,
 .nav-inputs-li
 {
 	cursor : default;
 }
 
-.nav-ul-li,
 .nav-inputs-li,
 #header-left
 {
@@ -618,85 +598,31 @@ button,
 	margin-top : 3px;
 }
 
-.css3-selectbox select
+.select
+{
+	position : relative;
+	display  : inline-block;
+}
+
+.select:after
+{
+	content        : 'a';
+	right          : 10px;
+	top            : 0;
+	position       : absolute;
+	pointer-events : none;
+	line-height    : 26px;
+}
+
+.select select
 {
 	margin             : 0;
 	border             : none;
 	outline            : none;
-	display            : inline-block;
 	-webkit-appearance : none;
 	-moz-appearance    : none;
 	appearance         : none;
-	cursor             : pointer;
-}
-
-@media screen and ( -webkit-min-device-pixel-ratio : 0 )
-{
-	.css3-selectbox select
-	{
-		padding-right : 18px;
-	}
-}
-
-.css3-selectbox,
-.css3-selectbox.top-bar
-{
-	position : relative;
-	top      : 0;
-	left     : 0;
-}
-
-.css3-selectbox:after
-{
-	content        : '<>';
-	font           : 11px "Consolas", monospace;
-	transform      : rotate(90deg);
-	right          : 11px;
-	top            : 5px;
-	padding        : 0 0 2px;
-	position       : absolute;
-	pointer-events : none;
-	border-bottom  : 1px solid #ddd;
-	color          : #aaa;
-}
-
-.css3-selectbox:before
-{
-	content        : '';
-	border-right   : 24px solid;
-	position       : absolute;
-	pointer-events : none;
-	display        : block;
-	right          : 0;
-	bottom         : -2px;
-}
-
-.css3-selectbox::before
-{
-	height : 19px;
-}
-
-.css3-selectbox.top-bar::after,
-.css3-selectbox.top-bar::before
-{
-	top    : 2px;
-	height : 26px;
-}
-
-.css3-selectbox.top-bar:after
-{
-	padding       : 0 2px 0 0;
-	color         : #fff;
-	border-bottom : 1px solid #ddd;
-}
-
-.css3-selectbox.top-bar select
-{
-	width      : 160px;
-	height     : 26px;
-	padding    : 3px;
-	color      : #fff;
-	background : #666;
+	padding            : 7px 30px 7px 7px;
 }
 
 .exists-text,
