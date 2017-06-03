@@ -5,11 +5,6 @@
  * @version n.version
  */
 
-/*
- button:hover
- currentColor
- */
-
 'use strict';
 /* HIGH PRIORITY */
 //TODO: Check Teddy for a problem with now playing of Five Finger Death Punch - Wrong Side of Heaven. It says invalid

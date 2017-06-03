@@ -35,13 +35,6 @@ a
 	color           : #fff;
 }
 
-#header,
-#footer,
-#playlist-hints
-{
-	color : #fff;
-}
-
 .add-item.active
 {
 	background : #4f4f4f;
@@ -128,6 +121,7 @@ body
 	font-family : Tahoma;
 	width       : 100%;
 	min-width   : 800px;
+	color       : #fff;
 	background  : #1e2328;
 }
 
@@ -192,7 +186,6 @@ body
 	margin  : 0;
 	padding : 0;
 	height  : 26px;
-	color   : #fff;
 }
 
 .playlists-tabs-li
@@ -245,7 +238,6 @@ body
 {
 	overflow    : hidden;
 	white-space : nowrap;
-	color       : #fff;
 	font-size   : 16px;
 	display     : flex;
 }
@@ -337,7 +329,6 @@ body
 {
 	padding   : 4px 0 0 5px;
 	font-size : 16px;
-	color     : #fff;
 	flex      : 1 1 auto;
 }
 
@@ -464,6 +455,7 @@ button,
 
 #window-content
 {
+	color      : #000;
 	background : #aaa;
 	height     : calc(100% - 62px);
 }
@@ -1373,7 +1365,7 @@ article + #playlist-hints
 	width        : 0;
 	height       : 0;
 	margin       : 2px;
-	background   : #fff;
+	background   : currentColor;
 	border-top   : 8px solid transparent;
 	border-right : 32px solid transparent;
 }
@@ -1382,7 +1374,7 @@ article + #playlist-hints
 {
 	width      : 12px;
 	height     : 5px;
-	background : #fff;
+	background : currentColor;
 	position   : absolute;
 	top        : 3px;
 	left       : 24px;
