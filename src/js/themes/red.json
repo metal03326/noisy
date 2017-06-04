@@ -1,0 +1,105 @@
+{
+  "body": {
+    "color": "#fff",
+    "background": "#CE4040"
+  },
+  ".playlists-tabs-li": {
+    "background": "#BD3636"
+  },
+  ".playlists-tabs-li.active": {
+    "background": "#F18282"
+  },
+  ".playlist": {
+    "background": "#FFBEBE"
+  },
+  ".playlist-item:nth-of-type(odd)": {
+    "background": "#F18282"
+  },
+  ".playlist-item:nth-of-type(even)": {
+    "background": "#F56E6E"
+  },
+  ".playlist-item.selected": {
+    "background": "#EC3C3C"
+  },
+  ".window": {
+    "border-color": "#C53232"
+  },
+  "#preferences-tabs": {
+    "border-color": "#F57A7A",
+    "background": "#FAA3A3"
+  },
+  ":root .preferences-item.active": {
+    "background": "#F55252"
+  },
+  "#find-window-results": {
+    "background": "#FCDCDC"
+  },
+  "#window-title": {
+    "background": "#C53232"
+  },
+  "#window-buttons": {
+    "border-color": "#F57A7A",
+    "background": "#FFB0B0"
+  },
+  "#volume,#progress": {
+    "background": "#FCDCDC"
+  },
+  "#volume-progress,#playback-progress": {
+    "background": "#F18282"
+  },
+  ".add-item.active": {
+    "background": "#F18282"
+  },
+  ".add-item span": {
+    "color": "#CC1A1A"
+  },
+  ".add-item.active span": {
+    "color": "#F5DEDE"
+  },
+  "h6": {
+    "color": "#B31212"
+  },
+  "#console-title": {
+    "border-bottom": "1px solid #000",
+    "background": "#FFB0B0",
+    "color": "#000",
+    "border-top-color": "#F57A7A"
+  },
+  "#add-playlist": {
+    "background": "#F55252",
+    "border-color": "#CE4040"
+  },
+  ".menu-ul-li": {
+    "background": "#CE4040"
+  },
+  "#window-content": {
+    "background": "#F18080"
+  },
+  ".select select": {
+    "background": "#F7D4D4"
+  },
+  ".select.top-bar select": {
+    "background": "#F55252"
+  },
+  "#connected-table tr td:first-child": {
+    "color": "#CC1A1A"
+  },
+  "button,.button": {
+    "background": "#F7D4D4"
+  },
+  "#keyboard-shortcuts button:not(#shortcut-add)": {
+    "color": "#F55252"
+  },
+  "#translation-contributors": {
+    "background": "#FFB0B0"
+  },
+  ".tooltip:hover:after": {
+    "background": "rgba(162,21,21,.9)"
+  },
+  ".tooltip:hover:before": {
+    "border-color": "rgba(162,21,21,.9) transparent"
+  },
+  "#footer-counter": {
+    "border-color": "#F07676"
+  }
+}
