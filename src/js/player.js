@@ -190,8 +190,8 @@ let n = {
 	// Interval for the slideshow at the welcome screen
 	slideshow: null,
 
-	// Object containing all the themes available
-	themes: themes,
+	// Object containing all loaded themes
+	themes: {},
 
 	// Version of Noisy
 	version: 20170506,
@@ -604,47 +604,50 @@ let n = {
 	applyTheme()
 	{
 		// Get selected theme
-		let theme             = document.getElementById( 'preference-theme' ).value;
-		// Style tag string to be appended in the end
-		let styles            = '';
-		const openRuleString  = '{';
-		const columnString    = ':';
-		const newLineString   = ';';
-		const closeRuleString = '}';
+		let theme = document.getElementById( 'preference-theme' ).value;
 
-		// Default theme is inside the style.css, so we don't need to process themes.js if user have chosen it
-		if ( 'default' !== theme )
+		if ( n.themes[ theme ] )
 		{
-			// Loop through all selectors. themes is a global variable declared in themes.js file
-			Object.keys( themes ).forEach( selector =>
+			document.getElementById( 'theme' ).innerHTML = n.themes[ theme ];
+
+			return Promise.resolve();
+		}
+		else
+		{
+			return fetch( '/js/themes/'.concat( theme, '.json' ) ).then( response => response.json() ).then( json =>
 			{
-				// Get the object of theme rules
-				let selectorRules = themes[ selector ];
+				// Style tag string to be appended in the end
+				let styles            = '';
+				const openRuleString  = '{';
+				const columnString    = ':';
+				const newLineString   = ';';
+				const closeRuleString = '}';
 
-				// Loop them
-				Object.keys( selectorRules ).forEach( selectedRule =>
+				Object.keys( json ).forEach( selector =>
 				{
-					// If current theme contains our theme name, then we should use the rules inside
-					if ( ~selectedRule.indexOf( theme ) )
+					// Get the object of theme rules
+					let selectorRules = json[ selector ];
+
+					styles += selector.concat( openRuleString );
+
+					// Loop them
+					Object.keys( selectorRules ).forEach( selectedRule =>
 					{
-						// Get rules for current theme
-						let rules = selectorRules[ selectedRule ];
-						styles += selector.concat( openRuleString );
+						styles += selectedRule.concat( columnString, selectorRules[ selectedRule ], newLineString );
+					} );
 
-						// Loop through all the rules for this theme and append them to the styles string
-						Object.keys( rules ).forEach( rule =>
-						{
-							styles += rule.concat( columnString, rules[ rule ], newLineString );
-						} );
-
-						styles += closeRuleString;
-					}
+					styles += closeRuleString;
 				} );
+
+				// Replace old styles with the new ones
+				document.getElementById( 'theme' ).innerHTML = styles;
+
+				// Cache the parsed theme if user wants to re-apply it
+				n.themes[ theme ] = styles;
+
+				return Promise.resolve();
 			} );
 		}
-
-		// Replace old styles with the new ones
-		document.getElementById( 'theme' ).innerHTML = styles;
 	},
 
 	/**
@@ -2121,7 +2124,7 @@ let n = {
 	/**
 	 * NB initialization function. Called on window load
 	 */
-	init( callback )
+	init()
 	{
 		// Before everything, if user is using the appspot domain, we should redirect him to https://www.noisyplayer.com
 		if ( ~location.host.indexOf( 'appspot' ) )
@@ -2245,8 +2248,6 @@ let n = {
 		{
 			n.checkConnections();
 		}
-
-		n.applyTheme();
 
 		// Load all available playlists
 		n.loadAndRenderPlaylists();
@@ -2470,7 +2471,7 @@ let n = {
 
 		// n.googledrive.youTubeSearch( 'Metallica One' );
 
-		callback();
+		return n.applyTheme();
 	},
 
 	/**
@@ -2843,7 +2844,6 @@ let n = {
 		 , 'main.js'
 		 , 'player.js'
 		 , 'style.css'
-		 , 'themes.js'
 		 ],
 		 progressCounter = 0;
 

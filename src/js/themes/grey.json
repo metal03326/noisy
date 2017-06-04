@@ -1,0 +1,100 @@
+{
+  "a,.link": {
+    "color": "#313138"
+  },
+  "body": {
+    "background": "#949494",
+    "color": "#313138"
+  },
+  ".playlists-tabs-li": {
+    "background": "#C9C9C9"
+  },
+  ".playlists-tabs-li.active": {
+    "background": "#fff"
+  },
+  ".playlist": {
+    "background": "#C7C6C6"
+  },
+  ".playlist-item:nth-of-type(odd)": {
+    "background": "#C9C9C9"
+  },
+  ".playlist-item:nth-of-type(even)": {
+    "background": "#D5D5D5"
+  },
+  ".playlist-item.selected": {
+    "background": "#EBD9B4",
+    "color": "#000"
+  },
+  ".window": {
+    "border-color": "#ADADAD"
+  },
+  "#preferences-tabs": {
+    "border-color": "#B9B9B9",
+    "background": "#C7C7C7"
+  },
+  ":root .preferences-item.active": {
+    "background": "#E7E7E7",
+    "color": "#313138"
+  },
+  "#find-window-results": {
+    "background": "#C9C9C9"
+  },
+  "#window-title": {
+    "background": "#ADADAD"
+  },
+  "#window-buttons": {
+    "border-color": "#B9B9B9",
+    "background": "#E2E2E2"
+  },
+  "#volume,#progress": {
+    "background": "#C9C9C9"
+  },
+  ".add-item.active": {
+    "color": "#313138"
+  },
+  ".add-item.active span": {
+    "color": "#9B9B9B"
+  },
+  "h6": {
+    "color": "#FDF8F8"
+  },
+  "#console-title": {
+    "background": "#E2E2E2",
+    "border-top-color": "#B9B9B9"
+  },
+  "#add-playlist": {
+    "background": "#E7E7E7",
+    "border-color": "#949494"
+  },
+  ".menu-ul-li": {
+    "background": "#949494"
+  },
+  "#window-content": {
+    "background": "#CECECE"
+  },
+  ".select.top-bar select": {
+    "background": "#E7E7E7"
+  },
+  "button,.button": {
+    "background": "#FAFAFA"
+  },
+  "#keyboard-shortcuts button:not(#shortcut-add)": {
+    "color": "#747474"
+  },
+  "#translation-contributors": {
+    "background": "#E2E2E2"
+  },
+  ".tooltip:hover:after": {
+    "background": "rgba(255,255,255,.9)",
+    "color": "#313138"
+  },
+  ".tooltip:hover:before": {
+    "border-color": "rgba(255,255,255,.9) transparent"
+  },
+  "#init-search": {
+    "background": "#E7E7E7"
+  },
+  ".selected.is-in-queue .item-queue": {
+    "color": "#fff"
+  }
+}
