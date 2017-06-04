@@ -179,10 +179,11 @@ window.onload = _ =>
 			setTimeout( () =>
 			{
 				splash.parentNode.removeChild( splash );
-				clearTimeout( window.splashTimeout );
-				delete window.splashTimeout;
 			}, 300 );
 		}, 300 );
+	} ).catch( _ =>
+	{
+		document.querySelector( '#splash [hidden]' ).hidden = false;
 	} );
 };
 

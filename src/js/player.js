@@ -603,54 +603,51 @@ let n = {
 	 */
 	applyTheme()
 	{
-		return new Promise( resolve =>
+		// Get selected theme
+		let theme = document.getElementById( 'preference-theme' ).value;
+
+		if ( n.themes[ theme ] )
 		{
-			// Get selected theme
-			let theme = document.getElementById( 'preference-theme' ).value;
+			document.getElementById( 'theme' ).innerHTML = n.themes[ theme ];
 
-			if ( n.themes[ theme ] )
+			return Promise.resolve();
+		}
+		else
+		{
+			return fetch( '/js/themes/'.concat( theme, '.json' ) ).then( response => response.json() ).then( json =>
 			{
-				document.getElementById( 'theme' ).innerHTML = n.themes[ theme ];
+				// Style tag string to be appended in the end
+				let styles            = '';
+				const openRuleString  = '{';
+				const columnString    = ':';
+				const newLineString   = ';';
+				const closeRuleString = '}';
 
-				resolve();
-			}
-			else
-			{
-				fetch( '/js/themes/'.concat( theme, '.json' ) ).then( response => response.json() ).then( json =>
+				Object.keys( json ).forEach( selector =>
 				{
-					// Style tag string to be appended in the end
-					let styles            = '';
-					const openRuleString  = '{';
-					const columnString    = ':';
-					const newLineString   = ';';
-					const closeRuleString = '}';
+					// Get the object of theme rules
+					let selectorRules = json[ selector ];
 
-					Object.keys( json ).forEach( selector =>
+					styles += selector.concat( openRuleString );
+
+					// Loop them
+					Object.keys( selectorRules ).forEach( selectedRule =>
 					{
-						// Get the object of theme rules
-						let selectorRules = json[ selector ];
-
-						styles += selector.concat( openRuleString );
-
-						// Loop them
-						Object.keys( selectorRules ).forEach( selectedRule =>
-						{
-							styles += selectedRule.concat( columnString, selectorRules[ selectedRule ], newLineString );
-						} );
-
-						styles += closeRuleString;
+						styles += selectedRule.concat( columnString, selectorRules[ selectedRule ], newLineString );
 					} );
 
-					// Replace old styles with the new ones
-					document.getElementById( 'theme' ).innerHTML = styles;
-
-					// Cache the parsed theme if user wants to re-apply it
-					n.themes[ theme ] = styles;
-
-					resolve();
+					styles += closeRuleString;
 				} );
-			}
-		} );
+
+				// Replace old styles with the new ones
+				document.getElementById( 'theme' ).innerHTML = styles;
+
+				// Cache the parsed theme if user wants to re-apply it
+				n.themes[ theme ] = styles;
+
+				return Promise.resolve();
+			} );
+		}
 	},
 
 	/**
@@ -2127,7 +2124,7 @@ let n = {
 	/**
 	 * NB initialization function. Called on window load
 	 */
-	init( callback )
+	init()
 	{
 		// Before everything, if user is using the appspot domain, we should redirect him to https://www.noisyplayer.com
 		if ( ~location.host.indexOf( 'appspot' ) )
