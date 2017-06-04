@@ -274,31 +274,27 @@ body
 	user-select           : none;
 }
 
+#window-backdrop
+{
+	position       : absolute;
+	top            : 0;
+	bottom         : 0;
+	left           : 0;
+	right          : 0;
+	pointer-events : none;
+}
+
 .window
 {
-	position : absolute;
-	left     : 50%;
-	top      : 50%;
-	z-index  : 0;
-	border   : 2px solid #757575;
-}
-
-#preferences-window
-{
-	width       : 700px;
-	height      : 422px;
-	margin-left : -350px;
-	margin-top  : -211px;
-}
-
-#preferences-window #window-content
-{
-	overflow : hidden;
+	z-index        : 0;
+	border         : 2px solid #757575;
+	pointer-events : all;
+	width          : 600px;
+	height         : 300px;
 }
 
 #preferences-tabs
 {
-	height       : 250px;
 	border-right : 1px solid #999;
 	background   : #bbb;
 }
@@ -315,7 +311,6 @@ body
 
 #preferences-container
 {
-	height     : 250px;
 	overflow-y : auto;
 	position   : relative;
 }
@@ -371,36 +366,17 @@ body
 	padding : 5px;
 }
 
-#about-window,
-#find-window,
-#add-window,
-#save-playlist-window,
-#load-playlist-window,
-#save-preferences-window,
-#load-preferences-window,
-#local-window,
-#youtube-search-window
-{
-	width       : 600px;
-	height      : 300px;
-	margin-left : -300px;
-	margin-top  : -150px;
-}
-
+#preferences-window,
 #welcome-window
 {
-	width       : 700px;
-	height      : 450px;
-	margin-left : -350px;
-	margin-top  : -225px;
+	width  : 700px;
+	height : 450px;
 }
 
 #connect-window
 {
-	width       : 400px;
-	height      : 230px;
-	margin-left : -200px;
-	margin-top  : -115px;
+	width  : 400px;
+	height : 230px;
 }
 
 #find-item
@@ -417,6 +393,7 @@ button,
 	padding    : 4px 12px;
 	background : #eee;
 	font-size  : 13px;
+	outline    : none;
 }
 
 .link
