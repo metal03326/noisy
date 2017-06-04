@@ -163,10 +163,10 @@ function scrollIntoViewIfOutOfView( el )
 /**
  * Onload event handler.
  */
-window.onload = () =>
+window.onload = _ =>
 {
 	// Initialize Noisy
-	n.init( () =>
+	n.init().then( _ =>
 	{
 		// Remove the splash screen
 		let splash = document.getElementById( 'splash' );

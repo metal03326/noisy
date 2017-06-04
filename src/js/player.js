@@ -600,53 +600,57 @@ let n = {
 
 	/**
 	 * Constructs style tag for chosen theme and appends it to the DOM.
-	 * @param {Function} [callback] Callback to call when theme gets applied.
 	 */
-	applyTheme( callback = new Function() )
+	applyTheme()
 	{
-		// Get selected theme
-		let theme = document.getElementById( 'preference-theme' ).value;
+		return new Promise( resolve =>
+		{
+			// Get selected theme
+			let theme = document.getElementById( 'preference-theme' ).value;
 
-		if ( n.themes[ theme ] )
-		{
-			document.getElementById( 'theme' ).innerHTML = n.themes[ theme ];
-		}
-		else
-		{
-			fetch( '/js/themes/'.concat( theme, '.json' ) ).then( response => response.json() ).then( json =>
+			if ( n.themes[ theme ] )
 			{
-				// Style tag string to be appended in the end
-				let styles            = '';
-				const openRuleString  = '{';
-				const columnString    = ':';
-				const newLineString   = ';';
-				const closeRuleString = '}';
+				document.getElementById( 'theme' ).innerHTML = n.themes[ theme ];
 
-				Object.keys( json ).forEach( selector =>
+				resolve();
+			}
+			else
+			{
+				fetch( '/js/themes/'.concat( theme, '.json' ) ).then( response => response.json() ).then( json =>
 				{
-					// Get the object of theme rules
-					let selectorRules = json[ selector ];
+					// Style tag string to be appended in the end
+					let styles            = '';
+					const openRuleString  = '{';
+					const columnString    = ':';
+					const newLineString   = ';';
+					const closeRuleString = '}';
 
-					styles += selector.concat( openRuleString );
-
-					// Loop them
-					Object.keys( selectorRules ).forEach( selectedRule =>
+					Object.keys( json ).forEach( selector =>
 					{
-						styles += selectedRule.concat( columnString, selectorRules[ selectedRule ], newLineString );
+						// Get the object of theme rules
+						let selectorRules = json[ selector ];
+
+						styles += selector.concat( openRuleString );
+
+						// Loop them
+						Object.keys( selectorRules ).forEach( selectedRule =>
+						{
+							styles += selectedRule.concat( columnString, selectorRules[ selectedRule ], newLineString );
+						} );
+
+						styles += closeRuleString;
 					} );
 
-					styles += closeRuleString;
+					// Replace old styles with the new ones
+					document.getElementById( 'theme' ).innerHTML = styles;
+
+					// Cache the parsed theme if user wants to re-apply it
+					n.themes[ theme ] = styles;
+
+					resolve();
 				} );
-
-				// Replace old styles with the new ones
-				document.getElementById( 'theme' ).innerHTML = styles;
-
-				// Cache the parsed theme if user wants to re-apply it
-				n.themes[ theme ] = styles;
-
-				callback();
-			} );
-		}
+			}
+		} );
 	},
 
 	/**
@@ -2470,7 +2474,7 @@ let n = {
 
 		// n.googledrive.youTubeSearch( 'Metallica One' );
 
-		n.applyTheme( callback );
+		return n.applyTheme();
 	},
 
 	/**
