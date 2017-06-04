@@ -2483,11 +2483,39 @@ let n = {
 
 		if ( !n.powerSaveMode && n.pref.settings.checkboxes[ 'preference-enable-animations' ] )
 		{
+			const duration    = '.3s';
+			const timing      = 'linear';
+			const last        = ' '.concat( duration, ' ', timing );
+			const join        = last + ',';
+			const transitions = {
+				'#the-menu'                                                                   : [ 'opacity', 'visibility' ],
+				'.window'                                                                     : 'opacity',
+				'.cloud-icon'                                                                 : 'opacity',
+				'.preferences-item'                                                           : [ 'background', 'color' ],
+				'.add-item'                                                                   : [ 'background', 'color' ],
+				'#drop-zone'                                                                  : 'border',
+				'.welcome-slide'                                                              : [ 'opacity', 'visibility' ],
+				'#battery-level-menu-handle:hover,.menu-ul-li:hover,[data-menulistener]:hover': 'opacity',
+				'#color-bulb'                                                                 : 'color',
+				'#splash'                                                                     : [ 'opacity', 'visibility' ]
+			};
+
 			rules = [
-				//TODO: Make separate rules for all the animations, because this wildcard selector is far from optimal
-				'*:not(.delete-icon){transition: all .3s linear}',
 				'.playback-status[data-icon="w"],#loading-folder-contents-icon,#youtube-search-window-content:empty:after{width: 30px;height: 30px;-webkit-animation-name: spin;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: linear;animation-name: spin;animation-duration: 1s;animation-iteration-count: infinite;animation-timing-function: linear}'
 			];
+
+			Object.keys( transitions ).forEach( selector =>
+			{
+				let values = transitions[ selector ];
+
+				// Support string, if only one transition will be used
+				if ( !Array.isArray( values ) )
+				{
+					values = [ values ];
+				}
+
+				rules.push( selector.concat( '{transition:', values.join( join ), last, '}' ) );
+			} );
 		}
 
 		document.getElementById( 'animations' ).innerHTML = rules.join( '' );

@@ -884,6 +884,7 @@ article + #playlist-hints
 	padding    : 0;
 	margin     : 3px 0 5px -2px;
 	text-align : center;
+	transition : visibility .3s linear;
 }
 
 #footer a
