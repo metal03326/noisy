@@ -283,7 +283,6 @@ let lang_bg = {
 		'showWelcome'                : 'Добре дошли екран'
 	},
 	splash      : {
-		'initializing-noisy': 'Noisy се инициализира...',
 		'splash-screen-text': 'Ако виждаш това съобщение за дълго време, това означава че най-вероятно настройките на Noisy са повредени. Ако си в Дев канала, пробвай да <a href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem("preferences"));settings.devChannel=false;localStorage.setItem("preferences",JSON.stringify(settings))}catch(e){};location.replace("//"+location.host+"/")})()" style="text-decoration:none;color:red;">излезнеш</a>. Ако не, може да опиташ да <a href="javascript:localStorage.removeItem("preferences"),location.reload()" style="text-decoration:none;color:red;">изтриеш настройките</a>. Ако и това не помогне, опитай да <a href="javascript:localStorage.removeItem("playlists"),location.reload()" style="text-decoration:none;color:red;">изтриеш плейлистите</a>.'
 	}
 };

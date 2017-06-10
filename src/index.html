@@ -36,22 +36,30 @@
     <style id="animations"></style>
 </head>
 <body class="flex-column">
-<div id="splash" style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:9999;background:#000;color:#fff">
-    <span id="initializing-noisy"
-          style="width: 100%;position:absolute;top:90%;text-align:center">Initializing Noisy...</span>
-    <div hidden
-         style="width:770px;height:170px;position:absolute;top:50%;left:50%;margin-left:-385px;margin-top:-85px;text-align:center;">
-        <div data-icon=">" style="font-size: 96px;"></div>
-        <div id="splash-screen-text">
-            If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you
-            are in Dev channel, try <a
-                href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){}location.replace('//'+location.host+'/')})()"
-                style="text-decoration:none;color:red;">leaving it</a>. If not you can <a
-                href="javascript:localStorage.removeItem('preferences'),location.reload()"
-                style="text-decoration:none;color:red;">click here to delete the settings</a>. If that doesn't help, try
-            <a href="javascript:localStorage.removeItem('playlists'),location.reload()"
-               style="text-decoration:none;color:red;">deleting the playlists</a>, too.
+<div id="splash" class="flex-column"
+     style="position:absolute;left:0;right:0;top:0;bottom:0;z-index:9999;background:#000;color:#fff">
+    <div class="flex-item-full"></div>
+    <div hidden style="text-align:center">
+        <div data-icon=">" style="font-size:96px"></div>
+        <div class="flex">
+            <div style="width:calc(100% - 400px)"></div>
+            <div id="splash-screen-text">
+                If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If
+                you are in Dev channel, try <a
+                    href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){}location.replace('//'+location.host+'/')})()"
+                    style="text-decoration:none;color:red;">leaving it</a>. If not you can <a
+                    href="javascript:localStorage.removeItem('preferences'),location.reload()"
+                    style="text-decoration:none;color:red;">click here to delete the settings</a>. If that doesn't help,
+                try
+                <a href="javascript:localStorage.removeItem('playlists'),location.reload()"
+                   style="text-decoration:none;color:red;">deleting the playlists</a>, too.
+            </div>
+            <div style="width:calc(100% - 400px)"></div>
         </div>
+    </div>
+    <div class="flex-item-full"></div>
+    <div style="height:100px;font-size:72px">
+        <div data-icon="w"></div>
     </div>
 </div>
 <div id="themes-style-tag-container"></div>
@@ -516,8 +524,10 @@
                         <div class="flex-item-full"></div>
                     </div>
                     <div id="add-window-files" class="flex-item-full"></div>
-                    <div id="loading-folder-contents" class="visibility-hidden">
-                        <div id="loading-folder-contents-icon" data-icon="w"></div>
+                    <div id="loading-folder-contents" class="flex-column visibility-hidden">
+                        <div class="flex-item-full"></div>
+                        <div data-icon="w"></div>
+                        <div class="flex-item-full"></div>
                     </div>
                 </div>
                 <div id="welcome-window-content"></div>

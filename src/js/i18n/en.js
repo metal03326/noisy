@@ -284,7 +284,6 @@ let lang_en = {
 		'showWelcome'                : 'Welcome screen'
 	},
 	splash      : {
-		'initializing-noisy': 'Initializing Noisy...',
 		'splash-screen-text': 'If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem("preferences"));settings.devChannel=false;localStorage.setItem("preferences",JSON.stringify(settings))}catch(e){};location.replace("//"+location.host+"/")})()" style="text-decoration:none;color:red;">leaving it</a>. If not you can <a href="javascript:localStorage.removeItem("preferences"),location.reload()" style="text-decoration:none;color:red;">click here to delete the settings</a>. If that doesn"t help, try <a href="javascript:localStorage.removeItem("playlists"),location.reload()" style="text-decoration:none;color:red;">deleting the playlists</a>, too.'
 	}
 };

@@ -22,6 +22,18 @@
 	-moz-osx-font-smoothing : grayscale;
 }
 
+[data-icon="w"]:before
+{
+	content       : '';
+	display       : block;
+	border-radius : 50%;
+	width         : 1em;
+	height        : 1em;
+	border        : .25rem solid;
+	margin        : auto;
+	animation     : spin 1s infinite linear;
+}
+
 /* Special case for delete confirmation */
 .confirmation .delete-icon:before
 {
@@ -374,24 +386,28 @@ button,
 	text-align : center;
 }
 
-.playback-status
+.playback-status[data-icon="w"]
 {
-	left : 30px;
+	font-size : 20px;
 }
 
 .item-queue,
 .playback-status
 {
-	font-size  : 26px;
-	margin-top : -5px;
+	font-size : 26px;
+}
+
+.item-queue:empty,
+.selected .item-queue:empty
+{
+	display : none;
 }
 
 .item-add-to-queue,
 .item-remove-from-queue
 {
-	display    : none;
-	font-size  : 30px;
-	margin-top : -7px;
+	display   : none;
+	font-size : 27px;
 }
 
 .selected .item-queue
@@ -424,14 +440,15 @@ button,
 
 .delete-icon
 {
-	display : none;
-	outline : none;
+	outline   : none;
+	margin    : 0 5px;
+	width     : 16px;
+	font-size : 0;
 }
 
 .selected .delete-icon
 {
-	display : block;
-	margin  : 0 5px;
+	font-size : 16px;
 }
 
 #volume
@@ -1062,39 +1079,14 @@ article + #playlist-hints
 	font-size    : 20px;
 }
 
-@keyframes spin
-{
-	from
-	{
-		transform : rotate(0deg);
-	}
-	to
-	{
-		transform : rotate(360deg);
-	}
-}
-
 #loading-folder-contents
 {
-	position   : absolute;
-	top        : 0;
-	bottom     : 0;
-	left       : 0;
-	right      : 0;
-	text-align : center;
-}
-
-#loading-folder-contents-icon,
-#youtube-search-window-content:empty:after
-{
-	font-size   : 32px;
-	width       : 38px;
-	height      : 38px;
-	position    : absolute;
-	top         : 50%;
-	left        : 50%;
-	margin-top  : -20px;
-	margin-left : -20px;
+	position  : absolute;
+	top       : 0;
+	bottom    : 0;
+	left      : 0;
+	right     : 0;
+	font-size : 72px;
 }
 
 .align-top
