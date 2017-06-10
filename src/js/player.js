@@ -1813,7 +1813,7 @@ let n = {
 		const tabIndexString    = 'tabindex';
 		const cloudString       = 'dropbox';
 		const cannotPlayClass   = 'can-not-play';
-		const initialHTML       = '<div class="playback-options"><div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div><div class="item-queue"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
+		const initialHTML       = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div><div class="item-queue"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
 		const playlistItemClass = 'playlist-item';
 		const dblClickEvent     = 'dblclick';
 		const mouseDownEvent    = 'mousedown';
@@ -2502,7 +2502,7 @@ let n = {
 			};
 
 			rules = [
-				'.playback-status[data-icon="w"],#loading-folder-contents-icon,#youtube-search-window-content:empty:after{width: 30px;height: 30px;-webkit-animation-name: spin;-webkit-animation-duration: 1s;-webkit-animation-iteration-count: infinite;-webkit-animation-timing-function: linear;animation-name: spin;animation-duration: 1s;animation-iteration-count: infinite;animation-timing-function: linear}'
+				'@keyframes spin{ 0% { transform : rotate(0deg);}100% { transform : rotate(360deg);}}'
 			];
 
 			Object.keys( transitions ).forEach( selector =>
