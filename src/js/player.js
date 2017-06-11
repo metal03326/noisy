@@ -21,6 +21,7 @@
 //TODO: Introduce n.pref.batch() to make changes to n.pref.settings object at once before saving. This should save a
 // few CPU cycles when two or more things needs to be saved; TODO: Add localStorage compression alogorithm (disabled by
 // default, since we save playlists too often)
+//todo: Get current browser/os language and try using it as a language of Noisy - just the way it was before the rework.
 
 /* LOW PRIORITY */
 //TODO: Finish tests.
@@ -53,8 +54,8 @@ let n = {
 	// Google Drive communication goes through here. See googledrive.js file for more info.
 	googledrive: googledrive,
 
-	// Default language is English
-	lang: lang.en,
+	// Language cache
+	langs: {},
 
 	// Last.fm communication goes through here. See lastfm.js file for more info.
 	lastfm: lastfm,
@@ -327,6 +328,213 @@ let n = {
 		}
 	},
 
+	_translate()
+	{
+		// Internal function needed to construct HTML for FAQ answers.
+		function _concatHTML( answer )
+		{
+			let compiled       = '';
+			const stringString = 'string';
+			const startOpen    = '<';
+			const startClose   = '</';
+			const end          = '>';
+			const emptyString  = '';
+
+			Object.keys( answer ).forEach( el =>
+			{
+				let val = answer[ el ];
+				if ( stringString === typeof answer[ el ] )
+				{
+					compiled += startOpen.concat( el, end, val, startClose, el, end );
+				}
+				else
+				{
+					let isNan = isNaN( el );
+					compiled += ( isNan ? startOpen.concat( el, end ) : emptyString );
+					compiled += _concatHTML( val.adv || val );
+					compiled += ( isNan ? startClose.concat( el, end ) : emptyString );
+				}
+			} );
+
+			return compiled;
+		}
+
+		// Re-create HTML for the FAQ with the new language
+		n.initFAQ();
+
+		document.documentElement.lang = n.pref.lang;
+
+		let splashItems = n.lang.splash;
+
+		Object.keys( splashItems ).forEach( key =>
+		{
+			// When changing language the splash screen isn't present in the DOM, so we need fake object to set the
+			// HTML to
+			let splashNode       = document.getElementById( key ) || {};
+			splashNode.innerHTML = splashItems[ key ];
+		} );
+
+		let menuItems = n.lang.menu;
+		Object.keys( menuItems ).forEach( key =>
+		{
+			document.getElementById( key ).innerHTML = menuItems[ key ];
+		} );
+
+		let windowItems = n.lang.window;
+		Object.keys( windowItems ).forEach( key =>
+		{
+			document.getElementById( key ).innerHTML = windowItems[ key ];
+		} );
+
+		let placeholderItems = n.lang.placeholders;
+		Object.keys( placeholderItems ).forEach( key =>
+		{
+			document.getElementById( key ).placeholder = placeholderItems[ key ];
+		} );
+
+		let preferenceItems = n.lang.preferences;
+		let id              = 'preferences-tabs';
+		let selectorStart   = 'button[data-preference="';
+		const selectorEnd   = '"]';
+		Object.keys( preferenceItems ).forEach( key =>
+		{
+			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = preferenceItems[ key ];
+		} );
+
+		let actionItems = n.lang.actions;
+		let secondId    = 'keyboard-shortcuts';
+		const dotString = '.';
+
+		id            = 'actions';
+		selectorStart = 'option[value="';
+
+		Object.keys( actionItems ).forEach( key =>
+		{
+			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = actionItems[ key ];
+
+			let elements = document.getElementById( secondId ).querySelectorAll( dotString + key );
+
+			for ( let i = elements.length; i--; )
+			{
+				elements[ i ].innerHTML = n.lang.actions[ key ];
+			}
+		} );
+
+		let themeItems = n.lang.themes;
+		id             = 'preference-theme';
+		selectorStart  = 'option[value="';
+		Object.keys( themeItems ).forEach( key =>
+		{
+			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = themeItems[ key ];
+		} );
+
+		let buttonItems = n.lang.buttons;
+		Object.keys( buttonItems ).forEach( key =>
+		{
+			let items = document.querySelectorAll( '.' + key );
+
+			for ( let i = items.length; i--; )
+			{
+				items[ i ].innerHTML = buttonItems[ key ];
+			}
+		} );
+
+		let validationItems = n.lang.validation;
+		Object.keys( validationItems ).forEach( key =>
+		{
+			let items = document.querySelectorAll( '.' + key );
+
+			for ( let i = items.length; i--; )
+			{
+				items[ i ].innerHTML = validationItems[ key ];
+			}
+		} );
+
+		let consoleItems = n.lang.console;
+		Object.keys( consoleItems ).forEach( key =>
+		{
+			let items = document.querySelectorAll( '.' + key );
+
+			for ( let i = items.length; i--; )
+			{
+				items[ i ].innerHTML = consoleItems[ key ];
+			}
+		} );
+
+		let footerItems = n.lang.footer;
+		Object.keys( footerItems ).forEach( key =>
+		{
+			let item = document.getElementById( key ) || {};
+
+			item.innerHTML = footerItems[ key ];
+		} );
+
+		let helpItems = n.lang.help;
+		Object.keys( helpItems ).forEach( key =>
+		{
+			document.getElementById( key ).title = helpItems[ key ];
+		} );
+
+		// Translate FAQ window
+		let questions = n.lang.faq.q;
+		id            = 'q-';
+		secondId      = 'a-';
+
+		questions.forEach( ( question, i ) =>
+		{
+			// Get corresponding answer for current question
+			let answer   = n.lang.faq.a[ i ];
+			let domIndex = i + 1;
+
+			// Print the question to the screen
+			document.getElementById( id + domIndex ).innerHTML = question;
+
+			// Print the answer to the screen
+			document.getElementById( secondId + domIndex ).innerHTML = _concatHTML( answer.adv || answer );
+		} );
+
+		// Add not supported text to all options which are not supported by the current browser
+		let notSupported = document.querySelectorAll( '.not-supported' );
+		for ( let i = notSupported.length; i--; )
+		{
+			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
+		}
+
+		// Dropbox playlist convert text
+		let playlistConvert = document.querySelectorAll( '.dropbox-convert-text' );
+		for ( let i = playlistConvert.length; i--; )
+		{
+			playlistConvert[ i ].innerHTML += n.lang.other[ 'dropbox-playlist-convert' ];
+		}
+
+		let clickHereItems = document.querySelectorAll( '.click-here' );
+		for ( let i = clickHereItems.length; i--; )
+		{
+			clickHereItems[ i ].innerHTML += n.lang.other[ 'click-here' ];
+		}
+
+		// Dev channel button
+		let channelSwither = document.getElementById( 'channel-switcher' );
+		if ( n.pref.devChannel )
+		{
+			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher-dev' ];
+		}
+		else
+		{
+			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher' ];
+		}
+
+		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-notconnected]' );
+		for ( let i = notConnecteds.length; i--; )
+		{
+			notConnecteds[ i ].dataset.notconnected = n.lang.other[ 'not-connected' ];
+		}
+
+		// Refresh window title
+		n.setTitle( null, true );
+		n.refreshWindowTitle();
+	},
+
 	/**
 	 * Returns item being played/paused/loaded
 	 * @returns {HTMLElement}
@@ -354,6 +562,15 @@ let n = {
 	{
 		let tab = document.getElementById( 'playlists-tabs' ).querySelector( '.active' );
 		return tab ? tab.dataset.for : null;
+	},
+
+	/**
+	 * Get currently selected language
+	 * @returns {Object}
+	 */
+	get lang()
+	{
+		return n.langs[ n.pref.lang ];
 	},
 
 	/**
@@ -2126,6 +2343,9 @@ let n = {
 	 */
 	init()
 	{
+		// Load the preferences first, as we need to know which language and theme to load
+		n.pref.process();
+
 		// Before everything, if user is using the appspot domain, we should redirect him to https://www.noisyplayer.com
 		if ( ~location.host.indexOf( 'appspot' ) )
 		{
@@ -2138,340 +2358,342 @@ let n = {
 			location.replace( '//' + location.host + '/dev/' + location.hash + location.search );
 		}
 
-		n.initBatteryWatcher( () =>
+		return Promise.all( [
+			n.translate(),
+			n.applyTheme()
+		] ).then( _ =>
 		{
-			n.markNotSupportedPreferences();
-			n.applyPowerSaveMode();
-		} );
-
-		n.initAudio();
-		n.pref.process();
-
-		// Set the counter for lastfm
-		n.updateScrobbleCounter();
-
-		// Set language
-		n.initFAQ();
-		n.translate();
-		n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
-
-		//TODO: currently we are saving preferences twice - can we optimize smartly?
-		const hash              = location.hash;
-		const search            = location.search;
-		let split               = [];
-		const accessTokenString = 'access_token=';
-		const codeString        = 'code=';
-		const tokenString       = 'token=';
-		const equalString       = '=';
-		const clickEvent        = 'click';
-		const mouseDownEvent    = 'mousedown';
-		const keyDownEvent      = 'keydown';
-		const dblClickEvent     = 'dblclick';
-
-		if ( hash && '#' !== hash )
-		{
-			split = hash.split( '#' ).pop().split( '&' );
-		}
-		else if ( search && '?' !== search )
-		{
-			split = search.split( '?' ).pop().split( '&' );
-		}
-
-		for ( let i = split.length; i--; )
-		{
-			let part = split[ i ];
-
-			// Dropbox and Google Drive are returning directly the access token
-			if ( 0 === part.indexOf( accessTokenString ) )
+			n.initBatteryWatcher( () =>
 			{
-				let accessToken = part.split( equalString ).pop();
+				n.markNotSupportedPreferences();
+				n.applyPowerSaveMode();
+			} );
 
-				n[ n.pref.tokenCloud ].accessToken = accessToken;
+			n.initAudio();
 
-				n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
+			// Set the counter for lastfm
+			n.updateScrobbleCounter();
 
-				break;
+			n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
+
+			//TODO: currently we are saving preferences twice - can we optimize smartly?
+			const hash              = location.hash;
+			const search            = location.search;
+			let split               = [];
+			const accessTokenString = 'access_token=';
+			const codeString        = 'code=';
+			const tokenString       = 'token=';
+			const equalString       = '=';
+			const clickEvent        = 'click';
+			const mouseDownEvent    = 'mousedown';
+			const keyDownEvent      = 'keydown';
+			const dblClickEvent     = 'dblclick';
+
+			if ( hash && '#' !== hash )
+			{
+				split = hash.split( '#' ).pop().split( '&' );
 			}
-			// Last.fm returns the token as "token" param and requires a special session token to be generated
-			else if ( 0 === part.indexOf( tokenString ) )
+			else if ( search && '?' !== search )
 			{
-				let token = part.split( equalString ).pop();
-
-				n[ n.pref.tokenCloud ].getAccessToken( token, xhr =>
-				{
-					let response = JSON.parse( xhr.responseText );
-
-					n[ n.pref.tokenCloud ].userName    = response.session.name;
-					n[ n.pref.tokenCloud ].accessToken = response.session.key;
-
-					n.pref.userName    = {
-						cloud   : n.pref.tokenCloud,
-						userName: response.session.name
-					};
-					n.pref.accessToken = {
-						cloud      : n.pref.tokenCloud,
-						accessToken: response.session.key
-					};
-				}, () =>
-				{
-					n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
-				} );
-
-				break;
+				split = search.split( '?' ).pop().split( '&' );
 			}
-			// Box is returning code with which we should request the access token
-			else if ( 0 === part.indexOf( codeString ) )
+
+			for ( let i = split.length; i--; )
 			{
-				n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
+				let part = split[ i ];
 
-				break;
-			}
-		}
-
-		// Make sure our URL is clean
-		let pathname = location.pathname;
-
-		if ( ~pathname.indexOf( '/dev/' ) )
-		{
-			pathname = '/dev/';
-		}
-		else
-		{
-			pathname = '/';
-		}
-
-		history.pushState( { clear: 'hash' }, 'without refresh', pathname );
-		history.pushState( { clear: 'search' }, 'without refresh', pathname );
-
-		// Check to which cloud services the user is connected to
-		//if( 'localhost' != location.host && '127.0.0.1' != location.host )
-		{
-			n.checkConnections();
-		}
-
-		// Load all available playlists
-		n.loadAndRenderPlaylists();
-
-		// Check how much space user took from the 5MB quota of localStorage
-		n.checkQuota();
-
-		// Resume where user left
-		if ( n.pref.activePlaylistId )
-		{
-			let playlist = document.getElementById( n.pref.activePlaylistId );
-
-			if ( playlist )
-			{
-				let scrollTop = n.pref.scrollTop;
-
-				// Let the rendering engine catchup
-				setTimeout( () =>
+				// Dropbox and Google Drive are returning directly the access token
+				if ( 0 === part.indexOf( accessTokenString ) )
 				{
-					playlist.scrollTop = scrollTop;
-				}, 0 );
+					let accessToken = part.split( equalString ).pop();
 
-				n.changePlaylist( document.querySelector( 'div[data-for="'.concat( n.pref.activePlaylistId, '"]' ) ) );
+					n[ n.pref.tokenCloud ].accessToken = accessToken;
+
+					n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
+
+					break;
+				}
+				// Last.fm returns the token as "token" param and requires a special session token to be generated
+				else if ( 0 === part.indexOf( tokenString ) )
+				{
+					let token = part.split( equalString ).pop();
+
+					n[ n.pref.tokenCloud ].getAccessToken( token, xhr =>
+					{
+						let response = JSON.parse( xhr.responseText );
+
+						n[ n.pref.tokenCloud ].userName    = response.session.name;
+						n[ n.pref.tokenCloud ].accessToken = response.session.key;
+
+						n.pref.userName    = {
+							cloud   : n.pref.tokenCloud,
+							userName: response.session.name
+						};
+						n.pref.accessToken = {
+							cloud      : n.pref.tokenCloud,
+							accessToken: response.session.key
+						};
+					}, () =>
+					{
+						n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
+					} );
+
+					break;
+				}
+				// Box is returning code with which we should request the access token
+				else if ( 0 === part.indexOf( codeString ) )
+				{
+					n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
+
+					break;
+				}
+			}
+
+			// Make sure our URL is clean
+			let pathname = location.pathname;
+
+			if ( ~pathname.indexOf( '/dev/' ) )
+			{
+				pathname = '/dev/';
 			}
 			else
 			{
-				n.warn( 'missing-element', n.pref.activePlaylistId );
-			}
-		}
-
-		// Attach events to the DOM elements of the player
-		n.attachEvents();
-
-		// Attach menu events
-		let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
-		let prefTabs     = document.querySelectorAll( '.preferences-item' );
-		let _onItemClick = function( e )
-		{
-			// Stop bubbling otherwise the window (if any) opened will be immediately closed
-			e.stopPropagation();
-
-			// Close all previous file browsing windows. Need in case user have entered in file browser (lets say
-			// Save playlist) and tries to open another one (lets say Load playlist). We need to re-initialize the
-			// add files window in original state
-			n.closeFileFolderWindow();
-
-			// Execute needed method
-			n[ this.dataset.menulistener ].call( this );
-		};
-		let _onTabClick  = function()
-		{
-			// Check if user clicked on the active tab already and stop execution if true
-			if ( this.classList.contains( 'active' ) )
-			{
-				return;
+				pathname = '/';
 			}
 
-			// Get all preference tabs contents
-			let preferences = document.getElementById( 'preferences-container' ).children;
-			let len         = preferences.length;
+			history.pushState( { clear: 'hash' }, 'without refresh', pathname );
+			history.pushState( { clear: 'search' }, 'without refresh', pathname );
 
-			// Remove active class from active tab
-			document.getElementById( 'preferences-tabs' ).querySelector( '.active' ).classList.remove( 'active' );
-
-			// Add active class to clicked tab
-			this.classList.add( 'active' );
-
-			// Hide all tab contents
-			for ( let i = len; i--; )
+			// Check to which cloud services the user is connected to
+			//if( 'localhost' != location.host && '127.0.0.1' != location.host )
 			{
-				preferences[ i ].hidden = true;
+				n.checkConnections();
 			}
 
-			// Show content for selected tab
-			document.getElementById( 'preference-'.concat( this.dataset.preference ) ).hidden = false;
-		};
+			// Load all available playlists
+			n.loadAndRenderPlaylists();
 
-		for ( let i = menuItems.length; i--; )
-		{
-			menuItems[ i ].addEventListener( clickEvent, _onItemClick );
-		}
+			// Check how much space user took from the 5MB quota of localStorage
+			n.checkQuota();
 
-		// Attach preferences items events
-		for ( let i = prefTabs.length; i--; )
-		{
-			prefTabs[ i ].addEventListener( clickEvent, _onTabClick );
-		}
-
-		// Attach progress bar events
-		document.getElementById( 'progress' ).addEventListener( mouseDownEvent, e =>
-		{
-			n.moving       = true;
-			n.movingBar    = this;
-			n.movingStartX = e.clientX;
-		} );
-		document.getElementById( 'volume' ).addEventListener( mouseDownEvent, e =>
-		{
-			n.moving           = true;
-			n.movingBar        = this;
-			n.movingStartX     = e.clientX;
-			n.movingShouldSave = true;
-		} );
-
-		// Catch click on body and close windows if any
-		document.body.addEventListener( clickEvent, n.closeAll );
-
-		// Catch click on .window and stop bubbling, so we do not close the window on click
-		document.querySelector( '.window' ).addEventListener( clickEvent, n.stopBubbling );
-
-		// Listen for keyboard shortcuts and execute them if found.
-		document.body.addEventListener( keyDownEvent, e =>
-		{
-			let keys = n.getKeys( e );
-			let item = document.getElementById( 'keyboard-shortcuts' ).querySelector( 'tr[data-keys="'.concat( keys.keyProperty.join( '+' ), '"]' ) );
-
-			if ( item )
+			// Resume where user left
+			if ( n.pref.activePlaylistId )
 			{
-				n[ item.dataset.action ]();
-				e.preventDefault();
-			}
+				let playlist = document.getElementById( n.pref.activePlaylistId );
 
-			// Close everything if Esc is pressed
-			if ( 27 === e.keyCode )
-			{
-				n.closeAll();
-				e.preventDefault();
-			}
-		} );
-
-		// Double click on footer should bring the currently active item into the view
-		document.getElementById( 'footer' ).addEventListener( dblClickEvent, () =>
-		{
-			let activeItem = n.activeItem;
-			let parentItem;
-			let id;
-
-			if ( activeItem )
-			{
-				parentItem = activeItem.parentNode;
-				id         = parentItem.id;
-
-				// Focus the tab in which the active item is
-				if ( id !== n.activePlaylistId )
+				if ( playlist )
 				{
-					n.changePlaylist( document.querySelector( 'div[data-for="'.concat( id, '"]' ) ) );
+					let scrollTop = n.pref.scrollTop;
+
+					// Let the rendering engine catchup
+					setTimeout( () =>
+					{
+						playlist.scrollTop = scrollTop;
+					}, 0 );
+
+					n.changePlaylist( document.querySelector( 'div[data-for="'.concat( n.pref.activePlaylistId, '"]' ) ) );
+				}
+				else
+				{
+					n.warn( 'missing-element', n.pref.activePlaylistId );
+				}
+			}
+
+			// Attach events to the DOM elements of the player
+			n.attachEvents();
+
+			// Attach menu events
+			let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
+			let prefTabs     = document.querySelectorAll( '.preferences-item' );
+			let _onItemClick = function( e )
+			{
+				// Stop bubbling otherwise the window (if any) opened will be immediately closed
+				e.stopPropagation();
+
+				// Close all previous file browsing windows. Need in case user have entered in file browser (lets say
+				// Save playlist) and tries to open another one (lets say Load playlist). We need to re-initialize the
+				// add files window in original state
+				n.closeFileFolderWindow();
+
+				// Execute needed method
+				n[ this.dataset.menulistener ].call( this );
+			};
+			let _onTabClick  = function()
+			{
+				// Check if user clicked on the active tab already and stop execution if true
+				if ( this.classList.contains( 'active' ) )
+				{
+					return;
 				}
 
-				// Scroll item into view
-				scrollIntoViewIfOutOfView( activeItem );
+				// Get all preference tabs contents
+				let preferences = document.getElementById( 'preferences-container' ).children;
+				let len         = preferences.length;
+
+				// Remove active class from active tab
+				document.getElementById( 'preferences-tabs' ).querySelector( '.active' ).classList.remove( 'active' );
+
+				// Add active class to clicked tab
+				this.classList.add( 'active' );
+
+				// Hide all tab contents
+				for ( let i = len; i--; )
+				{
+					preferences[ i ].hidden = true;
+				}
+
+				// Show content for selected tab
+				document.getElementById( 'preference-'.concat( this.dataset.preference ) ).hidden = false;
+			};
+
+			for ( let i = menuItems.length; i--; )
+			{
+				menuItems[ i ].addEventListener( clickEvent, _onItemClick );
 			}
+
+			// Attach preferences items events
+			for ( let i = prefTabs.length; i--; )
+			{
+				prefTabs[ i ].addEventListener( clickEvent, _onTabClick );
+			}
+
+			// Attach progress bar events
+			document.getElementById( 'progress' ).addEventListener( mouseDownEvent, e =>
+			{
+				n.moving       = true;
+				n.movingBar    = this;
+				n.movingStartX = e.clientX;
+			} );
+			document.getElementById( 'volume' ).addEventListener( mouseDownEvent, e =>
+			{
+				n.moving           = true;
+				n.movingBar        = this;
+				n.movingStartX     = e.clientX;
+				n.movingShouldSave = true;
+			} );
+
+			// Catch click on body and close windows if any
+			document.body.addEventListener( clickEvent, n.closeAll );
+
+			// Catch click on .window and stop bubbling, so we do not close the window on click
+			document.querySelector( '.window' ).addEventListener( clickEvent, n.stopBubbling );
+
+			// Listen for keyboard shortcuts and execute them if found.
+			document.body.addEventListener( keyDownEvent, e =>
+			{
+				let keys = n.getKeys( e );
+				let item = document.getElementById( 'keyboard-shortcuts' ).querySelector( 'tr[data-keys="'.concat( keys.keyProperty.join( '+' ), '"]' ) );
+
+				if ( item )
+				{
+					n[ item.dataset.action ]();
+					e.preventDefault();
+				}
+
+				// Close everything if Esc is pressed
+				if ( 27 === e.keyCode )
+				{
+					n.closeAll();
+					e.preventDefault();
+				}
+			} );
+
+			// Double click on footer should bring the currently active item into the view
+			document.getElementById( 'footer' ).addEventListener( dblClickEvent, () =>
+			{
+				let activeItem = n.activeItem;
+				let parentItem;
+				let id;
+
+				if ( activeItem )
+				{
+					parentItem = activeItem.parentNode;
+					id         = parentItem.id;
+
+					// Focus the tab in which the active item is
+					if ( id !== n.activePlaylistId )
+					{
+						n.changePlaylist( document.querySelector( 'div[data-for="'.concat( id, '"]' ) ) );
+					}
+
+					// Scroll item into view
+					scrollIntoViewIfOutOfView( activeItem );
+				}
+			} );
+
+			// We need to stop the bubbling so if the user is renaming the playlist it won't get saved while moving the
+			// caret to a new location with the mouse
+			document.getElementById( 'playlists-tabs' ).addEventListener( clickEvent, e =>
+			{
+				n.closeAll();
+				n.stopBubbling.call( this, e );
+			} );
+
+			// Double click on the tabs means either rename of playlist (if playlist tab was double clicked) or create
+			// new playlist, so need to listen for dblclick
+			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function( e )
+			{
+				if ( this === e.target )
+				{
+					n.newPlaylist();
+				}
+				else
+				{
+					n.renamePlaylist( e.target );
+				}
+			} );
+
+			// Need to listen for Enter and Esc keys when renaming
+			document.getElementById( 'playlists-tabs' ).addEventListener( keyDownEvent, e =>
+			{
+				let keyCode  = e.keyCode;
+				let renaming = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] span.renaming' ) );
+
+				// Shouldn't do anything if we are not renaming
+				if ( !renaming )
+				{
+					return;
+				}
+
+				if ( 13 === keyCode )
+				{
+					e.preventDefault();
+					n.playlistNameCheck();
+				}
+				else if ( 27 === keyCode )
+				{
+					e.preventDefault();
+
+					let name = e.target;
+
+					name.innerHTML = name.parentNode.dataset.name;
+
+					n.cancelRenames();
+				}
+			} );
+
+			// Print current version into the About box
+			document.getElementById( 'version' ).innerHTML = n.version;
+
+			// Init the welcome screen
+			n.initWelcome();
+
+			if ( n.pref.showWelcome )
+			{
+				n.showWelcome();
+			}
+
+			// Calculate time needed for Noisy to load
+			let timerEnd = Date.now();
+			n.log( 'startup', timerEnd - timerStart + '<span class=\'ms\'>'.concat( n.lang.console.ms, '</span>' ) );
+
+			// Construct todays date as last check for updates, as browser does check at first automatically
+			n.lastUpdateCheck = Math.floor( +new Date() / 86400000 );
+
+			// n.googledrive.youTubeSearch( 'Metallica One' );
+
+			return Promise.resolve();
 		} );
-
-		// We need to stop the bubbling so if the user is renaming the playlist it won't get saved while moving the
-		// caret to a new location with the mouse
-		document.getElementById( 'playlists-tabs' ).addEventListener( clickEvent, e =>
-		{
-			n.closeAll();
-			n.stopBubbling.call( this, e );
-		} );
-
-		// Double click on the tabs means either rename of playlist (if playlist tab was double clicked) or create new
-		// playlist, so need to listen for dblclick
-		document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function( e )
-		{
-			if ( this === e.target )
-			{
-				n.newPlaylist();
-			}
-			else
-			{
-				n.renamePlaylist( e.target );
-			}
-		} );
-
-		// Need to listen for Enter and Esc keys when renaming
-		document.getElementById( 'playlists-tabs' ).addEventListener( keyDownEvent, e =>
-		{
-			let keyCode  = e.keyCode;
-			let renaming = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] span.renaming' ) );
-
-			// Shouldn't do anything if we are not renaming
-			if ( !renaming )
-			{
-				return;
-			}
-
-			if ( 13 === keyCode )
-			{
-				e.preventDefault();
-				n.playlistNameCheck();
-			}
-			else if ( 27 === keyCode )
-			{
-				e.preventDefault();
-
-				let name = e.target;
-
-				name.innerHTML = name.parentNode.dataset.name;
-
-				n.cancelRenames();
-			}
-		} );
-
-		// Print current version into the About box
-		document.getElementById( 'version' ).innerHTML = n.version;
-
-		// Init the welcome screen
-		n.initWelcome();
-
-		if ( n.pref.showWelcome )
-		{
-			n.showWelcome();
-		}
-
-		// Calculate time needed for Noisy to load
-		let timerEnd = Date.now();
-		n.log( 'startup', timerEnd - timerStart + '<span class=\'ms\'>'.concat( n.lang.console.ms, '</span>' ) );
-
-		// Construct todays date as last check for updates, as browser does check at first automatically
-		n.lastUpdateCheck = Math.floor( +new Date() / 86400000 );
-
-		// n.googledrive.youTubeSearch( 'Metallica One' );
-
-		return n.applyTheme();
 	},
 
 	/**
@@ -2780,6 +3002,7 @@ let n = {
 	 */
 	initWelcome()
 	{
+		return;
 		let slides = n.lang.welcome;
 		let df     = document.createDocumentFragment();
 		let slide;
@@ -2834,13 +3057,10 @@ let n = {
 
 		/*var todoCount = 0,
 		 filesToCheck = [
-		 'bg.js'
 		 , 'cloud.js'
 		 , 'dropbox.js'
-		 , 'en.js'
 		 , 'googledrive.js'
 		 , 'index.html'
-		 , 'lang.js'
 		 , 'main.js'
 		 , 'player.js'
 		 , 'style.css'
@@ -4687,7 +4907,6 @@ let n = {
 		localStorage.removeItem( 'preferences' );
 
 		n.pref.settings  = JSON.parse( JSON.stringify( n.pref.originalSettings ) );
-		n.pref.firstTime = true;
 		n.pref.process();
 
 		n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
@@ -5215,206 +5434,27 @@ let n = {
 	 */
 	translate()
 	{
-		// Internal function needed to construct HTML for FAQ answers.
-		function _concatHTML( answer )
+		// Get selected language
+		let lang = n.pref.lang;
+
+		if ( n.langs[ lang ] )
 		{
-			let compiled       = '';
-			const stringString = 'string';
-			const startOpen    = '<';
-			const startClose   = '</';
-			const end          = '>';
-			const emptyString  = '';
+			n._translate();
 
-			Object.keys( answer ).forEach( el =>
-			{
-				let val = answer[ el ];
-				if ( stringString === typeof answer[ el ] )
-				{
-					compiled += startOpen.concat( el, end, val, startClose, el, end );
-				}
-				else
-				{
-					let isNan = isNaN( el );
-					compiled += ( isNan ? startOpen.concat( el, end ) : emptyString );
-					compiled += _concatHTML( val.adv || val );
-					compiled += ( isNan ? startClose.concat( el, end ) : emptyString );
-				}
-			} );
-
-			return compiled;
-		}
-
-		document.documentElement.lang = n.pref.lang;
-
-		let splashItems = n.lang.splash;
-
-		Object.keys( splashItems ).forEach( key =>
-		{
-			// When changing language the splash screen isn't present in the DOM, so we need fake object to set the
-			// HTML to
-			let splashNode       = document.getElementById( key ) || {};
-			splashNode.innerHTML = splashItems[ key ];
-		} );
-
-		let menuItems = n.lang.menu;
-		Object.keys( menuItems ).forEach( key =>
-		{
-			document.getElementById( key ).innerHTML = menuItems[ key ];
-		} );
-
-		let windowItems = n.lang.window;
-		Object.keys( windowItems ).forEach( key =>
-		{
-			document.getElementById( key ).innerHTML = windowItems[ key ];
-		} );
-
-		let placeholderItems = n.lang.placeholders;
-		Object.keys( placeholderItems ).forEach( key =>
-		{
-			document.getElementById( key ).placeholder = placeholderItems[ key ];
-		} );
-
-		let preferenceItems = n.lang.preferences;
-		let id              = 'preferences-tabs';
-		let selectorStart   = 'button[data-preference="';
-		const selectorEnd   = '"]';
-		Object.keys( preferenceItems ).forEach( key =>
-		{
-			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = preferenceItems[ key ];
-		} );
-
-		let actionItems = n.lang.actions;
-		let secondId    = 'keyboard-shortcuts';
-		const dotString = '.';
-
-		id            = 'actions';
-		selectorStart = 'option[value="';
-
-		Object.keys( actionItems ).forEach( key =>
-		{
-			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = actionItems[ key ];
-
-			let elements = document.getElementById( secondId ).querySelectorAll( dotString + key );
-
-			for ( let i = elements.length; i--; )
-			{
-				elements[ i ].innerHTML = n.lang.actions[ key ];
-			}
-		} );
-
-		let themeItems = n.lang.themes;
-		id             = 'preference-theme';
-		selectorStart  = 'option[value="';
-		Object.keys( themeItems ).forEach( key =>
-		{
-			document.getElementById( id ).querySelector( selectorStart.concat( key, selectorEnd ) ).innerHTML = themeItems[ key ];
-		} );
-
-		let buttonItems = n.lang.buttons;
-		Object.keys( buttonItems ).forEach( key =>
-		{
-			let items = document.querySelectorAll( '.' + key );
-
-			for ( let i = items.length; i--; )
-			{
-				items[ i ].innerHTML = buttonItems[ key ];
-			}
-		} );
-
-		let validationItems = n.lang.validation;
-		Object.keys( validationItems ).forEach( key =>
-		{
-			let items = document.querySelectorAll( '.' + key );
-
-			for ( let i = items.length; i--; )
-			{
-				items[ i ].innerHTML = validationItems[ key ];
-			}
-		} );
-
-		let consoleItems = n.lang.console;
-		Object.keys( consoleItems ).forEach( key =>
-		{
-			let items = document.querySelectorAll( '.' + key );
-
-			for ( let i = items.length; i--; )
-			{
-				items[ i ].innerHTML = consoleItems[ key ];
-			}
-		} );
-
-		let footerItems = n.lang.footer;
-		Object.keys( footerItems ).forEach( key =>
-		{
-			let item = document.getElementById( key ) || {};
-
-			item.innerHTML = footerItems[ key ];
-		} );
-
-		let helpItems = n.lang.help;
-		Object.keys( helpItems ).forEach( key =>
-		{
-			document.getElementById( key ).title = helpItems[ key ];
-		} );
-
-		// Translate FAQ window
-		let questions = n.lang.faq.q;
-		id            = 'q-';
-		secondId      = 'a-';
-
-		questions.forEach( ( question, i ) =>
-		{
-			// Get corresponding answer for current question
-			let answer   = n.lang.faq.a[ i ];
-			let domIndex = i + 1;
-
-			// Print the question to the screen
-			document.getElementById( id + domIndex ).innerHTML = question;
-
-			// Print the answer to the screen
-			document.getElementById( secondId + domIndex ).innerHTML = _concatHTML( answer.adv || answer );
-		} );
-
-		// Add not supported text to all options which are not supported by the current browser
-		let notSupported = document.querySelectorAll( '.not-supported' );
-		for ( let i = notSupported.length; i--; )
-		{
-			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
-		}
-
-		// Dropbox playlist convert text
-		let playlistConvert = document.querySelectorAll( '.dropbox-convert-text' );
-		for ( let i = playlistConvert.length; i--; )
-		{
-			playlistConvert[ i ].innerHTML += n.lang.other[ 'dropbox-playlist-convert' ];
-		}
-
-		let clickHereItems = document.querySelectorAll( '.click-here' );
-		for ( let i = clickHereItems.length; i--; )
-		{
-			clickHereItems[ i ].innerHTML += n.lang.other[ 'click-here' ];
-		}
-
-		// Dev channel button
-		let channelSwither = document.getElementById( 'channel-switcher' );
-		if ( n.pref.devChannel )
-		{
-			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher-dev' ];
+			return Promise.resolve();
 		}
 		else
 		{
-			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher' ];
-		}
+			return fetch( '/js/i18n/'.concat( lang, '.json' ) ).then( response => response.json() ).then( json =>
+			{
+				// Cache the parsed theme if user wants to re-apply it
+				n.langs[ lang ] = json;
 
-		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-notconnected]' );
-		for ( let i = notConnecteds.length; i--; )
-		{
-			notConnecteds[ i ].dataset.notconnected = n.lang.other[ 'not-connected' ];
-		}
+				n._translate();
 
-		// Refresh window title
-		n.setTitle( null, true );
-		n.refreshWindowTitle();
+				return Promise.resolve();
+			} );
+		}
 	},
 
 	/**

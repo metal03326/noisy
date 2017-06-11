@@ -7,9 +7,6 @@
 
 // Preferences singleton to be passed to Noisy
 let pref = {
-	// Flag showing if we are running Noisy for the first time
-	firstTime: true,
-
 	// Load method will save the original settings here, to be used later if user wants to reset to defaults
 	originalSettings: null,
 
@@ -80,7 +77,6 @@ let pref = {
 		if ( settings )
 		{
 			this.settings  = JSON.parse( settings );
-			this.firstTime = false;
 		}
 	},
 
@@ -97,24 +93,6 @@ let pref = {
 
 	process()
 	{
-		// Set language if we are running for the first time
-		if ( this.firstTime )
-		{
-			// Take default user language and set it as language
-			let language = navigator.language.split( '-' ).shift();
-
-			// Set language to English if we don't have translations for this language
-			if ( !lang[ language ] )
-			{
-				language = 'en';
-			}
-
-			document.getElementById( 'preference-user-language' ).value = language;
-
-			// Save preferences for the first time
-			this.lang = language;
-		}
-
 		// Load all elements that have it's values stored in .value property
 		let inputs = this.settings.values;
 
@@ -185,9 +163,6 @@ let pref = {
 		// Set Last.fm access token to loaded value
 		n.lastfm.accessToken = this.settings.lastfm.accessToken;
 		n.lastfm.userName    = this.settings.lastfm.userName;
-
-		// Set language
-		n.lang = lang[ this.lang ];
 
 		// Disable counter update if user said so
 		if ( !this.counter )
@@ -275,13 +250,11 @@ let pref = {
 
 	set lang( value )
 	{
-		let shouldSave = n.lang !== lang[ value ];
-
-		n.lang = lang[ value ];
+		let currentLang = this.settings.values[ 'preference-user-language' ] || 'en';
 
 		this.settings.values[ 'preference-user-language' ] = value;
 
-		if ( shouldSave )
+		if ( currentLang !== value )
 		{
 			this.save();
 		}
@@ -289,7 +262,7 @@ let pref = {
 
 	get lang()
 	{
-		return this.settings.values[ 'preference-user-language' ];
+		return this.settings.values[ 'preference-user-language' ] || 'en';
 	},
 
 	set theme( value )
