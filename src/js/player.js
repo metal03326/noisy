@@ -209,13 +209,15 @@ let n = {
 		let confirmationString = 'confirmation';
 
 		// Deselect them
-		for ( let i = selected.length; i--; )
+		for ( let i = 0; i < selected.length; i++ )
 		{
-			selected[ i ].classList.remove( selectedString );
+			let el = selected[ i ];
+
+			el.classList.remove( selectedString );
 
 			// User might have pressed Delete button, thus marking the selected items for removal and them wanting to
 			// stop it by deselection
-			selected[ i ].classList.remove( confirmationString );
+			el.classList.remove( confirmationString );
 		}
 	},
 
@@ -263,7 +265,7 @@ let n = {
 				let selectedItems = document.getElementById( containerId ).querySelectorAll( '.selected' );
 
 				// First de-select all items
-				for ( let i = selectedItems.length; i--; )
+				for ( let i = 0; i < selectedItems.length; i++ )
 				{
 					selectedItems[ i ].classList.remove( 'selected' );
 				}
@@ -414,7 +416,7 @@ let n = {
 
 			let elements = document.getElementById( secondId ).querySelectorAll( dotString + key );
 
-			for ( let i = elements.length; i--; )
+			for ( let i = 0; i < elements.length; i++ )
 			{
 				elements[ i ].innerHTML = n.lang.actions[ key ];
 			}
@@ -433,7 +435,7 @@ let n = {
 		{
 			let items = document.querySelectorAll( '.' + key );
 
-			for ( let i = items.length; i--; )
+			for ( let i = 0; i < items.length; i++ )
 			{
 				items[ i ].innerHTML = buttonItems[ key ];
 			}
@@ -444,7 +446,7 @@ let n = {
 		{
 			let items = document.querySelectorAll( '.' + key );
 
-			for ( let i = items.length; i--; )
+			for ( let i = 0; i < items.length; i++ )
 			{
 				items[ i ].innerHTML = validationItems[ key ];
 			}
@@ -455,7 +457,7 @@ let n = {
 		{
 			let items = document.querySelectorAll( '.' + key );
 
-			for ( let i = items.length; i--; )
+			for ( let i = 0; i < items.length; i++ )
 			{
 				items[ i ].innerHTML = consoleItems[ key ];
 			}
@@ -495,20 +497,20 @@ let n = {
 
 		// Add not supported text to all options which are not supported by the current browser
 		let notSupported = document.querySelectorAll( '.not-supported' );
-		for ( let i = notSupported.length; i--; )
+		for ( let i = 0; i < notSupported.length; i++ )
 		{
 			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
 		}
 
 		// Dropbox playlist convert text
 		let playlistConvert = document.querySelectorAll( '.dropbox-convert-text' );
-		for ( let i = playlistConvert.length; i--; )
+		for ( let i = 0; i < playlistConvert.length; i++ )
 		{
 			playlistConvert[ i ].innerHTML += n.lang.other[ 'dropbox-playlist-convert' ];
 		}
 
 		let clickHereItems = document.querySelectorAll( '.click-here' );
-		for ( let i = clickHereItems.length; i--; )
+		for ( let i = 0; i < clickHereItems.length; i++ )
 		{
 			clickHereItems[ i ].innerHTML += n.lang.other[ 'click-here' ];
 		}
@@ -525,7 +527,7 @@ let n = {
 		}
 
 		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-notconnected]' );
-		for ( let i = notConnecteds.length; i--; )
+		for ( let i = 0; i < notConnecteds.length; i++ )
 		{
 			notConnecteds[ i ].dataset.notconnected = n.lang.other[ 'not-connected' ];
 		}
@@ -1063,7 +1065,7 @@ let n = {
 		const changeEvent    = 'change';
 		const keyUpEvent     = 'keyup';
 
-		for ( let i = tabs.length; i--; )
+		for ( let i = 0; i < tabs.length; i++ )
 		{
 			tabs[ i ].addEventListener( clickEvent, n.onTabClick );
 			tabs[ i ].addEventListener( mouseDownEvent, n.onTabDown );
@@ -1071,19 +1073,19 @@ let n = {
 		}
 
 		// Attach event handlers to the events for changing the checkboxes for playback order in the preferences
-		for ( let i = checkboxes.length; i--; )
+		for ( let i = 0; i < checkboxes.length; i++ )
 		{
 			checkboxes[ i ].addEventListener( changeEvent, n.onCheckboxChange );
 		}
 
 		// Stop bubbling to all input fields as keyboard shortcuts may prevent user from typing in them
-		for ( let i = inputs.length; i--; )
+		for ( let i = 0; i < inputs.length; i++ )
 		{
 			inputs[ i ].addEventListener( keyDownEvent, n.stopBubbling );
 		}
 
 		// Set data-keys property for the input in which the user adds new keyboard shortcuts
-		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, e =>
+		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function( e )
 		{
 			let keys = n.getKeys( e );
 
@@ -1151,7 +1153,7 @@ let n = {
 			n.pref.input = event.target;
 		};
 
-		for ( let i = inputs.length; i--; )
+		for ( let i = 0; i < inputs.length; i++ )
 		{
 			inputs[ i ].onchange = _onChange;
 		}
@@ -1212,7 +1214,7 @@ let n = {
 			}
 		};
 
-		for ( let i = icons.length; i--; )
+		for ( let i = 0; i < icons.length; i++ )
 		{
 			icons[ i ].addEventListener( clickEvent, _onIconClick );
 		}
@@ -1420,7 +1422,7 @@ let n = {
 		const clickEvent            = 'click';
 
 		// Iterate all and remove contentaeditable attribute, remove class and event listener for name check
-		for ( let i = renamings.length; i--; )
+		for ( let i = 0; i < renamings.length; i++ )
 		{
 			let renaming = renamings[ i ];
 
@@ -1506,7 +1508,7 @@ let n = {
 
 		let buttons = document.getElementById( 'preference-performance' ).querySelectorAll( '.scrobble-action' );
 
-		for ( let i = buttons.length; i--; )
+		for ( let i = 0; i < buttons.length; i++ )
 		{
 			buttons[ i ].disabled = !enabled;
 		}
@@ -1639,7 +1641,7 @@ let n = {
 		let selects       = document.querySelectorAll( '#connect-to,#add-files-service-choose,#actions' );
 		const emptyString = '';
 
-		for ( let i = inputs.length; i--; )
+		for ( let i = 0; i < inputs.length; i++ )
 		{
 			inputs[ i ].value = emptyString;
 		}
@@ -1649,7 +1651,7 @@ let n = {
 			delete data[ key ];
 		} );
 
-		for ( let i = selects.length; i--; )
+		for ( let i = 0; i < selects.length; i++ )
 		{
 			selects[ i ].selectedIndex = 0;
 		}
@@ -1848,7 +1850,7 @@ let n = {
 		let len      = toDelete.length;
 
 		// Delete only if selected item(s) found
-		for ( let i = len; i--; )
+		for ( let i = 0; i < len; i++ )
 		{
 			let selected = toDelete[ i ];
 			selected.parentNode.removeChild( selected );
@@ -1958,7 +1960,7 @@ let n = {
 		const mouseDownEvent = 'mousedown';
 		const dblClickEvent  = 'dblclick';
 
-		for ( let i = items.length; i--; )
+		for ( let i = 0; i < items.length; i++ )
 		{
 			let item = items[ i ];
 			item.removeEventListener( mouseDownEvent, n.onAddItemDown );
@@ -1966,30 +1968,6 @@ let n = {
 		}
 
 		document.getElementById( 'add-window-files' ).innerHTML = '';
-	},
-
-	/**
-	 * Removes all items from playback's queue.
-	 */
-	//TODO: This method is not used. Do we need it?
-	emptyQueue()
-	{
-		let queue           = n.queue;
-		let item;
-		const emptyString   = '';
-		const classToRemove = 'is-in-queue';
-
-		for ( let i = queue.length; i--; )
-		{
-			item = queue[ i ];
-
-			item.querySelector( '.item-queue' ).innerHTML = emptyString;
-
-			// Remove queue mark from item
-			item.classList.remove( classToRemove );
-		}
-
-		n.queue.length = 0;
 	},
 
 	/**
@@ -2388,7 +2366,7 @@ let n = {
 				split = search.split( '?' ).pop().split( '&' );
 			}
 
-			for ( let i = split.length; i--; )
+			for ( let i = 0; i < split.length; i++ )
 			{
 				let part = split[ i ];
 
@@ -2527,7 +2505,7 @@ let n = {
 				this.classList.add( 'active' );
 
 				// Hide all tab contents
-				for ( let i = len; i--; )
+				for ( let i = 0; i < len; i++ )
 				{
 					preferences[ i ].hidden = true;
 				}
@@ -2536,13 +2514,13 @@ let n = {
 				document.getElementById( 'preference-'.concat( this.dataset.preference ) ).hidden = false;
 			};
 
-			for ( let i = menuItems.length; i--; )
+			for ( let i = 0; i < menuItems.length; i++ )
 			{
 				menuItems[ i ].addEventListener( clickEvent, _onItemClick );
 			}
 
 			// Attach preferences items events
-			for ( let i = prefTabs.length; i--; )
+			for ( let i = 0; i < prefTabs.length; i++ )
 			{
 				prefTabs[ i ].addEventListener( clickEvent, _onTabClick );
 			}
@@ -2916,7 +2894,7 @@ let n = {
 			let oldResults = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 			// Remove listeners from old results
-			for ( let i = oldResults.length; i--; )
+			for ( let i = 0; i < oldResults.length; i++ )
 			{
 				oldResults[ i ].removeEventListener( mouseDownEvent, n.onRowDown, false );
 				oldResults[ i ].removeEventListener( dblClickEvent, n.onRowDblClick, false );
@@ -2947,7 +2925,7 @@ let n = {
 				let title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
 
 				// Loop through all search terms (words)
-				for ( let j = terms.length; j--; )
+				for ( let j = 0; j < terms.length; j++ )
 				{
 					term = terms[ j ];
 
@@ -3100,7 +3078,7 @@ let n = {
 			const emptyString = '';
 
 			// Iterate through all the saved playlists
-			for ( let i = playlists.length; i--; )
+			for ( let i = 0; i < playlists.length; i++ )
 			{
 				// Shorthand for current playlist
 				let playlist = playlists[ i ];
@@ -3180,7 +3158,7 @@ let n = {
 
 		if ( cloud )
 		{
-			for ( let i = selected.length; i--; )
+			for ( let i = 0; i < selected.length; i++ )
 			{
 				n[ cloud ].loadPlaylist( selected[ i ] );
 			}
@@ -3230,7 +3208,7 @@ let n = {
 		let toSave = [];
 
 		// Iterate all items
-		for ( let i = items.length; i--; )
+		for ( let i = 0; i < items.length; i++ )
 		{
 			// Clone dataset object into a new one
 			toSave.push( Object.assign( {}, items[ i ].dataset ) );
@@ -3552,7 +3530,7 @@ let n = {
 			let items          = document.getElementById( 'add-window-files' ).querySelectorAll( '.add-item' );
 			const activeString = 'active';
 
-			for ( let i = items.length; i--; )
+			for ( let i = 0; i < items.length; i++ )
 			{
 				items[ i ].classList.remove( activeString );
 			}
@@ -4077,12 +4055,12 @@ let n = {
 				let selected        = document.querySelectorAll( '#'.concat( n.activePlaylistId, ' .selected' ) );
 
 				// Deselect all selected items from the current playlist
-				for ( let i = selected.length; i--; )
+				for ( let i = 0; i < selected.length; i++ )
 				{
 					selected[ i ].classList.remove( selectedClass );
 				}
 
-				for ( let i = toSelect.length; i--; )
+				for ( let i = 0; i < toSelect.length; i++ )
 				{
 					document.getElementById( n.activePlaylistId ).querySelector( selectorStart.concat( toSelect[ i ].dataset.url, selectorEnd ) ).classList.add( selectedClass );
 				}
@@ -4435,7 +4413,7 @@ let n = {
 				{
 					charCode = dv.getUint8( i++ );
 
-					for ( j = len; j--; )
+					for ( j = 0; j < len; j++ )
 					{
 						tag     = toGet[ j ];
 						tagCode = tag.charCodeAt( 0 );
@@ -4676,7 +4654,7 @@ let n = {
 		let len          = selectedRows.length;
 		let confirm      = 0;
 
-		for ( let i = len; i--; )
+		for ( let i = 0; i < len; i++ )
 		{
 			let row = selectedRows[ i ];
 			if ( row.classList.contains( 'confirmation' ) )
@@ -4736,7 +4714,7 @@ let n = {
 		let items = document.getElementById( 'playlists' ).querySelectorAll( '.playlist-item' );
 
 		// Re-render items
-		for ( let i = items.length; i--; )
+		for ( let i = 0; i < items.length; i++ )
 		{
 			n.renderItem( items[ i ] );
 		}
@@ -4833,7 +4811,7 @@ let n = {
 		// Remove previous rows, if any
 		let rows = document.getElementById( 'keyboard-shortcuts' ).querySelectorAll( '.va' );
 
-		for ( let i = rows.length; i--; )
+		for ( let i = 0; i < rows.length; i++ )
 		{
 			let row = rows[ i ];
 			row.parentNode.removeChild( row );
@@ -4949,7 +4927,7 @@ let n = {
 		let notFound  = true;
 
 		// Iterate all playlists
-		for ( let i = playlists.length; i--; )
+		for ( let i = 0; i < playlists.length; i++ )
 		{
 			// Replace found playlist with obj in case they are the same playlists
 			if ( playlists[ i ].id === obj.id )
@@ -4963,9 +4941,7 @@ let n = {
 		// Save the new playlist if no old one found
 		if ( notFound )
 		{
-			// unshift for legacy reasons - we are looping the playlist in reverse when rendering, thus unshift will
-			// actually come out as push
-			playlists.unshift( obj );
+			playlists.push( obj );
 		}
 
 		// Save playlists
@@ -4983,7 +4959,7 @@ let n = {
 		const id      = 'add-playlist';
 
 		// Iterate through all playlists and make objects for each of them
-		for ( let i = playlists.length; i--; )
+		for ( let i = 0; i < playlists.length; i++ )
 		{
 			let playlist = playlists[ i ];
 
@@ -5420,7 +5396,7 @@ let n = {
 		let lvl;
 		let threshold        = parseInt( document.getElementById( 'power-saver-state' ).value, 10 ) / 100;
 
-		for ( let i = levels.length; i--; )
+		for ( let i = 0; i < levels.length; i++ )
 		{
 			lvl = levels[ i ];
 			lvl.classList.remove( 'battery-level-green-full' );

@@ -193,7 +193,7 @@ let pref = {
 
 	set key( object )
 	{
-		this.settings.keys.unshift( object );
+		this.settings.keys.push( object );
 		this.save();
 	},
 
