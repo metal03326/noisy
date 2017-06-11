@@ -578,7 +578,7 @@ input::-ms-clear
 	display : none;
 }
 
-.renaming
+[contenteditable="true"]
 {
 	padding : 0 5px;
 }

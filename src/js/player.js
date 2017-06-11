@@ -1410,16 +1410,14 @@ let n = {
 	},
 
 	/**
-	 * Stops renaming of all playlists
+	 * Stops renaming of all playlists and return old name
 	 */
-	//TODO: Maybe this method should be called stopRenames, as cancel sounds like it returns old value, but it does not
-	cancelRenames()
+	stopRenames()
 	{
 		// Get all playlist being renamed (shouldn't be more than one, but to be sure we take all of them)
-		let renamings               = document.querySelectorAll( '.renaming' );
+		let renamings               = document.querySelectorAll( '[contenteditable="true"]' );
 		const contentEditableString = 'contenteditable';
 		const clickEvent            = 'click';
-		const emptyString           = '';
 
 		// Iterate all and remove contentaeditable attribute, remove class and event listener for name check
 		for ( let i = renamings.length; i--; )
@@ -1428,7 +1426,6 @@ let n = {
 
 			renaming.removeAttribute( contentEditableString );
 			document.body.removeEventListener( clickEvent, n.playlistNameCheck );
-			renaming.className = emptyString;
 		}
 	},
 
@@ -1733,13 +1730,6 @@ let n = {
 			{
 				document.getElementById( 'find-item' ).value = '';
 				n.initSearch( '' );
-			}
-			// Stop video on welcome window, if user have closed it
-			else if ( 'welcome-window' === id )
-			{
-				//TODO: What if the video is not on the first slide? Better find the iframe, get the index and use it
-				// instead
-				document.getElementById( 'welcome-window-content' ).children[ 0 ].innerHTML = n.lang.welcome[ 0 ];
 			}
 
 			// Timeout is needed for the CSS transition to finish before hiding the window
@@ -2647,7 +2637,7 @@ let n = {
 			document.getElementById( 'playlists-tabs' ).addEventListener( keyDownEvent, e =>
 			{
 				let keyCode  = e.keyCode;
-				let renaming = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] span.renaming' ) );
+				let renaming = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] [contenteditable="true"]' ) );
 
 				// Shouldn't do anything if we are not renaming
 				if ( !renaming )
@@ -2668,7 +2658,7 @@ let n = {
 
 					name.innerHTML = name.parentNode.dataset.name;
 
-					n.cancelRenames();
+					n.stopRenames();
 				}
 			} );
 
@@ -3101,7 +3091,7 @@ let n = {
 	 */
 	loadAndRenderPlaylists()
 	{
-		let playlists = [];//n.loadPlaylists();
+		let playlists = n.loadPlaylists();
 
 		// Continue only if there are playlists saved
 		if ( playlists )
@@ -4159,11 +4149,10 @@ let n = {
 	 */
 	onTabKeyDown( e )
 	{
-		let keyCode  = e.keyCode;
-		let renaming = e.target.classList.contains( 'renaming' );
+		let keyCode = e.keyCode;
 
 		if (
-			renaming &&
+			e.target.contentEditable &&
 			13 !== keyCode &&
 			27 !== keyCode
 		)
@@ -4247,7 +4236,7 @@ let n = {
 	{
 		let title  = document.querySelector( 'div[data-for="'.concat( n.activePlaylistId, '"] span' ) );
 		let name   = title.innerHTML.trim();
-		let rename = title.dataset.rename;
+		let rename = title.contentEditable;
 
 		// Remove event listener, as next time rename is issued, this event listener will be attached again
 		document.body.removeEventListener( 'click', n.playlistNameCheck );
@@ -4257,13 +4246,14 @@ let n = {
 			// Are we renaming an existing playlist?
 			if ( rename )
 			{
-				document.getElementById( n.activePlaylistId ).dataset.newname = name;
-				n.savePlaylist( document.getElementById( n.activePlaylistId ), false, true );
-				n.cancelRenames();
+				document.querySelector( '#playlists-tabs [data-for="' + n.activePlaylistId + '"]' ).dataset.name = name;
+				n.savePlaylist( document.getElementById( n.activePlaylistId ) );
+				n.stopRenames();
 
 				// Need to save preferences, as new id is generated and after refresh, there won't be an element with
-				// the old id to focus it
-				n.pref.activePlaylistId = n.activePlaylistId;
+				// the old id to focus it. Do it with delay, as we might have already pending delay, which will happen
+				// after this and erase the proper activeId from the settings.
+				n.saveActivePlaylistIdDelayed();
 			}
 			// or we are creating a new one
 			else
@@ -4271,7 +4261,7 @@ let n = {
 				if ( n.createPlaylist( name, n.activePlaylistId, true ) )
 				{
 					// Close window only if everything went well
-					n.cancelRenames();
+					n.stopRenames();
 				}
 			}
 		}
@@ -4796,9 +4786,7 @@ let n = {
 	 */
 	renamePlaylist( title )
 	{
-		title                = title.tagName ? title : this.previousElementSibling;
-		title.dataset.rename = true;
-		title.className      = 'renaming';
+		title = title.tagName ? title : this.previousElementSibling;
 
 		title.setAttribute( 'contenteditable', 'true' );
 
@@ -4906,7 +4894,7 @@ let n = {
 
 		localStorage.removeItem( 'preferences' );
 
-		n.pref.settings  = JSON.parse( JSON.stringify( n.pref.originalSettings ) );
+		n.pref.settings = JSON.parse( JSON.stringify( n.pref.originalSettings ) );
 		n.pref.process();
 
 		n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
@@ -4938,24 +4926,17 @@ let n = {
 	 * @param {HTMLElement} playlist Required. The playlist to be saved.
 	 * @param {Boolean} [shouldReturn] Optional. If passed and true,
 	 * constructed object will be returned, otherwise the playlist will be saved.
-	 * @param {Boolean} [rename] Optional. If passed, playlist will change
-	 * name of the active playlist, to the value that is read from the DOM.
 	 *
 	 * @return {Object} Object representing the playlist.
 	 */
-	savePlaylist( playlist, shouldReturn, rename )
+	savePlaylist( playlist, shouldReturn )
 	{
+		let id   = playlist.id;
+		let tab  = document.querySelector( '#playlists-tabs [data-for="' + id + '"]' );
+		let name = tab.querySelector( 'span' ).textContent;
+
 		// Object that will represent the playlist
-		let obj = {};
-
-		// Copy name
-		obj.name = playlist.dataset.name;
-
-		// Copy id
-		obj.id = playlist.id;
-
-		// Construct items
-		obj.items = n.makePlaylistItems( obj.id );
+		let obj = { id, name, items: n.makePlaylistItems( id ) };
 
 		// Return object if it should
 		if ( shouldReturn )
@@ -4963,60 +4944,28 @@ let n = {
 			return obj;
 		}
 
-		// Otherwise save playlist
-
 		// Load all playlists
-		let playlists       = n.loadPlaylists();
-		let notFound        = true;
-		let foundPosition   = -1;
-		const selectorStart = 'div[data-for="';
-		const selectorEnd   = '"]';
+		let playlists = n.loadPlaylists();
+		let notFound  = true;
 
 		// Iterate all playlists
 		for ( let i = playlists.length; i--; )
 		{
-			let playlist = playlists[ i ];
-			let id       = playlist.id;
-
 			// Replace found playlist with obj in case they are the same playlists
-			if ( id === obj.id && !rename )
+			if ( playlists[ i ].id === obj.id )
 			{
 				playlists[ i ] = obj;
 				notFound       = false;
 				break;
 			}
-			// Otherwise check if this is the old name of the playlist and remove it if it is
-			else if ( rename && id === obj.id )
-			{
-				let tab  = document.querySelector( selectorStart.concat( id, selectorEnd ) );
-				let plst = document.getElementById( id );
-
-				tab.children[ 0 ].innerHTML =
-					tab.dataset.name =
-						plst.dataset.name =
-							obj.name = plst.dataset.newname;
-
-				tab.dataset.for =
-					obj.id =
-						plst.id = 'playlist-' + +new Date();
-
-				foundPosition = i;
-
-				break;
-			}
 		}
 
 		// Save the new playlist if no old one found
-		if ( notFound || rename )
+		if ( notFound )
 		{
-			if ( 0 > foundPosition )
-			{
-				playlists.unshift( obj );
-			}
-			else
-			{
-				playlists[ foundPosition ] = obj;
-			}
+			// unshift for legacy reasons - we are looping the playlist in reverse when rendering, thus unshift will
+			// actually come out as push
+			playlists.unshift( obj );
 		}
 
 		// Save playlists
