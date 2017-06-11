@@ -76,7 +76,7 @@ let pref = {
 
 		if ( settings )
 		{
-			this.settings  = JSON.parse( settings );
+			this.settings = JSON.parse( settings );
 		}
 	},
 
@@ -312,8 +312,9 @@ let pref = {
 		else
 		{
 			delete this.settings.scrollTop;
-			this.save();
 		}
+
+		this.save();
 	},
 
 	get activePlaylistId()

@@ -105,7 +105,7 @@
   "#volume,#progress": {
     "background": "#2e2e2e"
   },
-  ".renaming": {
+  "[contenteditable=\"true\"]": {
     "background": "#fff",
     "color": "#000"
   },
