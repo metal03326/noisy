@@ -64,9 +64,6 @@ let n = {
 	// search if terms match
 	lastSearchTerm: '',
 
-	// Stores last date in which we checked for updates, because we need to check once per day
-	lastUpdateCheck: null,
-
 	// Fake cloud object for local playback
 	local: {
 		// Object containing all files from user's choise. Format is playlistId: file
@@ -119,15 +116,6 @@ let n = {
 
 			n.audio.src = url;
 			n.audio.load();
-
-			// Each time user plays something, we check for updates
-			let now = Math.floor( +new Date() / 86400000 );
-
-			if ( now > n.lastUpdateCheck )
-			{
-				applicationCache.update();
-				n.lastUpdateCheck = now;
-			}
 		},
 
 		/**
@@ -1370,45 +1358,6 @@ let n = {
 		{
 			n.changeCounterState( this.checked );
 		} );
-
-		applicationCache.addEventListener( 'updateready', () =>
-		{
-			if ( applicationCache.status === applicationCache.UPDATEREADY )
-			{
-				n.updateFound();
-				applicationCache.swapCache();
-			}
-		}, false );
-
-		applicationCache.addEventListener( 'cached', () =>
-		{
-			n.log( 'manifest-cached' );
-		}, false );
-
-		// Checking for an update. Always the first event fired in the sequence.
-		applicationCache.addEventListener( 'checking', () =>
-		{
-			n.log( 'manifest-checking' );
-		}, false );
-
-		// An update was found. The browser is fetching resources.
-		applicationCache.addEventListener( 'downloading', () =>
-		{
-			n.log( 'manifest-downloading' );
-		}, false );
-
-		// The manifest returns 404 or 410, the download failed,
-		// or the manifest changed while the download was in progress.
-		applicationCache.addEventListener( 'error', () =>
-		{
-			n.error( 'manifest-error' );
-		}, false );
-
-		// Fired after the first download of the manifest.
-		applicationCache.addEventListener( 'noupdate', () =>
-		{
-			n.log( 'manifest-noupdate' );
-		}, false );
 	},
 
 	/**
@@ -2654,9 +2603,6 @@ let n = {
 			// Calculate time needed for Noisy to load
 			let timerEnd = Date.now();
 			n.log( 'startup', timerEnd - timerStart + '<span class=\'ms\'>'.concat( n.lang.console.ms, '</span>' ) );
-
-			// Construct todays date as last check for updates, as browser does check at first automatically
-			n.lastUpdateCheck = Math.floor( +new Date() / 86400000 );
 
 			// n.googledrive.youTubeSearch( 'Metallica One' );
 
@@ -4196,15 +4142,6 @@ let n = {
 
 		// Load file from cloud service
 		n[ cloud ].play( item );
-
-		// Each time user plays something, we check for updates
-		let now = Math.floor( +new Date() / 86400000 );
-
-		if ( now > n.lastUpdateCheck )
-		{
-			applicationCache.update();
-			n.lastUpdateCheck = now;
-		}
 	},
 
 	/**
