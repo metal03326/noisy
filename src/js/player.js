@@ -1085,7 +1085,7 @@ let n = {
 		}
 
 		// Set data-keys property for the input in which the user adds new keyboard shortcuts
-		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, e =>
+		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function( e )
 		{
 			let keys = n.getKeys( e );
 
