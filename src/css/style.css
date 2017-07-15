@@ -55,7 +55,7 @@ a
 .menu-ul-li:hover,
 [data-menulistener]:hover
 {
-	opacity : 0.6;
+	opacity : .6;
 }
 
 /*End of common theme rules*/
@@ -99,27 +99,21 @@ body
 
 #header-left > div:first-child
 {
-	padding : 6px 12px;
+	padding : .15em 0;
 }
 
 .nav-inputs-li
 {
-	cursor : default;
-}
-
-.nav-inputs-li,
-#header-left
-{
+	cursor  : default;
 	padding : 2px;
 }
 
 #header-left
 {
-	width     : 62px;
-	height    : 56px;
-	font-size : 36px;
+	position  : relative;
 	z-index   : 1;
 	outline   : none;
+	font-size : 32px;
 }
 
 #color-bulb
@@ -132,7 +126,6 @@ body
 {
 	margin  : 0;
 	padding : 0;
-	height  : 26px;
 }
 
 .playlists-tabs-li
@@ -154,9 +147,21 @@ body
 	flex : 1 1 auto;
 }
 
-.one-tab #playlists-tabs
+.one-tab #playlists-tabs,
+.one-tab [data-icon="#"]:last-child,
+body:not(.one-tab) [data-icon="#"]:not(:last-child)
 {
 	display : none;
+}
+
+.one-tab #header-left
+{
+	font-size : 14px;
+}
+
+.one-tab #the-menu
+{
+	font-size : 16px;
 }
 
 .playlist-item
@@ -474,7 +479,7 @@ button,
 #volume,
 #progress
 {
-	margin-top : 3px;
+	margin : 2px 2px 0 0;
 }
 
 .select
@@ -591,11 +596,6 @@ input::-ms-clear
 	top      : 0;
 }
 
-#nav-progress .nav-inputs-li
-{
-	width : 100%;
-}
-
 .controls
 {
 	width        : 260px;
@@ -704,7 +704,7 @@ section:focus
 
 h4
 {
-	font-size : 0.83em;
+	font-size : .83em;
 }
 
 h5
@@ -753,14 +753,14 @@ article + #playlist-hints
 
 #the-menu
 {
+	font-size  : 36px;
 	visibility : hidden;
 	opacity    : 0;
-	width      : 66px;
+	width      : 100%;
 	z-index    : 2000;
 	position   : absolute;
 	background : inherit;
 	padding    : 0;
-	margin     : 3px 0 5px -2px;
 	text-align : center;
 	transition : visibility .3s linear;
 }
@@ -783,14 +783,8 @@ article + #playlist-hints
 
 .menu-ul-li
 {
-	white-space : nowrap;
-	width       : 62px;
-	cursor      : default;
-	display     : inline-block;
-	position    : relative;
-	outline     : none;
-	padding     : 0;
-	font-size   : inherit;
+	outline   : none;
+	font-size : inherit;
 }
 
 .menu-ul-li:last-child
@@ -1191,7 +1185,9 @@ article + #playlist-hints
 
 #battery-level-menu-handle
 {
-	margin   : 5px 0;
+	width    : 2em;
+	height   : 1.15em;
+	margin   : .25em 0;
 	position : relative;
 }
 
@@ -1199,21 +1195,22 @@ article + #playlist-hints
 {
 	width        : 0;
 	height       : 0;
-	margin       : 2px;
+	margin       : 2px auto;
 	background   : currentColor;
-	border-top   : 8px solid transparent;
-	border-right : 32px solid transparent;
+	border-top   : .25em solid transparent;
+	border-right : 1em solid transparent;
 }
 
 #battery-cap
 {
-	width      : 12px;
-	height     : 5px;
+	width      : .4em;
+	height     : .2em;
 	background : currentColor;
 	position   : absolute;
-	top        : 3px;
-	left       : 24px;
+	top        : .1em;
+	left       : .8em;
 	display    : none;
+	z-index    : -1;
 }
 
 .cap #battery-cap
@@ -1291,10 +1288,14 @@ article + #playlist-hints
 
 #mark50
 {
-	position : absolute;
-	top      : 10%;
-	left     : 50%;
-	height   : 50%;
+	position       : absolute;
+	top            : 0;
+	left           : 0;
+	bottom         : 0;
+	right          : 0;
+	text-align     : center;
+	font-size      : 18px;
+	pointer-events : none;
 }
 
 #youtube-search-window-content

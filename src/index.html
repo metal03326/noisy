@@ -97,11 +97,11 @@
                     <div id="volume-progress"></div>
                 </div>
             </div>
-            <div id="nav-progress" class="flex-item-full">
-                <div class="nav-inputs-li">
-                    <div id="progress">
-                        <div id="playback-progress"></div>
-                        <i id="mark50" title="50%">|</i></div>
+            <div id="progress" class="flex-item-full">
+                <div id="playback-progress"></div>
+                <div id="mark50" title="50%" class="flex-column">
+                    <div>|</div>
+                    <div class="flex-item-full"></div>
                 </div>
             </div>
             <label class="select top-bar">
@@ -113,7 +113,7 @@
                     <option id="playback-order-stop-after-current"></option>
                 </select>
             </label>
-            <div data-menulistener="showSearch" data-icon="#" hidden></div>
+            <div data-menulistener="showSearch" data-icon="#"></div>
             <div id="color-bulb" data-menulistener="showPreferences" data-icon="$"></div>
         </div>
         <div class="flex">
