@@ -514,10 +514,10 @@ let n = {
 			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher' ];
 		}
 
-		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-notconnected]' );
+		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-cloud]:not([data-cloud*="local"])' );
 		for ( let i = 0; i < notConnecteds.length; i++ )
 		{
-			notConnecteds[ i ].dataset.notconnected = n.lang.other[ 'not-connected' ];
+			notConnecteds[ i ].title = n.lang.other[ 'not-connected' ];
 		}
 
 		// Refresh window title
@@ -1498,6 +1498,8 @@ let n = {
 					n.log( 'connected', cloud.name.concat( as ) );
 
 					document.getElementById( 'connected-'.concat( cloud.codeName ) ).innerHTML = as;
+
+					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud.codeName + '"]' ).removeAttribute( 'title' );
 				}, cloud =>
 				{
 					document.getElementById( 'connected-'.concat( cloud.codeName ) ).innerHTML = n.lang.console.no;
@@ -1509,17 +1511,17 @@ let n = {
 						accessToken: null
 					};
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud.codeName + '"]' ).dataset.notconnected = n.lang.other[ 'not-connected' ];
+					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud.codeName + '"]' ).title = n.lang.other[ 'not-connected' ];
 				} );
 			}
 			else
 			{
-				// Visualy disable the icon in file chooser for that cloud
+				// Visually disable the icon in file chooser for that cloud
 				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud + '"]' );
 
 				if ( icon )
 				{
-					icon.dataset.notconnected = n.lang.other[ 'not-connected' ];
+					icon.title = n.lang.other[ 'not-connected' ];
 				}
 				// Special case for Last.fm - we don't have an icon to disable, but we do have a checkbox in the
 				// preferences that needs disabling
@@ -5363,7 +5365,6 @@ let n = {
 
 		if ( !n.battery.charging && n.pref.powerSaverEnabled )
 		{
-			batteryContainer.classList.add( 'cap' );
 			batteryContainer.setAttribute( 'title', Math.floor( n.battery.level * 100 ) + '%' );
 
 			if ( 1 >= level && .83 <= level )
@@ -5414,7 +5415,6 @@ let n = {
 		}
 		else
 		{
-			batteryContainer.classList.remove( 'cap' );
 			batteryContainer.removeAttribute( 'title' );
 		}
 	},

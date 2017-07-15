@@ -74,21 +74,6 @@ body
 	min-width   : 800px;
 }
 
-.menu-ul-li:hover:after,
-.cap:hover:after,
-.cloud-icon[data-notconnected]:hover:after
-{
-	top         : 10px;
-	content     : attr(title);
-	display     : block;
-	left        : 65px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 16px;
-}
-
 .nav-ul-a,
 .control-ul-a
 {
@@ -617,21 +602,9 @@ section:focus
 	position : relative;
 }
 
-.cloud-icon[data-notconnected]
+.cloud-icon[title]:not(:hover)
 {
 	opacity : .2;
-}
-
-.cloud-icon[data-notconnected]:hover
-{
-	opacity : 1;
-}
-
-.cloud-icon[data-notconnected]:hover:after
-{
-	top     : auto;
-	content : attr(data-notconnected);
-	left    : -60px;
 }
 
 .local-icon,
@@ -969,58 +942,6 @@ article + #playlist-hints
 	position : relative;
 	top      : 3px;
 	left     : 2px;
-}
-
-#preference-general-help:hover:after
-{
-	bottom      : 25px;
-	content     : attr(title);
-	display     : block;
-	left        : 5px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
-}
-
-#preference-language-help:hover:after
-{
-	top         : 20px;
-	content     : attr(title);
-	display     : block;
-	left        : 0;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
-}
-
-#preference-powersaver-help:hover:after
-{
-	top         : 25px;
-	content     : attr(title);
-	display     : block;
-	left        : 3px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
-}
-
-#preference-dev-channel-help:hover:after
-{
-	bottom      : 0;
-	content     : attr(title);
-	display     : block;
-	left        : 20px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
 }
 
 #local-files-form
