@@ -24,14 +24,15 @@
 
 [data-icon="w"]:before
 {
-	content       : '';
-	display       : block;
-	border-radius : 50%;
-	width         : 1em;
-	height        : 1em;
-	border        : .25rem solid;
-	margin        : auto;
-	animation     : spin 1s infinite linear;
+	content          : '';
+	display          : block;
+	border-radius    : 50%;
+	width            : 1em;
+	height           : 1em;
+	border           : .25rem solid rgba(255, 255, 255, .2);
+	border-top-color : #fff;
+	margin           : auto;
+	animation        : spin 1s infinite linear;
 }
 
 /* Special case for delete confirmation */
@@ -95,10 +96,11 @@ body
 
 #header-left
 {
-	position  : relative;
-	z-index   : 1;
-	outline   : none;
-	font-size : 32px;
+	position   : relative;
+	z-index    : 1;
+	outline    : none;
+	font-size  : 32px;
+	background : inherit;
 }
 
 #color-bulb
@@ -170,6 +172,7 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 	height       : 100%;
 	padding-left : 5px;
 	text-align   : center;
+	border-left  : 1px solid currentColor;
 }
 
 .playlist-item,
@@ -204,6 +207,7 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 	pointer-events : all;
 	width          : 600px;
 	height         : 300px;
+	border         : 2px solid;
 }
 
 :root .preferences-item
@@ -224,6 +228,11 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 #preferences-container > div
 {
 	flex : 1 1 auto;
+}
+
+#preferences-tabs
+{
+	border-right : 1px solid;
 }
 
 .window-title-span
@@ -329,7 +338,7 @@ button,
 #window-close
 {
 	padding-right : 5px;
-	font-size     : 22px;
+	font-size     : 32px;
 }
 
 #window-content
@@ -353,7 +362,8 @@ button,
 
 #window-buttons
 {
-	font-size : 16px;
+	font-size  : 16px;
+	border-top : 1px solid;
 }
 
 .scroll-y
@@ -514,7 +524,7 @@ button,
 
 .bold
 {
-	font-weight : bold;
+	font-weight : 700;
 
 }
 
@@ -541,7 +551,7 @@ details ul
 
 summary
 {
-	font-weight : bold;
+	font-weight : 700;
 }
 
 input:required:invalid,
@@ -570,7 +580,9 @@ input::-ms-clear
 
 [contenteditable="true"]
 {
-	padding : 0 5px;
+	padding    : 0 5px;
+	background : #fff;
+	color      : #000;
 }
 
 .inputs
@@ -662,6 +674,7 @@ section:focus
 	height     : 25px;
 	font-size  : 20px;
 	padding    : 0;
+	border     : 2px solid;
 }
 
 .center-vertically
@@ -740,7 +753,7 @@ article + #playlist-hints
 
 #footer a
 {
-	font-weight : bold;
+	font-weight : 700;
 }
 
 [data-menulistener]
@@ -763,6 +776,11 @@ article + #playlist-hints
 .menu-ul-li:last-child
 {
 	margin-bottom : 2px;
+}
+
+#header
+{
+	background : inherit;
 }
 
 #header-left:focus #the-menu
@@ -823,7 +841,7 @@ article + #playlist-hints
 
 #connected-table tr td:first-child
 {
-	font-weight   : bold;
+	font-weight   : 700;
 	padding-right : 5px;
 	white-space   : nowrap;
 }
@@ -861,7 +879,7 @@ article + #playlist-hints
 #faq-title
 {
 	margin      : 0 0 5px 5px;
-	font-weight : bold;
+	font-weight : 700;
 }
 
 .preference-format-input
@@ -875,26 +893,9 @@ article + #playlist-hints
 	text-align : right;
 }
 
-#preference-general-help,
-#preference-language-help,
-#preference-powersaver-help,
-#preference-dev-channel-help
+.help
 {
 	cursor : help;
-}
-
-#preference-dev-channel-help
-{
-	position : relative;
-	top      : 3px;
-	left     : 0;
-}
-
-#preference-general-help
-{
-	font-weight : bold;
-	margin-top  : 10px;
-	display     : inline-block;
 }
 
 #preference-general,
@@ -934,7 +935,9 @@ article + #playlist-hints
 
 #console-title
 {
-	padding-left : 5px;
+	padding-left  : 5px;
+	border-bottom : 1px solid;
+	border-top    : 1px solid;
 }
 
 #preference-language-help
@@ -955,6 +958,11 @@ article + #playlist-hints
 	padding    : 25px;
 	text-align : center;
 	margin-top : 5px;
+}
+
+#drop-zone:hover
+{
+	border-color : #0a0;
 }
 
 #file-input-methods
@@ -996,12 +1004,13 @@ article + #playlist-hints
 
 #loading-folder-contents
 {
-	position  : absolute;
-	top       : 0;
-	bottom    : 0;
-	left      : 0;
-	right     : 0;
-	font-size : 72px;
+	position   : absolute;
+	top        : 0;
+	bottom     : 0;
+	left       : 0;
+	right      : 0;
+	font-size  : 72px;
+	background : rgba(255, 255, 255, .5);
 }
 
 .align-top
@@ -1018,7 +1027,7 @@ article + #playlist-hints
 #about-used-resources,
 #about-follow-us
 {
-	font-weight : bold;
+	font-weight : 700;
 }
 
 .slide-text
@@ -1264,7 +1273,7 @@ article + #playlist-hints
 .youtube-item-name
 {
 	display     : inline-block;
-	font-weight : bold;
+	font-weight : 700;
 	font-size   : 20px;
 	margin-top  : 7px;
 }
@@ -1345,4 +1354,30 @@ article + #playlist-hints
 i
 {
 	font-style : normal;
+}
+
+.nb-update
+{
+	color : #22da16;
+}
+
+.nb-warn
+{
+	color : #f77814;
+}
+
+.nb-error
+{
+	color : #da1607;
+}
+
+#playlists .can-not-play
+{
+	color      : #fff;
+	background : #950f05;
+}
+
+.exists .required-item, .invalid .required-item
+{
+	box-shadow : 0 0 5px rgba(255, 0, 0, .75)
 }

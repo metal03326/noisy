@@ -71,9 +71,6 @@
     "background": "#FDBF73",
     "border-color": "#FCA335"
   },
-  ".menu-ul-li": {
-    "background": "#FCA335"
-  },
   "#window-content": {
     "background": "#FCC27B"
   },
@@ -97,14 +94,5 @@
   },
   "#translation-contributors": {
     "background": "#FFD8A6"
-  },
-  ".tooltip:hover:after": {
-    "background": "rgba(231,148,41,.9)"
-  },
-  ".tooltip:hover:before": {
-    "border-color": "rgba(231,148,41,.9) transparent"
-  },
-  "#footer-counter": {
-    "border-color": "#FCCA7F"
   }
 }

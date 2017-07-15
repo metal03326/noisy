@@ -514,7 +514,7 @@ let n = {
 			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher' ];
 		}
 
-		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( 'button[data-cloud]:not([data-cloud*="local"])' );
+		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( '[data-cloud]:not([data-cloud*="local"])' );
 		for ( let i = 0; i < notConnecteds.length; i++ )
 		{
 			notConnecteds[ i ].title = n.lang.other[ 'not-connected' ];
@@ -1499,7 +1499,7 @@ let n = {
 
 					document.getElementById( 'connected-'.concat( cloud.codeName ) ).innerHTML = as;
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud.codeName + '"]' ).removeAttribute( 'title' );
+					document.getElementById( 'add-window-cloud-chooser' ).querySelector( '[data-cloud="' + cloud.codeName + '"]' ).removeAttribute( 'title' );
 				}, cloud =>
 				{
 					document.getElementById( 'connected-'.concat( cloud.codeName ) ).innerHTML = n.lang.console.no;
@@ -1511,13 +1511,13 @@ let n = {
 						accessToken: null
 					};
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud.codeName + '"]' ).title = n.lang.other[ 'not-connected' ];
+					document.getElementById( 'add-window-cloud-chooser' ).querySelector( '[data-cloud="' + cloud.codeName + '"]' ).title = n.lang.other[ 'not-connected' ];
 				} );
 			}
 			else
 			{
 				// Visually disable the icon in file chooser for that cloud
-				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( 'button[data-cloud="' + cloud + '"]' );
+				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( '[data-cloud="' + cloud + '"]' );
 
 				if ( icon )
 				{
@@ -1738,9 +1738,9 @@ let n = {
 		tab.dataset.name = name;
 		tab.className    = 'playlists-tabs-li flex';
 		tab.tabIndex     = 0;
-		tab.innerHTML    = '<span>'.concat( name, '</span> <a href="javascript:;" class="playlist-edit"><span data-icon="!"></span></a> <a href="javascript:;" class="playlist-remove">&times;</a>' );
+		tab.innerHTML    = '<span>'.concat( name, '</span> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>' );
 
-		let triggers = tab.querySelectorAll( 'a' );
+		let triggers = tab.querySelectorAll( 'div' );
 
 		triggers[ 0 ].addEventListener( 'click', n.renamePlaylist );
 		triggers[ 1 ].addEventListener( 'click', n.deletePlaylist );

@@ -72,9 +72,6 @@
     "background": "#FFCDE3",
     "border-color": "#FFB5D6"
   },
-  ".menu-ul-li": {
-    "background": "#FFB5D6"
-  },
   "#window-content": {
     "background": "#FDCDE3"
   },
@@ -96,17 +93,8 @@
   "#translation-contributors": {
     "background": "#FCDDEB"
   },
-  ".tooltip:hover:after": {
-    "background": "rgba(255,155,195,.92)"
-  },
-  ".tooltip:hover:before": {
-    "border-color": "rgba(255,155,195,.92) transparent"
-  },
   "#init-search": {
     "background": "#FFF0F8"
-  },
-  "#footer-counter": {
-    "border-color": "#FF94C4"
   },
   ".selected.is-in-queue .item-queue": {
     "color": "#fff"

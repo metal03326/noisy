@@ -178,7 +178,7 @@
                 <span id="welcome-window-title" class="window-title-span"></span>
                 <span id="local-window-title" class="window-title-span"></span>
                 <span id="youtube-search-window-title" class="window-title-span"></span>
-                <button id="window-close" class="link">&times;</button>
+                <div id="window-close">&times;</div>
             </div>
             <div id="window-content" class="flex-item-full flex scroll-y">
                 <div id="preferences-window-content" class="flex-column">
@@ -249,7 +249,7 @@
                                         <span id="preference-general-hide-tabs"></span>
                                     </label>
                                 </div>
-                                <i id="preference-general-help"><span data-icon="H"></span></i>
+                                <i id="preference-general-help" class="help" data-icon="H"></i>
                             </div>
                             <div id="preference-appearance" class="flex" hidden>
                                 <div class="flex-column">
@@ -284,7 +284,7 @@
                                                 <option value="en">English</option>
                                             </select>
                                         </label>
-                                        <i id="preference-language-help"><span data-icon="H"></span></i>
+                                        <i id="preference-language-help" class="help" data-icon="H"></i>
                                     </div>
                                     <div id="translation-contributors">
                                         <div class="translation-contributor">
@@ -341,9 +341,7 @@
                                 <label>
                                     <input id="preference-enable-powersaver" type="checkbox"/>
                                     <span id="preference-performance-powersaver"></span>
-                                    <i id="preference-powersaver-help">
-                                        <span data-icon="H"></span>
-                                    </i>
+                                    <i id="preference-powersaver-help" class="help" data-icon="H"></i>
                                 </label>
                                 <div>
                                     <span id="preference-performance-powersaver-threshold"></span>
@@ -506,18 +504,18 @@
                         <div class="flex-column">
                             <div class="flex-item-full"></div>
                             <div>
-                                <button class="link cloud-icon dropbox-icon" data-cloud="dropbox">
+                                <div class="cloud-icon dropbox-icon" data-cloud="dropbox">
                                     <span data-icon="D" class="icon"></span>
                                     <span id="dropbox-text">Dropbox</span>
-                                </button>
-                                <button class="link cloud-icon googledrive-icon" data-cloud="googledrive">
+                                </div>
+                                <div class="cloud-icon googledrive-icon" data-cloud="googledrive">
                                     <span data-icon="A" class="icon"></span>
                                     <span id="google-drive-text">Google Drive</span>
-                                </button>
-                                <button class="link cloud-icon local-icon" data-cloud="local">
+                                </div>
+                                <div class="cloud-icon local-icon" data-cloud="local">
                                     <span data-icon="5" class="icon"></span>
                                     <span id="local-text"></span>
-                                </button>
+                                </div>
                             </div>
                             <div class="flex-item-full"></div>
                         </div>
@@ -553,7 +551,7 @@
                     <button onclick="this.parentNode.parentNode.classList.add('confirmation');"
                             id="button-reset-preferences"></button>
                     <button id="channel-switcher" onclick="n.switchChannel();"></button>
-                    <i id="preference-dev-channel-help"><span data-icon="H"></span></i>
+                    <i id="preference-dev-channel-help" class="help" data-icon="H"></i>
                 </span>
                         <div class="confirm">
                             <span id="confirmation"></span>

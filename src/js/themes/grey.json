@@ -66,9 +66,6 @@
     "background": "#E7E7E7",
     "border-color": "#949494"
   },
-  ".menu-ul-li": {
-    "background": "#949494"
-  },
   "#window-content": {
     "background": "#CECECE"
   },
@@ -83,13 +80,6 @@
   },
   "#translation-contributors": {
     "background": "#E2E2E2"
-  },
-  ".tooltip:hover:after": {
-    "background": "rgba(255,255,255,.9)",
-    "color": "#313138"
-  },
-  ".tooltip:hover:before": {
-    "border-color": "rgba(255,255,255,.9) transparent"
   },
   "#init-search": {
     "background": "#E7E7E7"

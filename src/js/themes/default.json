@@ -17,20 +17,8 @@
     "color": "#fff",
     "background": "#950f05"
   },
-  ".exists .required-item,.invalid .required-item": {
-    "box-shadow": "0 0 5px rgba(255, 0, 0, .75)"
-  },
   ".add-item.active span": {
     "color": "#ddd"
-  },
-  ".nb-update": {
-    "color": "#22da16"
-  },
-  ".nb-warn": {
-    "color": "#f77814"
-  },
-  ".nb-error": {
-    "color": "#da1607"
   },
   "details a": {
     "color": "#144cc2"
@@ -40,9 +28,6 @@
   },
   ".select.top-bar select": {
     "background": "#666"
-  },
-  "#drop-zone.hover": {
-    "border-color": "#0a0"
   },
   ":root .preferences-item.active": {
     "background": "#666",
@@ -66,14 +51,11 @@
   ".playlist": {
     "background": "#313131"
   },
-  "#footer-counter": {
-    "border-left": "1px solid #666"
-  },
   ".window": {
-    "border": "2px solid #757575"
+    "border-color": "#757575"
   },
   "#preferences-tabs": {
-    "border-right": "1px solid #999",
+    "border-color": "#999",
     "background": "#bbb"
   },
   ":root .preferences-item": {
@@ -93,7 +75,7 @@
     "background": "#aaa"
   },
   "#window-buttons": {
-    "border-top": "1px solid #999",
+    "border-color": "#999",
     "background": "#ccc"
   },
   ".selected .item-queue": {
@@ -105,24 +87,17 @@
   "#volume,#progress": {
     "background": "#2e2e2e"
   },
-  "[contenteditable=\"true\"]": {
-    "background": "#fff",
-    "color": "#000"
-  },
   "#add-playlist": {
-    "border": "2px solid #1e2328",
+    "border-color": "#1e2328",
     "background": "#666"
   },
   "h6": {
     "color": "#666"
   },
-  ".menu-ul-li": {
-    "background": "#1e2328"
-  },
   "#translation-contributors": {
     "background": "#ccc"
   },
-  "#preference-general-help,#preference-language-help,#preference-powersaver-help,#preference-dev-channel-help": {
+  ".help": {
     "color": "#144cc2"
   },
   "#keyboard-shortcuts button:not(#shortcut-add)": {
@@ -130,34 +105,11 @@
   },
   "#console-title": {
     "color": "#000",
-    "border-bottom": "1px solid #000",
-    "border-top": "1px solid #999",
+    "border-bottom-color": "#000",
+    "border-top-color": "#999",
     "background": "#ccc"
-  },
-  "#preference-general-help:hover:after": {
-    "background": "rgba(0, 0, 0, .8)",
-    "color": "#fff"
-  },
-  "#preference-language-help:hover:after": {
-    "background": "rgba(0, 0, 0, .8)",
-    "color": "#fff"
-  },
-  "#preference-powersaver-help:hover:after": {
-    "background": "rgba(0, 0, 0, .8)",
-    "color": "#fff"
-  },
-  "#preference-dev-channel-help:hover:after": {
-    "background": "rgba(0, 0, 0, .8)",
-    "color": "#fff"
-  },
-  "#loading-folder-contents": {
-    "background": "rgba(255, 255, 255, .5)"
   },
   "#connected-table tr td:first-child": {
     "color": "#333"
-  },
-  "[data-icon=\"w\"]:before": {
-    "border-color": "rgba(255,255,255,.2)",
-    "border-top-color": "#fff"
   }
 }

@@ -1,105 +1,103 @@
 {
   "body": {
     "color": "#fff",
-    "background": "#CE4040"
+    "background": "#ce4040"
   },
   ".playlists-tabs-li": {
-    "background": "#BD3636"
+    "background": "#bd3636"
   },
   ".playlists-tabs-li.active": {
-    "background": "#F18282"
+    "background": "#f18282"
   },
   ".playlist": {
-    "background": "#FFBEBE"
+    "background": "#ffbebe"
   },
   ".playlist-item:nth-of-type(odd)": {
-    "background": "#F18282"
+    "background": "#f18282"
   },
   ".playlist-item:nth-of-type(even)": {
-    "background": "#F56E6E"
+    "background": "#f56e6e"
   },
   ".playlist-item.selected": {
-    "background": "#EC3C3C"
+    "background": "#ec3c3c"
   },
   ".window": {
-    "border-color": "#C53232"
+    "border-color": "#c53232"
   },
   "#preferences-tabs": {
-    "border-color": "#F57A7A",
-    "background": "#FAA3A3"
+    "border-color": "#f57a7a",
+    "background": "#faa3a3"
+  },
+  ":root .preferences-item": {
+    "color": "#000"
   },
   ":root .preferences-item.active": {
-    "background": "#F55252"
+    "background": "#f55252",
+    "color": "#fff"
   },
   "#find-window-results": {
-    "background": "#FCDCDC"
+    "background": "#fcdcdc"
   },
   "#window-title": {
-    "background": "#C53232"
+    "background": "#c53232"
   },
   "#window-buttons": {
-    "border-color": "#F57A7A",
-    "background": "#FFB0B0"
+    "border-color": "#f57a7a",
+    "background": "#ffb0b0"
   },
   "#volume,#progress": {
-    "background": "#FCDCDC"
+    "background": "#fcdcdc"
   },
   "#volume-progress,#playback-progress": {
-    "background": "#F18282"
+    "background": "#f18282"
   },
   ".add-item.active": {
-    "background": "#F18282"
+    "background": "#f18282"
   },
   ".add-item span": {
-    "color": "#CC1A1A"
+    "color": "#cc1a1a"
   },
   ".add-item.active span": {
-    "color": "#F5DEDE"
+    "color": "#f5dede"
   },
   "h6": {
-    "color": "#B31212"
+    "color": "#b31212"
   },
   "#console-title": {
-    "border-bottom": "1px solid #000",
-    "background": "#FFB0B0",
+    "border-bottom-color": "#000",
+    "background": "#ffb0b0",
     "color": "#000",
-    "border-top-color": "#F57A7A"
+    "border-top-color": "#f57a7a"
   },
   "#add-playlist": {
-    "background": "#F55252",
-    "border-color": "#CE4040"
-  },
-  ".menu-ul-li": {
-    "background": "#CE4040"
+    "background": "#f55252",
+    "border-color": "#ce4040"
   },
   "#window-content": {
     "background": "#F18080"
   },
   ".select select": {
-    "background": "#F7D4D4"
-  },
-  ".select.top-bar select": {
-    "background": "#F55252"
+    "background": "#f55252"
   },
   "#connected-table tr td:first-child": {
     "color": "#CC1A1A"
   },
   "button,.button": {
-    "background": "#F7D4D4"
+    "background": "#f7d4d4"
   },
   "#keyboard-shortcuts button:not(#shortcut-add)": {
-    "color": "#F55252"
+    "color": "#f55252"
   },
   "#translation-contributors": {
-    "background": "#FFB0B0"
+    "background": "#ffb0b0"
   },
-  ".tooltip:hover:after": {
-    "background": "rgba(162,21,21,.9)"
+  ".help": {
+    "color": "#c53232"
   },
-  ".tooltip:hover:before": {
-    "border-color": "rgba(162,21,21,.9) transparent"
+  ".selected .item-queue": {
+    "color": "#000"
   },
-  "#footer-counter": {
-    "border-color": "#F07676"
+  "a,.link": {
+    "color": "#144cc2"
   }
 }
