@@ -1130,49 +1130,48 @@ article + #playlist-hints
 	position   : absolute;
 	top        : .1em;
 	left       : .8em;
-	display    : none;
 	z-index    : -1;
 }
 
-.cap #battery-cap
+#battery-level-menu-handle:not([title]) #battery-cap
 {
-	display : block;
+	display : none;
 }
 
 .battery-level-green-full
 {
-	border-top   : 8px solid lightgreen;
-	border-right : 32px solid lightgreen;
+	border-top-color   : #90ee90;
+	border-right-color : #90ee90;
 }
 
 .battery-level-green-half
 {
-	border-top   : 8px solid transparent;
-	border-right : 32px solid lightgreen;
+	border-top-color   : transparent;
+	border-right-color : #90ee90;
 }
 
 .battery-level-orange-full
 {
-	border-top   : 8px solid #ffb79a;
-	border-right : 32px solid #ffb79a;
+	border-top-color   : #ffb79a;
+	border-right-color : #ffb79a;
 }
 
 .battery-level-orange-half
 {
-	border-top   : 8px solid transparent;
-	border-right : 32px solid #ffb79a;
+	border-top-color   : transparent;
+	border-right-color : #ffb79a;
 }
 
 .battery-level-red-full
 {
-	border-top   : 8px solid #ffa39c;
-	border-right : 32px solid #ffa39c;
+	border-top-color   : #ffa39c;
+	border-right-color : #ffa39c;
 }
 
 .battery-level-red-half
 {
-	border-top   : 8px solid transparent;
-	border-right : 32px solid #ffa39c;
+	border-top-color   : transparent;
+	border-right-color : #ffa39c;
 }
 
 #console-content div:last-child
