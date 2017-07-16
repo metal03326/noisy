@@ -235,6 +235,7 @@ article + #playlist-hints,
 	pointer-events  : none;
 	align-items     : center;
 	justify-content : center;
+	z-index         : 1;
 }
 
 .window
@@ -964,9 +965,13 @@ h6
 	left            : 0;
 	right           : 0;
 	font-size       : 72px;
-	background      : rgba(255, 255, 255, .5);
 	align-items     : center;
 	justify-content : center;
+}
+
+#loading-folder-contents:not(.visibility-hidden) + #add-window-files
+{
+	overflow : hidden;
 }
 
 #about-resources,

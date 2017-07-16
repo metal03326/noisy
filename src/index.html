@@ -34,6 +34,7 @@
     <meta name="msapplication-TileImage" content="./img/mstile-144x144.png"/>
     <style id="theme"></style>
     <style id="animations"></style>
+    <style id="blur"></style>
 </head>
 <body class="flex-column">
 <div id="splash" class="flex-column"
@@ -63,102 +64,6 @@
     </div>
 </div>
 <div id="themes-style-tag-container"></div>
-<header id="header" class="flex">
-    <div id="header-left" tabindex="0">
-        <div id="battery-level-menu-handle">
-            <div id="battery-cap"></div>
-            <div id="battery-level-3" class="battery-level"></div>
-            <div id="battery-level-2" class="battery-level"></div>
-            <div id="battery-level-1" class="battery-level"></div>
-        </div>
-        <div id="the-menu">
-            <div id="connect" data-menulistener="connect" class="menu-ul-li" tabindex="0" data-icon="<"></div>
-            <div id="showAddFileFolder" data-menulistener="showAddFileFolder" class="menu-ul-li" tabindex="0"
-                 data-icon="="></div>
-            <div id="showSavePlaylist" data-menulistener="showSavePlaylist" class="menu-ul-li" tabindex="0"
-                 data-icon="9"></div>
-            <div id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0"
-                 data-icon="8"></div>
-            <div id="showAbout" data-menulistener="showAbout" class="menu-ul-li" tabindex="0" data-icon=";"></div>
-            <div id="showWelcome" data-menulistener="showWelcome" class="menu-ul-li" tabindex="0" data-icon="6"></div>
-        </div>
-    </div>
-    <div class="flex-column flex-item-full">
-        <div class="flex">
-            <div id="trigger-stop" data-menulistener="stop" data-icon="v"></div>
-            <div id="trigger-play" data-menulistener="play" data-icon="x"></div>
-            <div id="trigger-pause" data-menulistener="playPause" data-icon="c"></div>
-            <div id="trigger-prev" data-menulistener="prev" data-icon="C"></div>
-            <div id="trigger-next" data-menulistener="next" data-icon="B"></div>
-            <div id="trigger-next-random" data-menulistener="nextRandom" data-icon="s"></div>
-            <div id="nav-volume" class="flex">
-                <div id="trigger-mute" data-menulistener="toggleMute" data-icon="0"></div>
-                <div id="volume">
-                    <div id="volume-progress"></div>
-                </div>
-            </div>
-            <div id="progress" class="flex-item-full">
-                <div id="playback-progress"></div>
-                <div id="mark50" title="50%" class="flex">
-                    <div>|</div>
-                </div>
-            </div>
-            <label class="select top-bar">
-                <select id="playback-order">
-                    <option id="playback-order-default"></option>
-                    <option id="playback-order-repeat-playlist"></option>
-                    <option id="playback-order-repeat-track"></option>
-                    <option id="playback-order-random"></option>
-                    <option id="playback-order-stop-after-current"></option>
-                </select>
-            </label>
-            <div data-menulistener="showSearch" data-icon="#"></div>
-            <div id="color-bulb" data-menulistener="showPreferences" data-icon="$"></div>
-        </div>
-        <div class="flex">
-            <div id="playlists-tabs" class="flex flex-item-full">
-                <div id="add-playlist" class="playlists-tabs-li">
-                    <i data-icon="="></i>
-                </div>
-            </div>
-            <div data-menulistener="showSearch" data-icon="#"></div>
-        </div>
-    </div>
-</header>
-<div id="playlists-wrapper" class="flex flex-item-full">
-    <div id="playlists" class="flex flex-item-full">
-        <div id="playlist-hints" class="flex-item-full flex-column playlist scroll-y">
-            <div class="flex">
-                <div id="main-menu-hint-icon" data-icon="@"></div>
-                <div class="flex flex-item-full">
-                    <div>
-                                <span id="add-playlist-hint-icon" class="rotate90">
-                                    <span data-icon="?"></span>
-                                </span>
-                        <span id="add-playlist-hint-text"></span>
-                    </div>
-                    <div class="flex-item-full"></div>
-                    <div>
-                        <span id="search-playlist-hint-text"></span>
-                        <span id="search-playlist-hint-icon" class="rotate270">
-                                    <span data-icon="7"></span>
-                                </span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex-item-full">
-                <span id="main-menu-hint-text"></span>
-            </div>
-        </div>
-    </div>
-</div>
-<footer id="footer" class="flex">
-    <div class="flex flex-item-full">
-        <div id="footer-text" class="flex-item-full"></div>
-        <button onclick="n.setFooter(null,true);" id="cancel-action" data-icon="*" hidden class="link"></button>
-    </div>
-    <div id="footer-counter"></div>
-</footer>
 <div id="window-backdrop" class="flex">
     <div class="window flex-column">
         <div id="window-title" class="flex">
@@ -507,10 +412,10 @@
                         <span id="local-text"></span>
                     </div>
                 </div>
-                <div id="add-window-files" class="flex-item-full"></div>
                 <div id="loading-folder-contents" class="flex visibility-hidden">
                     <div data-icon="w"></div>
                 </div>
+                <div id="add-window-files" class="flex-item-full"></div>
             </div>
             <div id="welcome-window-content"></div>
             <div id="local-window-content">
@@ -589,6 +494,102 @@
         </div>
     </div>
 </div>
+<header id="header" class="flex">
+    <div id="header-left" tabindex="0">
+        <div id="battery-level-menu-handle">
+            <div id="battery-cap"></div>
+            <div id="battery-level-3" class="battery-level"></div>
+            <div id="battery-level-2" class="battery-level"></div>
+            <div id="battery-level-1" class="battery-level"></div>
+        </div>
+        <div id="the-menu">
+            <div id="connect" data-menulistener="connect" class="menu-ul-li" tabindex="0" data-icon="<"></div>
+            <div id="showAddFileFolder" data-menulistener="showAddFileFolder" class="menu-ul-li" tabindex="0"
+                 data-icon="="></div>
+            <div id="showSavePlaylist" data-menulistener="showSavePlaylist" class="menu-ul-li" tabindex="0"
+                 data-icon="9"></div>
+            <div id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0"
+                 data-icon="8"></div>
+            <div id="showAbout" data-menulistener="showAbout" class="menu-ul-li" tabindex="0" data-icon=";"></div>
+            <div id="showWelcome" data-menulistener="showWelcome" class="menu-ul-li" tabindex="0" data-icon="6"></div>
+        </div>
+    </div>
+    <div class="flex-column flex-item-full">
+        <div class="flex">
+            <div id="trigger-stop" data-menulistener="stop" data-icon="v"></div>
+            <div id="trigger-play" data-menulistener="play" data-icon="x"></div>
+            <div id="trigger-pause" data-menulistener="playPause" data-icon="c"></div>
+            <div id="trigger-prev" data-menulistener="prev" data-icon="C"></div>
+            <div id="trigger-next" data-menulistener="next" data-icon="B"></div>
+            <div id="trigger-next-random" data-menulistener="nextRandom" data-icon="s"></div>
+            <div id="nav-volume" class="flex">
+                <div id="trigger-mute" data-menulistener="toggleMute" data-icon="0"></div>
+                <div id="volume">
+                    <div id="volume-progress"></div>
+                </div>
+            </div>
+            <div id="progress" class="flex-item-full">
+                <div id="playback-progress"></div>
+                <div id="mark50" title="50%" class="flex">
+                    <div>|</div>
+                </div>
+            </div>
+            <label class="select top-bar">
+                <select id="playback-order">
+                    <option id="playback-order-default"></option>
+                    <option id="playback-order-repeat-playlist"></option>
+                    <option id="playback-order-repeat-track"></option>
+                    <option id="playback-order-random"></option>
+                    <option id="playback-order-stop-after-current"></option>
+                </select>
+            </label>
+            <div data-menulistener="showSearch" data-icon="#"></div>
+            <div id="color-bulb" data-menulistener="showPreferences" data-icon="$"></div>
+        </div>
+        <div class="flex">
+            <div id="playlists-tabs" class="flex flex-item-full">
+                <div id="add-playlist" class="playlists-tabs-li">
+                    <i data-icon="="></i>
+                </div>
+            </div>
+            <div data-menulistener="showSearch" data-icon="#"></div>
+        </div>
+    </div>
+</header>
+<div id="playlists-wrapper" class="flex flex-item-full">
+    <div id="playlists" class="flex flex-item-full">
+        <div id="playlist-hints" class="flex-item-full flex-column playlist scroll-y">
+            <div class="flex">
+                <div id="main-menu-hint-icon" data-icon="@"></div>
+                <div class="flex flex-item-full">
+                    <div>
+                                <span id="add-playlist-hint-icon" class="rotate90">
+                                    <span data-icon="?"></span>
+                                </span>
+                        <span id="add-playlist-hint-text"></span>
+                    </div>
+                    <div class="flex-item-full"></div>
+                    <div>
+                        <span id="search-playlist-hint-text"></span>
+                        <span id="search-playlist-hint-icon" class="rotate270">
+                                    <span data-icon="7"></span>
+                                </span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex-item-full">
+                <span id="main-menu-hint-text"></span>
+            </div>
+        </div>
+    </div>
+</div>
+<footer id="footer" class="flex">
+    <div class="flex flex-item-full">
+        <div id="footer-text" class="flex-item-full"></div>
+        <button onclick="n.setFooter(null,true);" id="cancel-action" data-icon="*" hidden class="link"></button>
+    </div>
+    <div id="footer-counter"></div>
+</footer>
 <script src="js/libs/md5.js"></script>
 <script src="js/urlmanager.js"></script>
 <script src="js/cloud.js"></script>

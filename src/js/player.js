@@ -775,6 +775,7 @@ let n = {
 	applyPowerSaveMode()
 	{
 		n.initAnimations();
+		n.initBlur();
 		n.changeCounterState( document.getElementById( 'preference-enable-counter' ).checked );
 	},
 
@@ -1678,6 +1679,9 @@ let n = {
 			// Remove slideshow interval
 			clearInterval( n.slideshow );
 		}
+
+		// Remove blur
+		window.parentNode.classList.remove( 'window-opened' );
 	},
 
 	/**
@@ -2590,16 +2594,12 @@ let n = {
 			const last        = ' '.concat( duration, ' ', timing );
 			const join        = last + ',';
 			const transitions = {
-				'#the-menu'                                                                   : [ 'opacity', 'visibility' ],
-				'.window'                                                                     : 'opacity',
-				'.cloud-icon'                                                                 : 'opacity',
-				'.preferences-item'                                                           : [ 'background', 'color' ],
-				'.add-item'                                                                   : [ 'background', 'color' ],
-				'#drop-zone'                                                                  : 'border',
-				'.welcome-slide'                                                              : [ 'opacity', 'visibility' ],
-				'#battery-level-menu-handle:hover,.menu-ul-li:hover,[data-menulistener]:hover': 'opacity',
-				'#color-bulb'                                                                 : 'color',
-				'#splash'                                                                     : [ 'opacity', 'visibility' ]
+				'#the-menu,.welcome-slide,#splash'                                                                : [ 'opacity', 'visibility' ],
+				'.preferences-item,.add-item'                                                                     : [ 'background', 'color' ],
+				'#drop-zone'                                                                                      : 'border',
+				'.window,.cloud-icon,#battery-level-menu-handle:hover,.menu-ul-li:hover,[data-menulistener]:hover': 'opacity',
+				'#color-bulb'                                                                                     : 'color',
+				'#header,#playlists-wrapper,#footer,#add-window-files'                                            : 'filter'
 			};
 
 			rules = [
@@ -2621,6 +2621,24 @@ let n = {
 		}
 
 		document.getElementById( 'animations' ).innerHTML = rules.join( '' );
+	},
+
+	/**
+	 * Adds blur if not in Power Save mode.
+	 */
+	initBlur()
+	{
+		let rules = [];
+
+		if ( !n.powerSaveMode )
+		{
+			rules = [
+				'.window-opened~*{filter:blur(5px)}',
+				'#loading-folder-contents:not(.visibility-hidden)+#add-window-files:{filter:blur(5px)}'
+			];
+		}
+
+		document.getElementById( 'blur' ).innerHTML = rules.join( '' );
 	},
 
 	/**
@@ -4780,6 +4798,7 @@ let n = {
 		n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
 		n.translate();
 		n.initAnimations();
+		n.initBlur();
 		n.checkConnections();
 		n.applyTheme();
 		n.checkQuota();
@@ -5551,6 +5570,9 @@ let n = {
 			default:
 				n.emptyAddWindow();
 				window.id = cls;
+
+				// Add blur
+				window.parentNode.classList.add( 'window-opened' );
 		}
 	}
 };
