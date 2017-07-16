@@ -51,7 +51,6 @@ let pref = {
 		activePlaylistId: null,
 		muted           : false,
 		playbackOrder   : 0,
-		devChannel      : false,
 		dropbox         : {
 			accessToken: null
 		},
@@ -422,17 +421,6 @@ let pref = {
 	get powerSaverEnabled()
 	{
 		return this.settings.checkboxes[ 'preference-enable-powersaver' ];
-	},
-
-	set devChannel( state )
-	{
-		this.settings.devChannel = state;
-		this.save();
-	},
-
-	get devChannel()
-	{
-		return this.settings.devChannel;
 	}
 };
 

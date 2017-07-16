@@ -259,15 +259,12 @@
 		"new-playlist"               : "New Playlist",
 		"notification-title"         : "Noisy is playing",
 		"not-supported"              : " (not supported on this browser)",
-		"button-channel-switcher"    : "Join Dev channel",
-		"button-channel-switcher-dev": "Leave Dev channel",
 		"not-connected"              : "Not connected. Click to connect"
 	},
 	"help"        : {
 		"preference-general-help"    : "Playback state display formatting\nFormats item tags as user specified. Available strings:\n%artist% for Artist\n%title% for Title\n%album% for Album\n%date% for Date\n\nCursor follows playback\nThis will always select the item being played\n\nPlayback follows cursor\nNext item to play will be the selected item\n\nHide playlist tabs when only one playlist\nThis is going to hide tabs when only one tab is available. Useful to save space if\nuser always uses only one playlist",
 		"preference-language-help"   : "Do you want to help with translation?\nContact me on GitHub",
 		"preference-powersaver-help" : "Makes Noisy to preserve resources when device not charging and the battery level is bellow\nthe set threshold.\n\nChanges when Noisy is running in Power Saver mode:\n- No animations\n- No progress display\n- No notifications\n- No scrobbling\n- Played item will be immediately removed from cache\n- Tags won't be read",
-		"preference-dev-channel-help": "Latest, but unstable",
 		"connect"                    : "Connect to clould",
 		"showAddFileFolder"          : "Add files or folders",
 		"showSavePlaylist"           : "Save playlist",
@@ -276,6 +273,6 @@
 		"showWelcome"                : "Welcome screen"
 	},
 	"splash"      : {
-		"splash-screen-text": "If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href=\"javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){};location.replace('//'+location.host+'/')})()\" style=\"text-decoration:none;color:red\">leaving it</a>. If not you can <a href=\"javascript:localStorage.removeItem('preferences'),location.reload()\" style=\"text-decoration:none;color:red\">click here to delete the settings</a>. If that doesn't help, try <a href=\"javascript:localStorage.removeItem('playlists'),location.reload()\" style=\"text-decoration:none;color:red\">deleting the playlists</a>, too."
+		"splash-screen-text": "If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href=\"javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){};location.replace('//'+location.host+'/')})()\" style=\"text-decoration:none;color:red\">leaving it</a>. If not you can <a href=\"javascript:localStorage.removeItem('preferences'),location.reload()\" style=\"text-decoration:none;color:red\">click here to delete the settings</a>. If that doesn't help, try <a href=\"javascript:localStorage.removeItem('playlists'),location.reload()\" style=\"text-decoration:none;color:red\">deleting the playlists</a>, too."
 	}
 }

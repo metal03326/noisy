@@ -487,17 +487,6 @@ let n = {
 			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
 		}
 
-		// Dev channel button
-		let channelSwither = document.getElementById( 'channel-switcher' );
-		if ( n.pref.devChannel )
-		{
-			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher-dev' ];
-		}
-		else
-		{
-			channelSwither.innerHTML = n.lang.other[ 'button-channel-switcher' ];
-		}
-
 		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( '[data-cloud]:not([data-cloud*="local"])' );
 		for ( let i = 0; i < notConnecteds.length; i++ )
 		{
@@ -2260,12 +2249,6 @@ let n = {
 			location.replace( 'https://www.noisyplayer.com' );
 		}
 
-		// Switch to Dev channel if user wants to
-		if ( n.pref.devChannel && !~location.pathname.indexOf( '/dev/' ) )
-		{
-			location.replace( '//' + location.host + '/dev/' + location.hash + location.search );
-		}
-
 		return Promise.all( [
 			n.translate(),
 			n.applyTheme()
@@ -2358,16 +2341,7 @@ let n = {
 			}
 
 			// Make sure our URL is clean
-			let pathname = location.pathname;
-
-			if ( ~pathname.indexOf( '/dev/' ) )
-			{
-				pathname = '/dev/';
-			}
-			else
-			{
-				pathname = '/';
-			}
+			let pathname = '/';
 
 			history.pushState( { clear: 'hash' }, 'without refresh', pathname );
 			history.pushState( { clear: 'search' }, 'without refresh', pathname );
@@ -5263,15 +5237,6 @@ let n = {
 	stopBubbling( e )
 	{
 		e.stopPropagation();
-	},
-
-	/**
-	 * Switches between normal and Dev channel
-	 */
-	switchChannel()
-	{
-		n.pref.devChannel = !n.pref.devChannel;
-		location.href     = '//' + location.host + '/';
 	},
 
 	/**

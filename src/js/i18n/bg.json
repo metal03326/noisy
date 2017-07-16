@@ -258,15 +258,12 @@
 		"new-playlist"               : "Нов Плейлист",
 		"notification-title"         : "Noisy пуска",
 		"not-supported"              : " (не се поддържа на този браузър)",
-		"button-channel-switcher"    : "Влез в Дев канала",
-		"button-channel-switcher-dev": "Излез от Дев канала",
 		"not-connected"              : "Няма връзка. Цъкни за да се свържеш"
 	},
 	"help"        : {
 		"preference-general-help"    : "Форматиране на състоянието на възпроизвеждане\nФорматира показването на таговете както потребителя окаже. Стойности:\n%artist% за Изпълнител\n%title% за Заглавие\n%album% за Албум\n%date% за Дата\n\nКурсорът следи възпроизвеждането\nВинаги селектира песента която свири\n\nВъзпроизвеждането следи курсора\nПуска следващата селектирана песен след текущата\n\nСкриване на табовете, когато има само един плейлист\nПести място когато потребителят използва един плейлист",
 		"preference-language-help"   : "Желаеш да помогнеш с превода?\nСвържи се с мен през GitHub",
 		"preference-powersaver-help" : "Кара Noisy да пести ресурси когато устройството не се зарежда и нивото на батерията е\nпод зададения праг.\n\nПромени когато Noisy работи в режим Пестене на енергия:\n- Няма анимации\n- Няма прогрес\n- Няма известия\n- Няма скроблинг\n- Изслушаните песни биват моментално премахнати от кеша\n- Таговете няма да бъдат четени",
-		"preference-dev-channel-help": "Послена версия, но нестабилна",
 		"connect"                    : "Свързване с облака",
 		"showAddFileFolder"          : "Добавяне на файлове или папки",
 		"showSavePlaylist"           : "Запазване на плейлист",
@@ -275,6 +272,6 @@
 		"showWelcome"                : "Добре дошли екран"
 	},
 	"splash"      : {
-		"splash-screen-text": "Ако виждаш това съобщение за дълго време, това означава че най-вероятно настройките на Noisy са повредени. Ако си в Дев канала, пробвай да <a href=\"javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){};location.replace('//'+location.host+'/')})()\" style=\"text-decoration:none;color:red\">излезнеш</a>. Ако не, може да опиташ да <a href=\"javascript:localStorage.removeItem('preferences'),location.reload()\" style=\"text-decoration:none;color:red\">изтриеш настройките</a>. Ако и това не помогне, опитай да <a href=\"javascript:localStorage.removeItem('playlists'),location.reload()\" style=\"text-decoration:none;color:red\">изтриеш плейлистите</a>."
+		"splash-screen-text": "Ако виждаш това съобщение за дълго време, това означава че най-вероятно настройките на Noisy са повредени. Ако си в Дев канала, пробвай да <a href=\"javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){};location.replace('//'+location.host+'/')})()\" style=\"text-decoration:none;color:red\">излезнеш</a>. Ако не, може да опиташ да <a href=\"javascript:localStorage.removeItem('preferences'),location.reload()\" style=\"text-decoration:none;color:red\">изтриеш настройките</a>. Ако и това не помогне, опитай да <a href=\"javascript:localStorage.removeItem('playlists'),location.reload()\" style=\"text-decoration:none;color:red\">изтриеш плейлистите</a>."
 	}
 }

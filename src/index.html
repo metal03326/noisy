@@ -46,7 +46,7 @@
             <div id="splash-screen-text">
                 If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If
                 you are in Dev channel, try <a
-                    href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));settings.devChannel=false;localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){}location.replace('//'+location.host+'/')})()"
+                    href="javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){}location.replace('//'+location.host+'/')})()"
                     style="text-decoration:none;color:red;">leaving it</a>. If not you can <a
                     href="javascript:localStorage.removeItem('preferences'),location.reload()"
                     style="text-decoration:none;color:red;">click here to delete the settings</a>. If that doesn't help,
@@ -531,12 +531,12 @@
         <div id="window-buttons">
             <div id="preferences-window-buttons" class="flex">
                 <div class="relative">
-            <span class="hide-when-asking">
-                <button onclick="this.parentNode.parentNode.classList.add('confirmation');"
-                        id="button-reset-preferences"></button>
-                <button id="channel-switcher" onclick="n.switchChannel();"></button>
-                <i id="preference-dev-channel-help" class="help" data-icon="H"></i>
-            </span>
+                    <span class="hide-when-asking">
+                        <button
+                                onclick="this.parentNode.parentNode.classList.add('confirmation');"
+                                id="button-reset-preferences"
+                        ></button>
+                    </span>
                     <div class="confirm">
                         <span id="confirmation"></span>
                         <button onclick="n.restoreToDefaults();" class="button-yes"></button>
