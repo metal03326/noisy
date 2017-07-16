@@ -189,9 +189,11 @@ article + #playlist-hints,
 
 .playlist-item
 {
+	height      : 32px;
 	overflow    : hidden;
 	white-space : nowrap;
 	font-size   : 16px;
+	align-items : center;
 }
 
 #footer
@@ -429,13 +431,6 @@ button,
 .item-title
 {
 	flex : 1 1 auto;
-}
-
-.item-title,
-.item-duration,
-.delete-icon
-{
-	padding : 7px 0;
 }
 
 .delete-icon
