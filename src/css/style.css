@@ -2,8 +2,148 @@
 {
 	font-family : 'Noisy';
 	src         : url('../fonts/Noisy.woff') format('woff');
-	font-weight : normal;
+	font-weight : 400;
 	font-style  : normal;
+}
+
+/* cyrillic-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-cyrillic-ext.woff2') format('woff2');
+	unicode-range : U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+
+/* cyrillic */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-cyrillic.woff2') format('woff2');
+	unicode-range : U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* greek-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-greek-ext.woff2') format('woff2');
+	unicode-range : U+1F00-1FFF;
+}
+
+/* greek */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-greek.woff2') format('woff2');
+	unicode-range : U+0370-03FF;
+}
+
+/* vietnamese */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-vietnamese.woff2') format('woff2');
+	unicode-range : U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+
+/* latin-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-latin-ext.woff2') format('woff2');
+	unicode-range : U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-latin.woff2') format('woff2');
+	unicode-range : U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+/* cyrillic-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-cyrillic-ext.woff2') format('woff2');
+	unicode-range : U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+
+/* cyrillic */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-cyrillic.woff2') format('woff2');
+	unicode-range : U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* greek-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-greek-ext.woff2') format('woff2');
+	unicode-range : U+1F00-1FFF;
+}
+
+/* greek */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-greek.woff2') format('woff2');
+	unicode-range : U+0370-03FF;
+}
+
+/* vietnamese */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-vietnamese.woff2') format('woff2');
+	unicode-range : U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+
+/* latin-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-latin-ext.woff2') format('woff2');
+	unicode-range : U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-latin.woff2') format('woff2');
+	unicode-range : U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
 [data-icon]:before,
@@ -14,7 +154,7 @@
 	content                 : attr(data-icon);
 	speak                   : none;
 	font-style              : normal;
-	font-weight             : normal;
+	font-weight             : 400;
 	font-variant            : normal;
 	text-transform          : none;
 	line-height             : 1;
@@ -68,11 +208,19 @@ body
 
 body
 {
-	margin      : 0;
-	padding     : 0;
-	font-family : Tahoma;
-	width       : 100%;
-	min-width   : 800px;
+	margin    : 0;
+	padding   : 0;
+	width     : 100%;
+	min-width : 800px;
+}
+
+body,
+input,
+textarea,
+select,
+button
+{
+	font-family : 'Roboto';
 }
 
 .item-queue:empty,
@@ -135,7 +283,7 @@ article + #playlist-hints,
 
 #header-left > div:first-child
 {
-	padding : .15em 0;
+	padding : .13em 0;
 }
 
 .nav-inputs-li
@@ -168,7 +316,7 @@ article + #playlist-hints,
 .playlists-tabs-li
 {
 	padding   : 4px 7px;
-	font-size : 19px;
+	font-size : 18px;
 	outline   : none;
 }
 
@@ -281,13 +429,13 @@ article + #playlist-hints,
 label[for|="preference"],
 #translation-contributors-label
 {
-	padding : 7px;
+	padding : 4px 10px;
 }
 
 .window-title-span
 {
 	padding   : 4px 0 0 5px;
-	font-size : 20px;
+	font-size : 18px;
 	flex      : 1 1 auto;
 }
 
@@ -354,7 +502,7 @@ button,
 #window-close
 {
 	padding-right : 5px;
-	font-size     : 32px;
+	font-size     : 24px;
 }
 
 #window-content
@@ -422,7 +570,7 @@ button,
 .item-queue
 {
 	z-index   : 2;
-	font-size : 14px;
+	font-size : 10px;
 	position  : absolute;
 	top       : 8px;
 	left      : 0;
@@ -497,7 +645,7 @@ button,
 	-webkit-appearance : none;
 	-moz-appearance    : none;
 	appearance         : none;
-	padding            : 7px 30px 7px 7px;
+	padding            : 5px 30px 5px 7px;
 }
 
 .exists-text
@@ -879,7 +1027,7 @@ h6
 #keyboard-shortcuts button:not(#shortcut-add)
 {
 	height      : 21px;
-	padding-top : 2px;
+	padding-top : 0;
 	font-size   : 18px;
 }
 
