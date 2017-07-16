@@ -1010,11 +1010,18 @@ h6
 
 .confirm
 {
-	visibility : hidden;
-	opacity    : 0;
-	position   : absolute;
-	top        : 0;
-	left       : 0;
+	visibility  : hidden;
+	opacity     : 0;
+	position    : absolute;
+	top         : 0;
+	left        : 0;
+	white-space : nowrap;
+	align-items : center;
+}
+
+.confirm button
+{
+	margin-left : 5px;
 }
 
 .confirmation .confirm
