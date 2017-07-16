@@ -227,12 +227,14 @@ article + #playlist-hints,
 
 #window-backdrop
 {
-	position       : absolute;
-	top            : 0;
-	bottom         : 0;
-	left           : 0;
-	right          : 0;
-	pointer-events : none;
+	position        : absolute;
+	top             : 0;
+	bottom          : 0;
+	left            : 0;
+	right           : 0;
+	pointer-events  : none;
+	align-items     : center;
+	justify-content : center;
 }
 
 .window
@@ -242,6 +244,12 @@ article + #playlist-hints,
 	width          : 600px;
 	height         : 300px;
 	border         : 2px solid;
+}
+
+#add-window-cloud-chooser
+{
+	align-items     : center;
+	justify-content : center;
 }
 
 :root .preferences-item
@@ -778,7 +786,8 @@ h6
 
 #window-buttons > div
 {
-	padding : 4px;
+	padding         : 4px;
+	justify-content : flex-end;
 }
 
 #connected-table
@@ -949,19 +958,26 @@ h6
 
 #loading-folder-contents
 {
-	position   : absolute;
-	top        : 0;
-	bottom     : 0;
-	left       : 0;
-	right      : 0;
-	font-size  : 72px;
-	background : rgba(255, 255, 255, .5);
+	position        : absolute;
+	top             : 0;
+	bottom          : 0;
+	left            : 0;
+	right           : 0;
+	font-size       : 72px;
+	background      : rgba(255, 255, 255, .5);
+	align-items     : center;
+	justify-content : center;
 }
 
 #about-resources,
 #about-follow
 {
 	margin : 0 0 5px 5px;
+}
+
+#about-follow
+{
+	align-items : center;
 }
 
 #about-used-resources,
@@ -1112,14 +1128,15 @@ h6
 
 #mark50
 {
-	position       : absolute;
-	top            : 0;
-	left           : 0;
-	bottom         : 0;
-	right          : 0;
-	text-align     : center;
-	font-size      : 18px;
-	pointer-events : none;
+	position        : absolute;
+	top             : 0;
+	left            : 0;
+	bottom          : 0;
+	right           : 0;
+	font-size       : 18px;
+	pointer-events  : none;
+	align-items     : center;
+	justify-content : center;
 }
 
 #youtube-search-window-content
