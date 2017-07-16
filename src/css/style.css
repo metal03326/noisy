@@ -75,6 +75,56 @@ body
 	min-width   : 800px;
 }
 
+.item-queue:empty,
+.playlist-item:not(.selected) .item-queue,
+.playlist-item:not(.selected) .item-add-to-queue,
+.playlist-item:not(.selected) .item-remove-from-queue,
+.playlist-item.selected:not(.is-in-queue) .item-remove-from-queue,
+.playlist-item.selected.is-in-queue .item-add-to-queue,
+.one-tab #playlists-tabs,
+.one-tab [data-icon="#"]:last-child,
+body:not(.one-tab) [data-icon="#"]:not(:last-child),
+article + #playlist-hints,
+#find-window-results div[data-icon],
+.playlists-tabs-li:not(.active) .playlist-edit,
+.playlists-tabs-li:not(.active) .playlist-remove,
+#battery-level-menu-handle:not([title]) #battery-cap,
+#add-window-files:empty,
+.window:not(#add-window) .local-icon,
+.window:not(.exists) .exists-text,
+.window:not(#preferences-window) #preferences-window-title,
+.window:not(#preferences-window) #preferences-window-content,
+.window:not(#preferences-window) #preferences-window-buttons,
+.window:not(#about-window) #about-window-title,
+.window:not(#about-window) #about-window-content,
+.window:not(#about-window) #about-window-buttons,
+.window:not(#find-window) #find-window-title,
+.window:not(#find-window) #find-window-content,
+.window:not(#connect-window) #connect-window-title,
+.window:not(#connect-window) #connect-window-content,
+.window:not(#connect-window) #connect-window-buttons,
+.window:not(#add-window) #add-window-title,
+.window:not(#add-window):not(#save-playlist-window):not(#load-playlist-window):not(#save-preferences-window):not(#load-preferences-window) #add-window-content,
+.window:not(#add-window) #add-window-buttons,
+.window:not(#welcome-window) #welcome-window-title,
+.window:not(#welcome-window) #welcome-window-content,
+.window:not(#welcome-window) #welcome-window-buttons,
+.window:not(#local-window) #local-window-title,
+.window:not(#local-window) #local-window-content,
+.window:not(#youtube-search-window) #youtube-search-window-title,
+.window:not(#youtube-search-window) #youtube-search-window-content,
+.window:not(#save-playlist-window) #save-playlist-window-title,
+.window:not(#save-playlist-window) #save-playlist-window-buttons,
+.window:not(#load-playlist-window) #load-playlist-window-title,
+.window:not(#load-playlist-window) #load-playlist-window-buttons,
+.window:not(#save-preferences-window) #save-preferences-window-title,
+.window:not(#save-preferences-window) #save-preferences-window-buttons,
+.window:not(#load-preferences-window) #load-preferences-window-title,
+.window:not(#load-preferences-window) #load-preferences-window-buttons
+{
+	display : none;
+}
+
 .nav-ul-a,
 .control-ul-a
 {
@@ -117,28 +167,14 @@ body
 
 .playlists-tabs-li
 {
-	cursor    : default;
-	padding   : 2px 0 2px 5px;
-	border    : 2px solid transparent;
-	font-size : 16px;
+	padding   : 4px 7px;
+	font-size : 19px;
 	outline   : none;
-}
-
-.playlists-tabs-li:not(#add-playlist) > *
-{
-	margin-right : 5px;
 }
 
 .playlist
 {
 	flex : 1 1 auto;
-}
-
-.one-tab #playlists-tabs,
-.one-tab [data-icon="#"]:last-child,
-body:not(.one-tab) [data-icon="#"]:not(:last-child)
-{
-	display : none;
 }
 
 .one-tab #header-left
@@ -156,7 +192,6 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 	overflow    : hidden;
 	white-space : nowrap;
 	font-size   : 16px;
-	display     : flex;
 }
 
 #footer
@@ -169,7 +204,6 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 #footer-counter
 {
 	min-width    : 110px;
-	height       : 100%;
 	padding-left : 5px;
 	text-align   : center;
 	border-left  : 1px solid currentColor;
@@ -212,10 +246,8 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 
 :root .preferences-item
 {
-	display     : block;
 	padding     : 0 20px 0 5px;
 	white-space : nowrap;
-	width       : 100%;
 	text-align  : left;
 }
 
@@ -235,44 +267,17 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child)
 	border-right : 1px solid;
 }
 
+label[for|="preference"],
+#translation-contributors-label
+{
+	padding : 7px;
+}
+
 .window-title-span
 {
 	padding   : 4px 0 0 5px;
-	font-size : 16px;
+	font-size : 20px;
 	flex      : 1 1 auto;
-}
-
-.window:not(#preferences-window) #preferences-window-title,
-.window:not(#preferences-window) #preferences-window-content,
-.window:not(#preferences-window) #preferences-window-buttons,
-.window:not(#about-window) #about-window-title,
-.window:not(#about-window) #about-window-content,
-.window:not(#about-window) #about-window-buttons,
-.window:not(#find-window) #find-window-title,
-.window:not(#find-window) #find-window-content,
-.window:not(#connect-window) #connect-window-title,
-.window:not(#connect-window) #connect-window-content,
-.window:not(#connect-window) #connect-window-buttons,
-.window:not(#add-window) #add-window-title,
-.window:not(#add-window):not(#save-playlist-window):not(#load-playlist-window):not(#save-preferences-window):not(#load-preferences-window) #add-window-content,
-.window:not(#add-window) #add-window-buttons,
-.window:not(#welcome-window) #welcome-window-title,
-.window:not(#welcome-window) #welcome-window-content,
-.window:not(#welcome-window) #welcome-window-buttons,
-.window:not(#local-window) #local-window-title,
-.window:not(#local-window) #local-window-content,
-.window:not(#youtube-search-window) #youtube-search-window-title,
-.window:not(#youtube-search-window) #youtube-search-window-content,
-.window:not(#save-playlist-window) #save-playlist-window-title,
-.window:not(#save-playlist-window) #save-playlist-window-buttons,
-.window:not(#load-playlist-window) #load-playlist-window-title,
-.window:not(#load-playlist-window) #load-playlist-window-buttons,
-.window:not(#save-preferences-window) #save-preferences-window-title,
-.window:not(#save-preferences-window) #save-preferences-window-buttons,
-.window:not(#load-preferences-window) #load-preferences-window-title,
-.window:not(#load-preferences-window) #load-preferences-window-buttons
-{
-	display : none;
 }
 
 #connect-window-content,
@@ -373,8 +378,8 @@ button,
 
 .playback-options
 {
-	width   : 60px;
-	display : flex;
+	width    : 60px;
+	position : relative;
 }
 
 .item-queue,
@@ -397,27 +402,19 @@ button,
 	font-size : 26px;
 }
 
-.item-queue:empty,
-.selected .item-queue:empty
-{
-	display : none;
-}
-
 .item-add-to-queue,
 .item-remove-from-queue
 {
-	display   : none;
 	font-size : 27px;
 }
 
-.selected .item-queue
+.item-queue
 {
-	display      : block;
-	z-index      : 2;
-	font-size    : 18px;
-	padding-top  : 1px;
-	padding-left : 5px;
-	margin       : 0;
+	z-index   : 2;
+	font-size : 14px;
+	position  : absolute;
+	top       : 8px;
+	left      : 0;
 }
 
 .item-title
@@ -430,12 +427,6 @@ button,
 .delete-icon
 {
 	padding : 7px 0;
-}
-
-.selected:not(.is-in-queue) .item-add-to-queue,
-.selected.is-in-queue .item-remove-from-queue
-{
-	display : block;
 }
 
 .delete-icon
@@ -479,8 +470,9 @@ button,
 
 .select
 {
-	position : relative;
-	display  : inline-block;
+	position   : relative;
+	display    : inline-block;
+	margin-top : 2px;
 }
 
 .select:after
@@ -504,17 +496,14 @@ button,
 	padding            : 7px 30px 7px 7px;
 }
 
-.exists-text,
-.invalid-text
+.exists-text
 {
-	visibility : hidden;
-	color      : red;
+	color : red;
 }
 
-.exists .exists-text,
-.invalid .invalid-text
+.exists .required-item
 {
-	visibility : visible;
+	box-shadow : 0 0 5px rgba(255, 0, 0, .75)
 }
 
 .va
@@ -552,6 +541,7 @@ details ul
 summary
 {
 	font-weight : 700;
+	outline     : none;
 }
 
 input:required:invalid,
@@ -607,11 +597,8 @@ section:focus
 
 .cloud-icon
 {
-	display  : inline-block;
-	width    : 110px;
-	height   : 110px;
-	margin   : 65px 8px;
-	position : relative;
+	width  : 110px;
+	height : 110px;
 }
 
 .cloud-icon[title]:not(:hover)
@@ -625,11 +612,6 @@ section:focus
 {
 	margin     : 0 8px;
 	text-align : center;
-}
-
-.local-icon
-{
-	display : none;
 }
 
 .local-icon .icon,
@@ -648,17 +630,10 @@ section:focus
 	top       : -18px;
 }
 
-#add-window .local-icon
-{
-	display : inline-block;
-}
-
 .playlist-edit
 {
-	font-size      : 11px;
-	display        : inline-block;
-	padding-top    : 4px;
-	vertical-align : middle;
+	font-size : 12px;
+	margin    : 2px 5px 0 15px;
 }
 
 #clear-console
@@ -669,18 +644,10 @@ section:focus
 
 #add-playlist
 {
-	width      : 25px;
-	text-align : center;
-	height     : 25px;
-	font-size  : 20px;
-	padding    : 0;
-	border     : 2px solid;
-}
-
-.center-vertically
-{
-	display        : inline-block;
-	vertical-align : middle;
+	height    : 25px;
+	font-size : 25px;
+	padding   : 0;
+	border    : 2px solid;
 }
 
 .favicon
@@ -724,11 +691,6 @@ h6
 #playlist-hints
 {
 	padding-left : 18px;
-}
-
-article + #playlist-hints
-{
-	display : none;
 }
 
 #search-playlist-hint-icon
@@ -787,21 +749,6 @@ article + #playlist-hints
 {
 	visibility : visible;
 	opacity    : 1;
-}
-
-.playlist-remove
-{
-	display : none;
-}
-
-.active .playlist-remove
-{
-	display : inline-block;
-}
-
-#find-window-results div[data-icon]
-{
-	display : none;
 }
 
 .donation
@@ -927,10 +874,8 @@ article + #playlist-hints
 #keyboard-shortcuts button:not(#shortcut-add)
 {
 	height      : 21px;
-	padding-top : 0;
+	padding-top : 2px;
 	font-size   : 18px;
-	overflow    : hidden;
-	display     : block;
 }
 
 #console-title
@@ -1013,11 +958,6 @@ article + #playlist-hints
 	background : rgba(255, 255, 255, .5);
 }
 
-.align-top
-{
-	vertical-align : top;
-}
-
 #about-resources,
 #about-follow
 {
@@ -1080,34 +1020,6 @@ article + #playlist-hints
 	margin-left : 25px;
 }
 
-#slideshow-video-placeholder
-{
-	width      : 690px;
-	height     : 380px;
-	position   : relative;
-	background : #fff;
-	cursor     : pointer;
-	top        : 2px;
-	left       : 5px;
-}
-
-#slideshow-video-play
-{
-	display     : block;
-	font-size   : 72px;
-	position    : absolute;
-	top         : 50%;
-	left        : 50%;
-	margin-left : -36px;
-	margin-top  : -36px;
-	opacity     : .7;
-}
-
-#slideshow-video-play:hover
-{
-	opacity : 1;
-}
-
 .scrobble-action
 {
 	margin-left : 2px;
@@ -1140,11 +1052,6 @@ article + #playlist-hints
 	top        : .1em;
 	left       : .8em;
 	z-index    : -1;
-}
-
-#battery-level-menu-handle:not([title]) #battery-cap
-{
-	display : none;
 }
 
 .battery-level-green-full
@@ -1188,12 +1095,6 @@ article + #playlist-hints
 	margin-bottom : 5px;
 }
 
-#add-window-buttons .window-buttons-text,
-#load-playlist-window-buttons .window-buttons-text
-{
-	display : none;
-}
-
 #add-window-buttons > *,
 #save-playlist-window-buttons > *,
 #load-playlist-window-buttons > *,
@@ -1201,12 +1102,6 @@ article + #playlist-hints
 #load-preferences-window-buttons > *
 {
 	margin-left : 3px;
-}
-
-.window.dropbox #add-window-buttons .window-buttons-text,
-.window.dropbox #load-playlist-window-buttons .window-buttons-text
-{
-	display : inline;
 }
 
 .follow-link
@@ -1346,11 +1241,6 @@ article + #playlist-hints
 	position : relative;
 }
 
-#add-window-files:empty
-{
-	display : none;
-}
-
 i
 {
 	font-style : normal;
@@ -1375,9 +1265,4 @@ i
 {
 	color      : #fff;
 	background : #950f05;
-}
-
-.exists .required-item, .invalid .required-item
-{
-	box-shadow : 0 0 5px rgba(255, 0, 0, .75)
 }

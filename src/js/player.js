@@ -176,9 +176,6 @@ let n = {
 	shouldRefreshStatusBar  : false,
 	shouldRefreshWindowTitle: false,
 
-	// Interval for the slideshow at the welcome screen
-	slideshow: null,
-
 	// Object containing all loaded themes
 	themes: {},
 
@@ -488,19 +485,6 @@ let n = {
 		for ( let i = 0; i < notSupported.length; i++ )
 		{
 			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
-		}
-
-		// Dropbox playlist convert text
-		let playlistConvert = document.querySelectorAll( '.dropbox-convert-text' );
-		for ( let i = 0; i < playlistConvert.length; i++ )
-		{
-			playlistConvert[ i ].innerHTML += n.lang.other[ 'dropbox-playlist-convert' ];
-		}
-
-		let clickHereItems = document.querySelectorAll( '.click-here' );
-		for ( let i = 0; i < clickHereItems.length; i++ )
-		{
-			clickHereItems[ i ].innerHTML += n.lang.other[ 'click-here' ];
 		}
 
 		// Dev channel button
@@ -1624,12 +1608,17 @@ let n = {
 	{
 		let source = document.getElementById( 'add-window-files' );
 
+		// Remove cloud contents
+		source.innerHTML = '';
+
+		// Show cloud selection
 		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
 
 		delete source.dataset.path;
 		delete source.dataset.cloud;
 		delete source.dataset.filter;
 
+		// Hide loading indicator, in case user clicked X before loading finished
 		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
@@ -1944,15 +1933,14 @@ let n = {
 	fillPlaylist( id, items, save )
 	{
 		// Will append all items to a document fragment first - much faster that way
-		let df                  = document.createDocumentFragment();
-		const elementToCreate   = 'section';
-		const tabIndexString    = 'tabindex';
-		const cloudString       = 'dropbox';
-		const cannotPlayClass   = 'can-not-play';
-		const initialHTML       = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div><div class="item-queue"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
-		const playlistItemClass = 'playlist-item';
-		const dblClickEvent     = 'dblclick';
-		const mouseDownEvent    = 'mousedown';
+		let df                = document.createDocumentFragment();
+		const elementToCreate = 'section';
+		const tabIndexString  = 'tabindex';
+		const cloudString     = 'dropbox';
+		const cannotPlayClass = 'can-not-play';
+		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div><div class="item-queue"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
+		const dblClickEvent   = 'dblclick';
+		const mouseDownEvent  = 'mousedown';
 
 		items.forEach( itm =>
 		{
@@ -1978,7 +1966,8 @@ let n = {
 			}
 
 			// Add styling classes
-			item.classList.add( playlistItemClass );
+			item.classList.add( 'playlist-item' );
+			item.classList.add( 'flex' );
 
 			// Format title as Artist - Title string if either of the two is available
 			item.innerHTML = initialHTML;
@@ -2622,7 +2611,7 @@ let n = {
 
 		if ( !n.powerSaveMode && n.pref.settings.checkboxes[ 'preference-enable-animations' ] )
 		{
-			const duration    = '.3s';
+			const duration    = '.5s';
 			const timing      = 'linear';
 			const last        = ' '.concat( duration, ' ', timing );
 			const join        = last + ',';
@@ -5590,9 +5579,7 @@ let n = {
 		{
 			// These classes should be added to the window
 			case 'exists':
-			case 'invalid':
 				window.classList.remove( 'exists' );
-				window.classList.remove( 'invalid' );
 				window.classList.add( cls );
 				break;
 			// All other classes are ids and should replace old id

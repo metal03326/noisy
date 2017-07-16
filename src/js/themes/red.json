@@ -52,7 +52,7 @@
     "background": "#f18282"
   },
   ".add-item.active": {
-    "background": "#f18282"
+    "background": "#c53232"
   },
   ".add-item span": {
     "color": "#cc1a1a"

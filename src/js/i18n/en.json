@@ -219,8 +219,7 @@
 		"button-clear"  : "Clear"
 	},
 	"validation"  : {
-		"exists-text" : "Already exists",
-		"invalid-text": "Invalid data supplied"
+		"exists-text" : "Already exists"
 	},
 	"console"     : {
 		"ms"                        : "ms",
@@ -260,8 +259,6 @@
 		"new-playlist"               : "New Playlist",
 		"notification-title"         : "Noisy is playing",
 		"not-supported"              : " (not supported on this browser)",
-		"dropbox-playlist-convert"   : "Convert local playlist? ",
-		"click-here"                 : "Click here",
 		"button-channel-switcher"    : "Join Dev channel",
 		"button-channel-switcher-dev": "Leave Dev channel",
 		"not-connected"              : "Not connected. Click to connect"

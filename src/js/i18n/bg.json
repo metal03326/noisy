@@ -218,8 +218,7 @@
 		"button-clear"  : "Изчисти"
 	},
 	"validation"  : {
-		"exists-text" : "Вече съществува",
-		"invalid-text": "Невалидна информация"
+		"exists-text" : "Вече съществува"
 	},
 	"console"     : {
 		"ms"                        : "мс",
@@ -259,8 +258,6 @@
 		"new-playlist"               : "Нов Плейлист",
 		"notification-title"         : "Noisy пуска",
 		"not-supported"              : " (не се поддържа на този браузър)",
-		"dropbox-playlist-convert"   : "Конвертиране на локален плейлист? ",
-		"click-here"                 : "Натисни тук",
 		"button-channel-switcher"    : "Влез в Дев канала",
 		"button-channel-switcher-dev": "Излез от Дев канала",
 		"not-connected"              : "Няма връзка. Цъкни за да се свържеш"

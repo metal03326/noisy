@@ -183,7 +183,7 @@
             <div id="window-content" class="flex-item-full flex scroll-y">
                 <div id="preferences-window-content" class="flex-column">
                     <div class="flex flex-item-full">
-                        <div id="preferences-tabs">
+                        <div id="preferences-tabs" class="flex-column">
                             <button class="link preferences-item active" data-preference="general"></button>
                             <button class="link preferences-item" data-preference="appearance"></button>
                             <button class="link preferences-item" data-preference="keyboard"></button>
@@ -249,7 +249,9 @@
                                         <span id="preference-general-hide-tabs"></span>
                                     </label>
                                 </div>
-                                <i id="preference-general-help" class="help" data-icon="H"></i>
+                                <div>
+                                    <i id="preference-general-help" class="help" data-icon="H"></i>
+                                </div>
                             </div>
                             <div id="preference-appearance" class="flex" hidden>
                                 <div class="flex-column">
@@ -305,11 +307,11 @@
                                         <th id="preference-keyboard-action"></th>
                                         <th></th>
                                     </tr>
-                                    <tr class="align-top">
+                                    <tr>
                                         <td>
                                             <input id="keyboard-shortcut" type="text" data-keys="" required
-                                                   class="required-item"/><br/>
-                                            <span class="exists-text"></span>
+                                                   class="required-item"/>
+                                            <div class="exists-text"></div>
                                         </td>
                                         <td>
                                             <label class="select">
@@ -503,7 +505,7 @@
                         <div class="flex-item-full"></div>
                         <div class="flex-column">
                             <div class="flex-item-full"></div>
-                            <div>
+                            <div class="flex">
                                 <div class="cloud-icon dropbox-icon" data-cloud="dropbox">
                                     <span data-icon="D" class="icon"></span>
                                     <span id="dropbox-text">Dropbox</span>
@@ -572,10 +574,6 @@
                 </div>
                 <div id="add-window-buttons" class="flex">
                     <div class="flex-item-full"></div>
-                    <span class="window-buttons-text">
-                <span class="dropbox-convert-text"></span>
-                <button onclick="n.showReadFile();" class="link click-here"></button>
-            </span>
                     <button onclick="n.addFileFolder();" class="button-add" disabled></button>
                     <button onclick="n.openFolder();" class="button-open" disabled></button>
                 </div>
@@ -586,10 +584,6 @@
                 </div>
                 <div id="load-playlist-window-buttons" class="flex">
                     <div class="flex-item-full"></div>
-                    <span class="window-buttons-text">
-                <span class="dropbox-convert-text"></span>
-                <button onclick="n.showReadFile();" class="link click-here"></button>
-            </span>
                     <button onclick="n.loadPlaylistFromCloud();" class="button-load" disabled></button>
                 </div>
                 <div id="save-preferences-window-buttons" class="flex">
