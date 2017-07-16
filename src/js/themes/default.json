@@ -39,14 +39,14 @@
   ".playlists-tabs-li.active": {
     "background": "#4f4f4f"
   },
-  ".playlist-item.selected": {
-    "background": "#525252"
-  },
   ".playlist-item:nth-of-type(odd)": {
     "background": "#2e2e2e"
   },
   ".playlist-item:nth-of-type(even)": {
     "background": "#343434"
+  },
+  ".playlist-item.selected": {
+    "background": "#525252"
   },
   ".playlist": {
     "background": "#313131"
