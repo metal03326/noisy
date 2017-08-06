@@ -171,9 +171,9 @@
 		"manifest-cached"           : "Noisy се свали"
 	},
 	"footer"      : {
-		"footer-finished"     : "Добавянето на файлове завърши. Добавени файлове: ",
-		"adding-files-from"   : "Добавяне на файлове от ",
-		"added-items"         : " Добавени файлове: ",
+		"footer-finished"     : "Добавянето на файлове завърши. Добавени файлове:",
+		"adding-files-from"   : "Добавяне на файлове от",
+		"added-items"         : "Добавени файлове:",
 		"error-see-console"   : "Грешка. Виж <a href=\"javascript:;\">конзолата</a> за повече информация",
 		"operation-successful": "Операцията е успешна",
 		"please-wait"         : "Моля изчакайте..."

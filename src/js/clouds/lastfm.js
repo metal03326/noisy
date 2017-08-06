@@ -35,7 +35,7 @@ let lastfm = new Cloud( {
 				if ( item )
 				{
 					let duration = n.audio.duration;
-					let position = +new Date() / 1000 - parseInt( n.audio.dataset.start, 10 );
+					let position = Date.now() / 1000 - parseInt( n.audio.dataset.start, 10 );
 
 					// Decrease position with one second if the duration is less. This may happen as a calculation
 					// error, which is less than a second, so we compensate here
@@ -114,25 +114,17 @@ let lastfm = new Cloud( {
 					{
 						let q = this.q[ i ];
 
-						artists += 'artist['.concat( i, ']', q.artist );
-						artistsEq += '&artist['.concat( i, ']=', encodeURIComponent( q.artist ) );
-						timestamps += 'timestamp['.concat( i, ']', q.timestamp );
-						timestampsEq += '&timestamp['.concat( i, ']=', q.timestamp );
-						tracks += 'track['.concat( i, ']', q.track );
-						tracksEq += '&track['.concat( i, ']=', encodeURIComponent( q.track ) );
+						artists += `artist[${i}]${q.artist}`;
+						artistsEq += `&artist[${i}]=${encodeURIComponent( q.artist )}`;
+						timestamps += `timestamp[${i}]${q.timestamp}`;
+						timestampsEq += `&timestamp[${i}]=${q.timestamp}`;
+						tracks += `track[${i}]${q.track}`;
+						tracksEq += `&track[${i}]=${encodeURIComponent( q.track )}`;
 					} );
 
-					let params = 'api_key='.concat( lastfm.apiKey,
-						'&api_sig=', hex_md5( 'api_key'.concat( lastfm.apiKey, artists, 'method', method, 'sk', lastfm.accessToken, timestamps, tracks, lastfm.apiSecret ) ),
-						artistsEq,
-						'&format=json',
-						'&method=', method,
-						'&sk=', lastfm.accessToken,
-						timestampsEq,
-						tracksEq
-					);
+					let params = `api_key=${lastfm.apiKey}&api_sig=${hex_md5( `api_key${lastfm.apiKey}${artists}method${method}sk${lastfm.accessToken}${timestamps}${tracks}${lastfm.apiSecret}` )}${artistsEq}&format=json&method=${method}&sk=${lastfm.accessToken}${timestampsEq}${tracksEq}`;
 
-					lastfm.ajaxRequest( '//ws.audioscrobbler.com/2.0/?' + params,
+					lastfm.ajaxRequest( `//ws.audioscrobbler.com/2.0/?${params}`,
 						() =>
 						{
 							//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
@@ -169,7 +161,7 @@ let lastfm = new Cloud( {
 	 */
 	getAccessToken( token, successCallback, failureCallback )
 	{
-		this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=' + token + '&api_key=' + this.apiKey + '&api_sig=' + hex_md5( 'api_key' + this.apiKey + 'methodauth.getSessiontoken' + token + 'c11941c36875f14d1dfe392848a43685' ), successCallback, failureCallback );
+		this.ajaxRequest( `//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=${token}&api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}methodauth.getSessiontoken${token}c11941c36875f14d1dfe392848a43685` )}`, successCallback, failureCallback );
 	},
 
 	/**
@@ -181,7 +173,7 @@ let lastfm = new Cloud( {
 	//TODO: Find a way to verify token.
 	checkToken( successCallback, failureCallback )
 	{
-		this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=' + this.userName + '&api_key=72e8177b21934e08c11195b8e559c925', xhr =>
+		this.ajaxRequest( `//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=${this.userName}&api_key=72e8177b21934e08c11195b8e559c925`, xhr =>
 		{
 			let response = JSON.parse( xhr.responseText );
 			let username = response.user.name;
@@ -214,16 +206,9 @@ let lastfm = new Cloud( {
 
 			if ( artist && title )
 			{
-				let params = 'api_key='.concat( this.apiKey,
-					'&api_sig=', hex_md5( 'api_key'.concat( this.apiKey, 'artist', artist, 'method', method, 'sk', this.accessToken, 'track', title, this.apiSecret ) ),
-					'&artist=', artist,
-					'&format=json',
-					'&method=', method,
-					'&sk=', this.accessToken,
-					'&track=', title
-				);
+				let params = `api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}artist${artist}method${method}sk${this.accessToken}track${title}${this.apiSecret}` )}&artist=${artist}&format=json&method=${method}&sk=${this.accessToken}&track=${title}`;
 
-				this.ajaxRequest( '//ws.audioscrobbler.com/2.0/?' + params,
+				this.ajaxRequest( `//ws.audioscrobbler.com/2.0/?${params}`,
 					xhr =>
 					{
 						//TODO: Make an option for the user to accept last.fm's corrections on artist/song names

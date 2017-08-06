@@ -172,9 +172,9 @@
 		"manifest-cached"           : "Noisy downloaded"
 	},
 	"footer"      : {
-		"footer-finished"     : "Adding files finished. Added items: ",
-		"adding-files-from"   : "Adding files from ",
-		"added-items"         : " Added items: ",
+		"footer-finished"     : "Adding files finished. Added items:",
+		"adding-files-from"   : "Adding files from",
+		"added-items"         : "Added items:",
 		"error-see-console"   : "Error. See <a href=\"javascript:;\">console</a> for more info",
 		"operation-successful": "Operation successful",
 		"please-wait"         : "Please wait..."

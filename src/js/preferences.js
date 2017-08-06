@@ -32,7 +32,7 @@ let pref = {
 			'preference-playback-follows-cursor': false,
 			'preference-cursor-follows-playback': false
 		},
-		['showWhatsNew-' + version]: true,
+		[`showWhatsNew-${version}`]: true,
 		keys                       : [
 			{ key: '17+81', action: 'addToQueue' },
 			{ key: '81', action: 'addToQueue' },
@@ -78,7 +78,7 @@ let pref = {
 			this.settings = Object.assign( {}, this.originalSettings, JSON.parse( settings ) );
 		}
 
-		this.clean( [ 'showWhatsNew-' + version ] );
+		this.clean( [ `showWhatsNew-${version}` ] );
 	},
 
 	/**
@@ -184,7 +184,7 @@ let pref = {
 		}
 
 		// Set whats new window state
-		document.getElementById( 'show-on-startup-checkbox' ).checked = this.settings[ 'showWhatsNew-' + version ];
+		document.getElementById( 'show-on-startup-checkbox' ).checked = this.settings[ `showWhatsNew-${version}` ];
 
 		// Set Dropbox access token to loaded value
 		n.dropbox.accessToken = this.settings.dropbox.accessToken;
@@ -265,9 +265,9 @@ let pref = {
 
 	set showWhatsNew( value )
 	{
-		let shouldSave = this.settings[ 'showWhatsNew-' + version ] !== value;
+		let shouldSave = this.settings[ `showWhatsNew-${version}` ] !== value;
 
-		this.settings[ 'showWhatsNew-' + version ] = value;
+		this.settings[ `showWhatsNew-${version}` ] = value;
 
 		if ( shouldSave )
 		{
@@ -277,7 +277,7 @@ let pref = {
 
 	get showWhatsNew()
 	{
-		return this.settings[ 'showWhatsNew-' + version ];
+		return this.settings[ `showWhatsNew-${version}` ];
 	},
 
 	set lang( value )

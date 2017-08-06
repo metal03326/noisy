@@ -10,10 +10,7 @@ let dropbox = new Cloud( {
 	name: 'Dropbox',
 
 	urls: {
-		connect     : '//www.dropbox.com/oauth2/authorize?response_type=token&client_id=' +
-		encodeURIComponent( '5lq1huyyozezyl5' ) +
-		'&redirect_uri=' +
-		encodeURIComponent( location.protocol + '//' + location.host + location.pathname ),
+		connect     : `//www.dropbox.com/oauth2/authorize?response_type=token&client_id=${encodeURIComponent( '5lq1huyyozezyl5' )}&redirect_uri=${encodeURIComponent( `${location.protocol}//${location.host}${location.pathname}` )}`,
 		info        : { url: 'https://api.dropboxapi.com/2/users/get_current_account', method: 'POST' },
 		query       : {
 			url     : 'https://api.dropboxapi.com/2/files/list_folder',

@@ -13,11 +13,11 @@
 String.prototype.toHHMMSS = function()
 {
 	let time    = parseInt( this, 10 ),
-	    hours   = ( '00' + Math.floor( time / 3600 ) ).substr( -2 ),
-	    minutes = ( '00' + Math.floor( ( time - ( hours * 3600 ) ) / 60 ) ).substr( -2 ),
+	    hours   = `0${Math.floor( time / 3600 )}`.substr( -2 ),
+	    minutes = `0${Math.floor( ( time - ( hours * 3600 ) ) / 60 )}`.substr( -2 ),
 	    arr     = [
 		    minutes,
-		    ( '00' + ( time - ( hours * 3600 ) - ( minutes * 60 ) ) ).substr( -2 )
+		    `0${time - ( hours * 3600 ) - ( minutes * 60 )}`.substr( -2 )
 	    ];
 
 	// Add the hours into the array if we have them
