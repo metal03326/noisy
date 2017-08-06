@@ -74,42 +74,14 @@
 		"whats-new-footer"                               : "The full changelog can be found <a href=\"/CHANGES.txt\">here</a>."
 	},
 	"faq"         : {
-		"q": [
-			"What do I need to use Noisy?",
-			"Which cloud services are supported?",
-			"Do you collect my data?",
-			"Can I play local files?",
-			"Can I play video files?",
-			"Can Noisy work offline?",
-			"Why Noisy doesn't support my language?",
-			"What is the 5MB quota?"
-		],
-		"a": [
-			{
-				"span": "To use Noisy you'll need a minimum resolution of 800x480 pixels and any modern browser up to date.<br/>We support the <b>latest 2</b> versions of <b>Google Chrome, Mozilla Firefox and Microsoft Edge</b>.<br/><br/><b>Not supported</b>: All mobile browsers.<br/><br/><b>Notes on support</b>: We are working towards better support for smaller screen resolution and mobile browsers."
-			},
-			{
-				"span": "For now only <a href=\"//dropbox.com/\" target=\"_blank\">Dropbox</a> and <a href=\"//drive.google.com/\" target=\"_blank\">Google Drive</a>, but other services are planned, too. We also offer audio scrobbling to <a href=\"http://last.fm/\" target=\"_blank\">last.fm</a>."
-			},
-			{
-				"span": "No. Noisy is client side only application, meaning we don't have any server logic. That said, we cannot store any of your information with us, even if we want to. All your information is saved in your browser, not in our server. That's the reason for your playlists and settings not to sync between browsers - we don't have any information about you to send to the other browse."
-			},
-			{
-				"span": "Yes, local files can be played by Noisy. Note, though, that due to security limitations, Noisy cannot save the path to your local files, meaning it won't be able to play them after restart. That's why we won't save local files to the playlist."
-			},
-			{
-				"span": "For now only audio files are supported, but video playback is in the plan, too."
-			},
-			{
-				"span": "Yes, Noisy works offline, too, but only with local files. We support HTML5 offline mode which allows us to make Noisy available to you even if you don't have active internet connection, but we cannot make your audio tracks available, since they are in the cloud storage service. So long story short - you can run Noisy offline to play local files."
-			},
-			{
-				"span": "Official support is only for English and Bulgarian. All other languages are done by the users. If your language is not from those and you want to help with the translation, you can contact me on GitHub"
-			},
-			{
-				"span": "Web technologies have limitations to prevent bad people doing bad things on user's PC. Such limitation is the quota for how much data you can store on user's device. By limiting each site to 5MB the user is assured that his hard drive won't be overflowed with information from any particular site. Noisy uses this quota to save your playlists and preferences so next time you come to have them instantly loaded. Typically, in 5MB Noisy should be able to save playlists with a total items count of around 13000-14000 before running out of space. Noisy warns the user both when quota gets above 4MB and when it reaches the limit."
-			}
-		]
+		"What do I need to use Noisy?"          : "To use Noisy you'll need a minimum resolution of 800x480 pixels and any modern browser up to date.<br/>We support the <b>latest 2</b> versions of <b>Google Chrome, Mozilla Firefox and Microsoft Edge</b>.<br/><br/><b>Not supported</b>: All mobile browsers.<br/><br/><b>Notes on support</b>: We are working towards better support for smaller screen resolution and mobile browsers.",
+		"Which cloud services are supported?"   : "For now only <a href=\"//dropbox.com/\" target=\"_blank\">Dropbox</a> and <a href=\"//drive.google.com/\" target=\"_blank\">Google Drive</a>, but other services are planned, too. We also offer audio scrobbling to <a href=\"http://last.fm/\" target=\"_blank\">last.fm</a>.",
+		"Do you collect my data?"               : "No. Noisy is client side only application, meaning we don't have any server logic. That said, we cannot store any of your information with us, even if we want to. All your information is saved in your browser, not in our server. That's the reason for your playlists and settings not to sync between browsers - we don't have any information about you to send to the other browse.",
+		"Can I play local files?"               : "Yes, local files can be played by Noisy. Note, though, that due to security limitations, Noisy cannot save the path to your local files, meaning it won't be able to play them after restart. That's why we won't save local files to the playlist.",
+		"Can I play video files?"               : "For now only audio files are supported, but video playback is in the plan, too.",
+		"Can Noisy work offline?"               : "Yes, Noisy works offline, too, but only with local files. We support HTML5 offline mode which allows us to make Noisy available to you even if you don't have active internet connection, but we cannot make your audio tracks available, since they are in the cloud storage service. So long story short - you can run Noisy offline to play local files.",
+		"Why Noisy doesn't support my language?": "Official support is only for English and Bulgarian. All other languages are done by the users. If your language is not from those and you want to help with the translation, you can contact me on GitHub",
+		"What is the 5MB quota?"                : "Web technologies have limitations to prevent bad people doing bad things on user's PC. Such limitation is the quota for how much data you can store on user's device. By limiting each site to 5MB the user is assured that his hard drive won't be overflowed with information from any particular site. Noisy uses this quota to save your playlists and preferences so next time you come to have them instantly loaded. Typically, in 5MB Noisy should be able to save playlists with a total items count of around 13000-14000 before running out of space. Noisy warns the user both when quota gets above 4MB and when it reaches the limit."
 	},
 	"whatsnew"    : [
 		"Updated the UI a bit",

@@ -323,38 +323,6 @@ let n = {
 
 	_translate()
 	{
-		// Internal function needed to construct HTML for FAQ answers.
-		function _concatHTML( answer )
-		{
-			let compiled       = '';
-			const stringString = 'string';
-			const startOpen    = '<';
-			const startClose   = '</';
-			const end          = '>';
-			const emptyString  = '';
-
-			Object.keys( answer ).forEach( el =>
-			{
-				let val = answer[ el ];
-				if ( stringString === typeof answer[ el ] )
-				{
-					compiled += startOpen.concat( el, end, val, startClose, el, end );
-				}
-				else
-				{
-					let isNan = isNaN( el );
-					compiled += ( isNan ? startOpen.concat( el, end ) : emptyString );
-					compiled += _concatHTML( val.adv || val );
-					compiled += ( isNan ? startClose.concat( el, end ) : emptyString );
-				}
-			} );
-
-			return compiled;
-		}
-
-		// Re-create HTML for the FAQ with the new language
-		n.initFAQ();
-
 		// Re-create HTML for the whats new screen
 		n.initWhatsNew();
 
@@ -471,23 +439,10 @@ let n = {
 			document.getElementById( key ).title = helpItems[ key ];
 		} );
 
+		let faq = n.lang.faq;
+
 		// Translate FAQ window
-		let questions = n.lang.faq.q;
-		id            = 'q-';
-		secondId      = 'a-';
-
-		questions.forEach( ( question, i ) =>
-		{
-			// Get corresponding answer for current question
-			let answer   = n.lang.faq.a[ i ];
-			let domIndex = i + 1;
-
-			// Print the question to the screen
-			document.getElementById( id + domIndex ).innerHTML = question;
-
-			// Print the answer to the screen
-			document.getElementById( secondId + domIndex ).innerHTML = _concatHTML( answer.adv || answer );
-		} );
+		document.getElementById( 'faq-content' ).innerHTML = Object.keys( faq ).map( question => `<details><summary>${question}</summary><p>${faq[ question ]}</p></details>` ).join( '' );
 
 		// Add not supported text to all options which are not supported by the current browser
 		let notSupported = document.querySelectorAll( '.not-supported' );
@@ -2792,22 +2747,6 @@ let n = {
 				attachEvents();
 			}
 		}
-	},
-
-	/**
-	 * Renders HTML for FAQ section in the About window
-	 */
-	initFAQ()
-	{
-		let q    = n.lang.faq.q;
-		let html = '';
-
-		q.forEach( ( q, i ) =>
-		{
-			html += '<details><summary id="q-'.concat( i + 1, '"></summary><p id="a-', i + 1, '"></p></details>' );
-		} );
-
-		document.getElementById( 'faq-content' ).innerHTML = html;
 	},
 
 	/**
