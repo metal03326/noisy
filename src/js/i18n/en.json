@@ -86,62 +86,7 @@
 		],
 		"a": [
 			{
-				"adv": [
-					{
-						"span": "To use Noisy you'll need a minimum resolution of 800x480 pixels and a browser from the following list (or newer):",
-						"ul"  : {
-							"adv": [
-								{
-									"li": "Google Chrome 29"
-								},
-								{
-									"li": "Mozilla Firefox 25"
-								},
-								{
-									"li": "Internet Explorer 11"
-								},
-								{
-									"li": "Safari 6.1"
-								},
-								{
-									"li": "Opera 15"
-								},
-								{
-									"li": "Mobile Firefox 25"
-								}
-							]
-						}
-					},
-					{
-						"span": "Not supported:",
-						"l"   : {
-							"adv": [
-								{
-									"li": "iOS Safari"
-								},
-								{
-									"li": "Android browser"
-								},
-								{
-									"li": "Mobile Chrome"
-								}
-							]
-						}
-					},
-					{
-						"span": "Notes on support:",
-						"ul"  : {
-							"adv": [
-								{
-									"li": "iOS is not supported due to Apple's restriction on audio playback (only human can start playback, which means you can play only song by song, by yourself)."
-								},
-								{
-									"li": "Noisy is fixated on performance, so each new browser feature that is introduced and it makes things faster, will be implemented. This will probably limit browser compatibility to only the latest version of your browser."
-								}
-							]
-						}
-					}
-				]
+				"span": "To use Noisy you'll need a minimum resolution of 800x480 pixels and any modern browser up to date.<br/>We support the <b>latest 2</b> versions of <b>Google Chrome, Mozilla Firefox and Microsoft Edge</b>.<br/><br/><b>Not supported</b>: All mobile browsers.<br/><br/><b>Notes on support</b>: We are working towards better support for smaller screen resolution and mobile browsers."
 			},
 			{
 				"span": "For now only <a href=\"//dropbox.com/\" target=\"_blank\">Dropbox</a> and <a href=\"//drive.google.com/\" target=\"_blank\">Google Drive</a>, but other services are planned, too. We also offer audio scrobbling to <a href=\"http://last.fm/\" target=\"_blank\">last.fm</a>."

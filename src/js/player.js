@@ -379,7 +379,7 @@ let n = {
 		let windowItems = n.lang.window;
 		Object.keys( windowItems ).forEach( key =>
 		{
-			document.getElementById( key ).innerHTML = this.literalize( windowItems[ key ] );
+			document.getElementById( key ).innerHTML = n.literalize( windowItems[ key ] );
 		} );
 
 		let placeholderItems = n.lang.placeholders;
