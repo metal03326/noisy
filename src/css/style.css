@@ -254,9 +254,9 @@ article + #playlist-hints,
 .window:not(#add-window) #add-window-title,
 .window:not(#add-window):not(#save-playlist-window):not(#load-playlist-window):not(#save-preferences-window):not(#load-preferences-window) #add-window-content,
 .window:not(#add-window) #add-window-buttons,
-.window:not(#welcome-window) #welcome-window-title,
-.window:not(#welcome-window) #welcome-window-content,
-.window:not(#welcome-window) #welcome-window-buttons,
+.window:not(#whats-new-window) #whats-new-window-title,
+.window:not(#whats-new-window) #whats-new-window-content,
+.window:not(#whats-new-window) #whats-new-window-buttons,
 .window:not(#local-window) #local-window-title,
 .window:not(#local-window) #local-window-content,
 .window:not(#youtube-search-window) #youtube-search-window-title,
@@ -446,7 +446,7 @@ label[for|="preference"],
 }
 
 #preferences-window,
-#welcome-window
+#whats-new-window
 {
 	width  : 700px;
 	height : 450px;
@@ -1001,7 +1001,7 @@ h6
 #preference-general,
 #preference-appearance,
 #preference-keyboard,
-#welcome-window-content,
+#whats-new-window-content,
 #local-window-content,
 #youtube-search-window-content
 {
@@ -1132,28 +1132,6 @@ h6
 #about-follow-us
 {
 	font-weight : 700;
-}
-
-.slide-text
-{
-	font-size : 26px;
-}
-
-.slide-smaller-text
-{
-	font-size : 16px;
-}
-
-.welcome-slide
-{
-	position : absolute;
-	top      : 0;
-	left     : 0;
-}
-
-#welcome-slide-counter
-{
-	margin : 0 5px;
 }
 
 .confirm
@@ -1437,4 +1415,27 @@ i
 {
 	color      : #fff;
 	background : #950f05;
+}
+
+#whats-new-window-content
+{
+	font-size : 18px;
+	padding   : 0 20px;
+}
+
+#whats-new-heading,
+#whats-new-footer
+{
+	font-size : 1.2em;
+	padding   : 20px 0;
+}
+
+#whats-new-content
+{
+	padding : 0 10px;
+}
+
+#whats-new-content i
+{
+	margin : 0 10px 5px;
 }

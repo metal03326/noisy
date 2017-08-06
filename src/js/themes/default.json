@@ -75,6 +75,7 @@
     "background": "#aaa"
   },
   "#window-buttons": {
+    "color": "#000",
     "border-color": "#999",
     "background": "#ccc"
   },

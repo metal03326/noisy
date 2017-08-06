@@ -20,7 +20,7 @@
 		"load-playlist-window-title"                     : "Load playlist...",
 		"save-preferences-window-title"                  : "Save Preferences as...",
 		"load-preferences-window-title"                  : "Load Preferences...",
-		"welcome-window-title"                           : "Welcome to Noisy",
+		"whats-new-window-title"                         : "What's new in Noisy",
 		"local-window-title"                             : "Add files from your local drive",
 		"youtube-search-window-title"                    : "YouTube results for:",
 		"preference-general-legend"                      : "Playback state display formatting:",
@@ -69,7 +69,9 @@
 		"about-icons"                                    : "Icons images downloaded from",
 		"fav-icons"                                      : "Favicons generated using",
 		"md5-library"                                    : "MD5 library by",
-		"about-music"                                    : "Music by"
+		"about-music"                                    : "Music by",
+		"whats-new-heading"                              : "Since your last visit we have released a new version: <b>${version}</b>. Here are the changes made:",
+		"whats-new-footer"                               : "The full changelog can be found <a href=\"/CHANGES.txt\">here</a>."
 	},
 	"faq"         : {
 		"q": [
@@ -164,7 +166,12 @@
 			}
 		]
 	},
-	"welcome"     : [
+	"whatsnew"    : [
+		"Updated the UI a bit",
+		"Made a few changes that should speedup Noisy a bit",
+		"Dropped old browser support, like Internet Explorer",
+		"Lots of stability improvements and bugfixes",
+		"We are now on <a href=\"//github.com/metal03326/noisy\">GitHub</a>"
 	],
 	"placeholders": {
 		"find-item"                    : "Enter name to search",
@@ -219,7 +226,7 @@
 		"button-clear"  : "Clear"
 	},
 	"validation"  : {
-		"exists-text" : "Already exists"
+		"exists-text": "Already exists"
 	},
 	"console"     : {
 		"ms"                        : "ms",
@@ -256,21 +263,21 @@
 		"please-wait"         : "Please wait..."
 	},
 	"other"       : {
-		"new-playlist"               : "New Playlist",
-		"notification-title"         : "Noisy is playing",
-		"not-supported"              : " (not supported on this browser)",
-		"not-connected"              : "Not connected. Click to connect"
+		"new-playlist"      : "New Playlist",
+		"notification-title": "Noisy is playing",
+		"not-supported"     : " (not supported on this browser)",
+		"not-connected"     : "Not connected. Click to connect"
 	},
 	"help"        : {
-		"preference-general-help"    : "Playback state display formatting\nFormats item tags as user specified. Available strings:\n%artist% for Artist\n%title% for Title\n%album% for Album\n%date% for Date\n\nCursor follows playback\nThis will always select the item being played\n\nPlayback follows cursor\nNext item to play will be the selected item\n\nHide playlist tabs when only one playlist\nThis is going to hide tabs when only one tab is available. Useful to save space if\nuser always uses only one playlist",
-		"preference-language-help"   : "Do you want to help with translation?\nContact me on GitHub",
-		"preference-powersaver-help" : "Makes Noisy to preserve resources when device not charging and the battery level is bellow\nthe set threshold.\n\nChanges when Noisy is running in Power Saver mode:\n- No animations\n- No background blur\n- No progress display\n- No notifications\n- No scrobbling\n- Played item will be immediately removed from cache\n- Tags won't be read",
-		"connect"                    : "Connect to clould",
-		"showAddFileFolder"          : "Add files or folders",
-		"showSavePlaylist"           : "Save playlist",
-		"showLoadPlaylist"           : "Load playlist",
-		"showAbout"                  : "About",
-		"showWelcome"                : "Welcome screen"
+		"preference-general-help"   : "Playback state display formatting\nFormats item tags as user specified. Available strings:\n%artist% for Artist\n%title% for Title\n%album% for Album\n%date% for Date\n\nCursor follows playback\nThis will always select the item being played\n\nPlayback follows cursor\nNext item to play will be the selected item\n\nHide playlist tabs when only one playlist\nThis is going to hide tabs when only one tab is available. Useful to save space if\nuser always uses only one playlist",
+		"preference-language-help"  : "Do you want to help with translation?\nContact me on GitHub",
+		"preference-powersaver-help": "Makes Noisy to preserve resources when device not charging and the battery level is bellow\nthe set threshold.\n\nChanges when Noisy is running in Power Saver mode:\n- No animations\n- No background blur\n- No progress display\n- No notifications\n- No scrobbling\n- Played item will be immediately removed from cache\n- Tags won't be read",
+		"connect"                   : "Connect to clould",
+		"showAddFileFolder"         : "Add files or folders",
+		"showSavePlaylist"          : "Save playlist",
+		"showLoadPlaylist"          : "Load playlist",
+		"showAbout"                 : "About",
+		"showWhatsNew"              : "What's new"
 	},
 	"splash"      : {
 		"splash-screen-text": "If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href=\"javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){};location.replace('//'+location.host+'/')})()\" style=\"text-decoration:none;color:red\">leaving it</a>. If not you can <a href=\"javascript:localStorage.removeItem('preferences'),location.reload()\" style=\"text-decoration:none;color:red\">click here to delete the settings</a>. If that doesn't help, try <a href=\"javascript:localStorage.removeItem('playlists'),location.reload()\" style=\"text-decoration:none;color:red\">deleting the playlists</a>, too."

@@ -13,6 +13,7 @@
     <meta property="og:image" content="https://www.noisyplayer.com/open_praph.png">
     <script type="text/javascript">
 		var timerStart = Date.now();
+		var version = 20170721;
     </script>
     <meta charset="utf-8"/>
     <meta name=viewport content="width=device-width, initial-scale=1">
@@ -76,7 +77,7 @@
             <span id="load-playlist-window-title" class="window-title-span"></span>
             <span id="save-preferences-window-title" class="window-title-span"></span>
             <span id="load-preferences-window-title" class="window-title-span"></span>
-            <span id="welcome-window-title" class="window-title-span"></span>
+            <span id="whats-new-window-title" class="window-title-span"></span>
             <span id="local-window-title" class="window-title-span"></span>
             <span id="youtube-search-window-title" class="window-title-span"></span>
             <div id="window-close">&times;</div>
@@ -309,7 +310,13 @@
                     <div>
                         <h5>Noisy</h5>
                         <!--todo: Fetch changes and display them to the user in-app-->
-                        <a href="../CHANGES.txt" target="_blank"><h6 id="version"></h6></a>
+                        <a href="../CHANGES.txt" target="_blank">
+                            <h6 id="version">
+                                <script type="text/javascript">
+		                            document.write( version );
+                                </script>
+                            </h6>
+                        </a>
                         <h4 id="moto"></h4>
                         <h6><span id="by"></span> metal03326</h6>
                     </div>
@@ -334,6 +341,9 @@
                     </a>
                     <a href="//plus.google.com/+Noisyplayer" rel="publisher" class="follow-link" target="_blank">
                         <span data-icon="G"></span>
+                    </a>
+                    <a href="//github.com/metal03326/noisy" rel="publisher" class="follow-link" target="_blank">
+                        <span data-icon="I"></span>
                     </a>
                 </div>
                 <div id="about-resources">
@@ -417,7 +427,11 @@
                 </div>
                 <div id="add-window-files" class="flex-item-full"></div>
             </div>
-            <div id="welcome-window-content"></div>
+            <div id="whats-new-window-content" class="flex-column">
+                <div id="whats-new-heading"></div>
+                <div id="whats-new-content" class="flex-item-full"></div>
+                <div id="whats-new-footer"></div>
+            </div>
             <div id="local-window-content">
                 <span id="choose-files-to-play"></span>
                 <div id="file-input-methods">
@@ -476,20 +490,13 @@
             <div id="load-preferences-window-buttons" class="flex">
                 <button onclick="n.loadPreferencesFromCloud();" class="button-load" disabled></button>
             </div>
-            <div id="welcome-window-buttons" class="flex">
+            <div id="whats-new-window-buttons" class="flex">
                 <div class="flex-item-full">
                     <label>
                         <input type="checkbox" id="show-on-startup-checkbox" checked="checked"/>
                         <span id="show-on-startup"></span>
                     </label>
                 </div>
-                <button onclick="n.changeSlide(-1);">
-                    <div data-icon="@" class="rotate270"></div>
-                </button>
-                <span id="welcome-slide-counter"></span>
-                <button onclick="n.changeSlide(1);" id="welcome-slide-next">
-                    <div data-icon="@" class="rotate90"></div>
-                </button>
             </div>
         </div>
     </div>
@@ -511,7 +518,7 @@
             <div id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0"
                  data-icon="8"></div>
             <div id="showAbout" data-menulistener="showAbout" class="menu-ul-li" tabindex="0" data-icon=";"></div>
-            <div id="showWelcome" data-menulistener="showWelcome" class="menu-ul-li" tabindex="0" data-icon="6"></div>
+            <div id="showWhatsNew" data-menulistener="showWhatsNew" class="menu-ul-li" tabindex="0" data-icon="6"></div>
         </div>
     </div>
     <div class="flex-column flex-item-full">

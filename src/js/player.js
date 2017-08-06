@@ -2,7 +2,7 @@
  * Noisy - Your cloud player
  *
  * @author metal03326
- * @version n.version
+ * @version window.version
  */
 
 'use strict';
@@ -15,7 +15,6 @@
 //TODO: Make a page with things to be dropped and when (approximately)
 //TODO: Fix double tag read under Firefox
 //TODO: Go around the code and find usages for n.log/warn/error.
-//TODO: Finish the animated video for the welcome screen.
 //TODO: Implement WAI-ARIA.
 //TODO: Add WebVTT - Web Video Text Tracks to the intro video
 //TODO: Introduce n.pref.batch() to make changes to n.pref.settings object at once before saving. This should save a
@@ -46,19 +45,19 @@ let n = {
 	console: document.getElementById( 'console-content' ),
 
 	// Dropbox communication goes through here. See dropbox.js file for more info.
-	dropbox: dropbox,
+	dropbox,
 
 	// Detected formats that the browser is able to play in Audio tag
 	formats: [],
 
 	// Google Drive communication goes through here. See googledrive.js file for more info.
-	googledrive: googledrive,
+	googledrive,
 
 	// Language cache
 	langs: {},
 
 	// Last.fm communication goes through here. See lastfm.js file for more info.
-	lastfm: lastfm,
+	lastfm,
 
 	// Save last search term, as we need to check for it next time the user presses Enter and initiate play instead of
 	// search if terms match
@@ -69,7 +68,7 @@ let n = {
 		// Object containing all files from user's choise. Format is playlistId: file
 		files: {},
 
-		urlManager: urlManager,
+		urlManager,
 
 		/**
 		 * Show local window instead of actually trying to connect to a cloud
@@ -156,7 +155,7 @@ let n = {
 	powerSaveMode: false,
 
 	// Preferences object - all preferences are available here
-	pref: pref,
+	pref,
 
 	// True when pre-load was initiated
 	preloaded: false,
@@ -178,9 +177,6 @@ let n = {
 
 	// Object containing all loaded themes
 	themes: {},
-
-	// Version of Noisy
-	version: 20170506,
 
 	/**
 	 * Deselect all selected items from the current playlist and find window
@@ -315,6 +311,16 @@ let n = {
 		}
 	},
 
+	/**
+	 * Evaluate regular string as if it was a template literal
+	 * @param {String} string String to be evaluated
+	 * @returns {String}
+	 */
+	literalize( string )
+	{
+		return eval( '`' + string + '`' );
+	},
+
 	_translate()
 	{
 		// Internal function needed to construct HTML for FAQ answers.
@@ -349,6 +355,9 @@ let n = {
 		// Re-create HTML for the FAQ with the new language
 		n.initFAQ();
 
+		// Re-create HTML for the whats new screen
+		n.initWhatsNew();
+
 		document.documentElement.lang = n.pref.lang;
 
 		let splashItems = n.lang.splash;
@@ -370,7 +379,7 @@ let n = {
 		let windowItems = n.lang.window;
 		Object.keys( windowItems ).forEach( key =>
 		{
-			document.getElementById( key ).innerHTML = windowItems[ key ];
+			document.getElementById( key ).innerHTML = this.literalize( windowItems[ key ] );
 		} );
 
 		let placeholderItems = n.lang.placeholders;
@@ -1306,10 +1315,10 @@ let n = {
 
 		document.getElementById( 'playlists-wrapper' ).addEventListener( 'keydown', _onPlaylistDown );
 
-		// We need to remember user's choice for showing or not the welcome screen
-		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, () =>
+		// We need to remember user's choice for showing or not the whats new screen
+		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function()
 		{
-			n.pref.showWelcome = this.checked;
+			n.pref.showWhatsNew = this.checked;
 		} );
 
 		// We need to make animation setting work immediately
@@ -1675,9 +1684,6 @@ let n = {
 			window.className = 'window';
 
 			n.clearWindow();
-
-			// Remove slideshow interval
-			clearInterval( n.slideshow );
 		}
 
 		// Remove blur
@@ -2558,15 +2564,9 @@ let n = {
 				}
 			} );
 
-			// Print current version into the About box
-			document.getElementById( 'version' ).innerHTML = n.version;
-
-			// Init the welcome screen
-			n.initWelcome();
-
-			if ( n.pref.showWelcome )
+			if ( n.pref.showWhatsNew )
 			{
-				n.showWelcome();
+				n.showWhatsNew();
 			}
 
 			// Calculate time needed for Noisy to load
@@ -2594,7 +2594,7 @@ let n = {
 			const last        = ' '.concat( duration, ' ', timing );
 			const join        = last + ',';
 			const transitions = {
-				'#the-menu,.welcome-slide,#splash'                                                                : [ 'opacity', 'visibility' ],
+				'#the-menu,#splash'                                                                               : [ 'opacity', 'visibility' ],
 				'.preferences-item,.add-item'                                                                     : [ 'background', 'color' ],
 				'#drop-zone'                                                                                      : 'border',
 				'.window,.cloud-icon,#battery-level-menu-handle:hover,.menu-ul-li:hover,[data-menulistener]:hover': 'opacity',
@@ -2894,103 +2894,13 @@ let n = {
 		}
 	},
 
-	/**
-	 * Initializes sliding functionality on welcome page and all features in them.
-	 */
-	initWelcome()
+	initWhatsNew()
 	{
-		return;
-		let slides = n.lang.welcome;
-		let df     = document.createDocumentFragment();
-		let slide;
-
-		slides.forEach( ( s, i ) =>
-		{
-			slide = document.createElement( 'div' );
-
-			slide.id = 'welcome-slide-' + i;
-
-			// Add unique class name to all slides so we can select them later
-			slide.classList.add( 'welcome-slide' );
-
-			// Hide slide if not first one
-			if ( i )
-			{
-				slide.classList.add( 'visibility-hidden' );
-			}
-
-			slide.innerHTML = slides[ i ];
-
-			df.appendChild( slide );
-		} );
-
-		// Append all slides to the DOM
-		document.getElementById( 'welcome-window-content' ).appendChild( df );
-
-		// Update slide counter
-		document.getElementById( 'welcome-slide-counter' ).innerHTML = '1'.concat( '/', slides.length );
-
-		// Update Noisy version
-		//		document.getElementById( 'welcome-version' ).innerHTML = n.version;
-
-		// Place the logo in the slides
-		document.getElementById( 'welcome-window-logo' ).src = document.getElementById( 'largest-logo' ).href;
-
-		if ( n.pref.showWelcome )
-		{
-			this.slideshow = setInterval( () =>
-			{
-				let button = document.getElementById( 'welcome-slide-next' );
-				if ( !button.disabled )
-				{
-					n.changeSlide( 1, true );
-				}
-				else
-				{
-					clearInterval( n.slideshow );
-				}
-			}, 5000 );
-		}
-
-		/*var todoCount = 0,
-		 filesToCheck = [
-		 , 'cloud.js'
-		 , 'dropbox.js'
-		 , 'googledrive.js'
-		 , 'index.html'
-		 , 'main.js'
-		 , 'player.js'
-		 , 'style.css'
-		 ],
-		 progressCounter = 0;
-
-		 // Check all listed above files for TODOs and count them
-		 filesToCheck.forEach( function( file )
-		 {
-		 var xhr = new XMLHttpRequest();
-
-		 xhr.onreadystatechange = function()
-		 {
-		 if( 4 === xhr.readyState )
-		 {
-		 if( 200 === xhr.status )
-		 {
-		 var count = xhr.responseText.match( /TODO(:)/g );
-		 if( count )
-		 {
-		 todoCount += count.length;
-		 }
-		 if( filesToCheck.length == ++progressCounter )
-		 {
-		 document.getElementById( 'todos-left' ).innerHTML = todoCount;
-		 }
-		 }
-		 }
-		 };
-
-		 xhr.open( 'GET', file, true );
-		 xhr.send();
-		 } );*/
+		document.getElementById( 'whats-new-content' ).innerHTML = n.lang.whatsnew.map( whatsnew => `<div class="flex">
+				<i data-icon="o"></i>
+				<div>${whatsnew}</div>
+			</div>`
+		).join( '' );
 	},
 
 	/**
@@ -3320,61 +3230,6 @@ let n = {
 
 		// Return the playback order to the previous setting
 		order.selectedIndex = idx;
-	},
-
-	/**
-	 * Show next slide on Welcome screen and update button state.
-	 * @param {String} direction Required. Direction in which the slideshow will go.
-	 * @param {Boolean} doNotClear Required. Flag showing if interval for slideshow should be stopped or not.
-	 */
-	changeSlide( direction, doNotClear )
-	{
-		// Stop slideshow
-		if ( !doNotClear )
-		{
-			clearInterval( n.slideshow );
-		}
-
-		// Get current style
-		let currentSlide = document.getElementById( 'welcome-window-content' ).querySelector( '.welcome-slide:not(.visibility-hidden)' );
-		// Parent node of our slides
-		let parent       = currentSlide.parentNode;
-		// Get it's index among it's siblings
-		let idx          = parseInt( currentSlide.id.split( '-' ).pop(), 10 );
-		// Slide number
-		let slide        = idx + 1 + direction;
-		// Get next slide
-		let next         = currentSlide.parentNode.children[ idx + direction ];
-
-		// Check if we are the last slide in that direction
-		if ( !next )
-		{
-			// Set next slide depending on the direction
-			slide = direction > 0 ? 0 : parent.childElementCount - 1;
-			next  = parent.children.item( slide++ );
-		}
-
-		requestAnimationFrame( () =>
-		{
-			// Hide current slide
-			currentSlide.classList.add( 'visibility-hidden' );
-
-			// Reset content of the slide being hidden to the default, if it contains iframe (video). This will stop
-			// video if played.
-			if ( currentSlide.querySelectorAll( 'iframe' ).length )
-			{
-				setTimeout( () =>
-				{
-					currentSlide.innerHTML = n.lang.welcome[ idx ];
-				}, 500 );
-			}
-
-			// Show next slide
-			next.classList.remove( 'visibility-hidden' );
-
-			// Update counter in the welcome footer
-			document.getElementById( 'welcome-slide-counter' ).innerHTML = ''.concat( slide, '/' + next.parentNode.childElementCount );
-		} );
 	},
 
 	/**
@@ -4183,16 +4038,6 @@ let n = {
 	},
 
 	/**
-	 * Plays the video and stops the slideshow from sliding
-	 * @param {HTMLElement} container Required. Element from which to read the HTML needed to replace the existing one
-	 */
-	playSlideshowVideo( container )
-	{
-		clearInterval( n.slideshow );
-		container.innerHTML = container.dataset.iframe;
-	},
-
-	/**
 	 * Calls next method with previous direction.
 	 */
 	prev()
@@ -4802,7 +4647,7 @@ let n = {
 		n.checkConnections();
 		n.applyTheme();
 		n.checkQuota();
-		n.initWelcome();
+		n.initWhatsNew();
 	},
 
 	/**
@@ -5199,11 +5044,11 @@ let n = {
 	},
 
 	/**
-	 * Shows welcome window.
+	 * Shows whats new window.
 	 */
-	showWelcome()
+	showWhatsNew()
 	{
-		n.window( 'welcome-window' );
+		n.window( 'whats-new-window' );
 	},
 
 	/**
