@@ -2,7 +2,7 @@
  * Noisy Preferences module for data binding between the DOM and the preferences object
  *
  * @author metal03326
- * @version 20170507
+ * @version 20170721
  */
 
 // Preferences singleton to be passed to Noisy
@@ -12,7 +12,7 @@ let pref = {
 
 	// Default settings
 	settings: {
-		values          : {
+		values                     : {
 			'power-saver-state'                   : '15',
 			'preference-user-language'            : 'en',
 			'preference-theme'                    : 'default',
@@ -22,7 +22,7 @@ let pref = {
 			'preference-window-title-format'      : '%artist% - %title%',
 			'preference-playlist-format'          : '%artist% - %title%'
 		},
-		checkboxes      : {
+		checkboxes                 : {
 			'preference-enable-notifications'   : false,
 			'preference-enable-counter'         : true,
 			'preference-enable-animations'      : true,
@@ -32,8 +32,8 @@ let pref = {
 			'preference-playback-follows-cursor': false,
 			'preference-cursor-follows-playback': false
 		},
-		showWelcome     : true,
-		keys            : [
+		[`showWhatsNew-${version}`]: true,
+		keys                       : [
 			{ key: '17+81', action: 'addToQueue' },
 			{ key: '81', action: 'addToQueue' },
 			{ key: '74', action: 'showSearch' },
@@ -47,18 +47,17 @@ let pref = {
 			{ key: '77', action: 'toggleMute' },
 			{ key: '46', action: 'removeFromPlaylist' }
 		],
-		volume          : 1,
-		activePlaylistId: null,
-		muted           : false,
-		playbackOrder   : 0,
-		devChannel      : false,
-		dropbox         : {
+		volume                     : 1,
+		activePlaylistId           : null,
+		muted                      : false,
+		playbackOrder              : 0,
+		dropbox                    : {
 			accessToken: null
 		},
-		googledrive     : {
+		googledrive                : {
 			accessToken: null
 		},
-		lastfm          : {
+		lastfm                     : {
 			accessToken: null
 		}
 	},
@@ -76,8 +75,41 @@ let pref = {
 
 		if ( settings )
 		{
-			this.settings = JSON.parse( settings );
+			this.settings = Object.assign( {}, this.originalSettings, JSON.parse( settings ) );
 		}
+
+		this.clean( [ `showWhatsNew-${version}` ] );
+	},
+
+	/**
+	 * Removes old, unused settings
+	 * @param {Array} [exceptionList] List of exact key names that needs to be kept
+	 */
+	clean( exceptionList = [] )
+	{
+		let removeExact = [ 'devChannel', 'showWelcome' ];
+		let removeRegEx = [ 'showWhatsNew' ];
+
+		removeExact.forEach( key =>
+		{
+			if ( !exceptionList.includes( key ) )
+			{
+				delete this.settings[ key ];
+			}
+		} );
+
+		let settingsKeys = Object.keys( this.settings );
+
+		removeRegEx.forEach( removeKey =>
+		{
+			settingsKeys.forEach( key =>
+			{
+				if ( !exceptionList.includes( key ) && key.match( new RegExp( removeKey ) ) )
+				{
+					delete this.settings[ key ];
+				}
+			} );
+		} );
 	},
 
 	'import'( settings )
@@ -151,8 +183,8 @@ let pref = {
 			n.warn( 'missing-element', 'playback-order' );
 		}
 
-		// Set welcome window state
-		document.getElementById( 'show-on-startup-checkbox' ).checked = this.settings.showWelcome;
+		// Set whats new window state
+		document.getElementById( 'show-on-startup-checkbox' ).checked = this.settings[ `showWhatsNew-${version}` ];
 
 		// Set Dropbox access token to loaded value
 		n.dropbox.accessToken = this.settings.dropbox.accessToken;
@@ -231,11 +263,11 @@ let pref = {
 		}
 	},
 
-	set showWelcome( value )
+	set showWhatsNew( value )
 	{
-		let shouldSave = this.settings.showWelcome !== value;
+		let shouldSave = this.settings[ `showWhatsNew-${version}` ] !== value;
 
-		this.settings.showWelcome = value;
+		this.settings[ `showWhatsNew-${version}` ] = value;
 
 		if ( shouldSave )
 		{
@@ -243,9 +275,9 @@ let pref = {
 		}
 	},
 
-	get showWelcome()
+	get showWhatsNew()
 	{
-		return this.settings.showWelcome;
+		return this.settings[ `showWhatsNew-${version}` ];
 	},
 
 	set lang( value )
@@ -422,17 +454,6 @@ let pref = {
 	get powerSaverEnabled()
 	{
 		return this.settings.checkboxes[ 'preference-enable-powersaver' ];
-	},
-
-	set devChannel( state )
-	{
-		this.settings.devChannel = state;
-		this.save();
-	},
-
-	get devChannel()
-	{
-		return this.settings.devChannel;
 	}
 };
 

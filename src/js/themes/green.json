@@ -74,9 +74,6 @@
     "background": "#A0E771",
     "border-color": "#D0F8AA"
   },
-  ".menu-ul-li": {
-    "background": "#D0F8AA"
-  },
   "#window-content": {
     "background": "#E7FFD7"
   },
@@ -98,20 +95,10 @@
   "#translation-contributors": {
     "background": "#C9F0B6"
   },
-  ".tooltip:hover:after": {
-    "background": "rgba(195,246,158,.93)",
-    "color": "#04700C"
-  },
-  ".tooltip:hover:before": {
-    "border-color": "rgba(195,246,158,.93) transparent"
-  },
   "#init-search": {
     "background": "#E9EBE8"
   },
   "#window-close": {
     "color": "#fff"
-  },
-  "#footer-counter": {
-    "border-color": "#04700C"
   }
 }

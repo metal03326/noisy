@@ -2,8 +2,148 @@
 {
 	font-family : 'Noisy';
 	src         : url('../fonts/Noisy.woff') format('woff');
-	font-weight : normal;
+	font-weight : 400;
 	font-style  : normal;
+}
+
+/* cyrillic-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-cyrillic-ext.woff2') format('woff2');
+	unicode-range : U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+
+/* cyrillic */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-cyrillic.woff2') format('woff2');
+	unicode-range : U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* greek-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-greek-ext.woff2') format('woff2');
+	unicode-range : U+1F00-1FFF;
+}
+
+/* greek */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-greek.woff2') format('woff2');
+	unicode-range : U+0370-03FF;
+}
+
+/* vietnamese */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-vietnamese.woff2') format('woff2');
+	unicode-range : U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+
+/* latin-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-latin-ext.woff2') format('woff2');
+	unicode-range : U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 400;
+	src           : local('Roboto'), local('Roboto-Regular'), url('../fonts/Roboto-Regular-latin.woff2') format('woff2');
+	unicode-range : U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+
+/* cyrillic-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-cyrillic-ext.woff2') format('woff2');
+	unicode-range : U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
+}
+
+/* cyrillic */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-cyrillic.woff2') format('woff2');
+	unicode-range : U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+/* greek-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-greek-ext.woff2') format('woff2');
+	unicode-range : U+1F00-1FFF;
+}
+
+/* greek */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-greek.woff2') format('woff2');
+	unicode-range : U+0370-03FF;
+}
+
+/* vietnamese */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-vietnamese.woff2') format('woff2');
+	unicode-range : U+0102-0103, U+1EA0-1EF9, U+20AB;
+}
+
+/* latin-ext */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-latin-ext.woff2') format('woff2');
+	unicode-range : U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* latin */
+@font-face
+{
+	font-family   : 'Roboto';
+	font-style    : normal;
+	font-weight   : 700;
+	src           : local('Roboto Bold'), local('Roboto-Bold'), url('../fonts/Roboto-Bold-latin.woff2') format('woff2');
+	unicode-range : U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
 }
 
 [data-icon]:before,
@@ -14,7 +154,7 @@
 	content                 : attr(data-icon);
 	speak                   : none;
 	font-style              : normal;
-	font-weight             : normal;
+	font-weight             : 400;
 	font-variant            : normal;
 	text-transform          : none;
 	line-height             : 1;
@@ -24,14 +164,15 @@
 
 [data-icon="w"]:before
 {
-	content       : '';
-	display       : block;
-	border-radius : 50%;
-	width         : 1em;
-	height        : 1em;
-	border        : .25rem solid;
-	margin        : auto;
-	animation     : spin 1s infinite linear;
+	content          : '';
+	display          : block;
+	border-radius    : 50%;
+	width            : 1em;
+	height           : 1em;
+	border           : .25rem solid rgba(255, 255, 255, .2);
+	border-top-color : #fff;
+	margin           : auto;
+	animation        : spin 1s infinite linear;
 }
 
 /* Special case for delete confirmation */
@@ -55,7 +196,7 @@ a
 .menu-ul-li:hover,
 [data-menulistener]:hover
 {
-	opacity : 0.6;
+	opacity : .6;
 }
 
 /*End of common theme rules*/
@@ -67,26 +208,69 @@ body
 
 body
 {
-	margin      : 0;
-	padding     : 0;
-	font-family : Tahoma;
-	width       : 100%;
-	min-width   : 800px;
+	margin    : 0;
+	padding   : 0;
+	width     : 100%;
+	min-width : 800px;
 }
 
-.menu-ul-li:hover:after,
-.cap:hover:after,
-.cloud-icon[data-notconnected]:hover:after
+body,
+input,
+textarea,
+select,
+button
 {
-	top         : 10px;
-	content     : attr(title);
-	display     : block;
-	left        : 65px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 16px;
+	font-family : 'Roboto';
+}
+
+.item-queue:empty,
+.playlist-item:not(.selected) .item-queue,
+.playlist-item:not(.selected) .item-add-to-queue,
+.playlist-item:not(.selected) .item-remove-from-queue,
+.playlist-item.selected:not(.is-in-queue) .item-remove-from-queue,
+.playlist-item.selected.is-in-queue .item-add-to-queue,
+.one-tab #playlists-tabs,
+.one-tab [data-icon="#"]:last-child,
+body:not(.one-tab) [data-icon="#"]:not(:last-child),
+article + #playlist-hints,
+#find-window-results div[data-icon],
+.playlists-tabs-li:not(.active) .playlist-edit,
+.playlists-tabs-li:not(.active) .playlist-remove,
+#battery-level-menu-handle:not([title]) #battery-cap,
+#add-window-files:empty,
+.window:not(#add-window) .local-icon,
+.window:not(.exists) .exists-text,
+.window:not(#preferences-window) #preferences-window-title,
+.window:not(#preferences-window) #preferences-window-content,
+.window:not(#preferences-window) #preferences-window-buttons,
+.window:not(#about-window) #about-window-title,
+.window:not(#about-window) #about-window-content,
+.window:not(#about-window) #about-window-buttons,
+.window:not(#find-window) #find-window-title,
+.window:not(#find-window) #find-window-content,
+.window:not(#connect-window) #connect-window-title,
+.window:not(#connect-window) #connect-window-content,
+.window:not(#connect-window) #connect-window-buttons,
+.window:not(#add-window) #add-window-title,
+.window:not(#add-window):not(#save-playlist-window):not(#load-playlist-window):not(#save-preferences-window):not(#load-preferences-window) #add-window-content,
+.window:not(#add-window) #add-window-buttons,
+.window:not(#whats-new-window) #whats-new-window-title,
+.window:not(#whats-new-window) #whats-new-window-content,
+.window:not(#whats-new-window) #whats-new-window-buttons,
+.window:not(#local-window) #local-window-title,
+.window:not(#local-window) #local-window-content,
+.window:not(#youtube-search-window) #youtube-search-window-title,
+.window:not(#youtube-search-window) #youtube-search-window-content,
+.window:not(#save-playlist-window) #save-playlist-window-title,
+.window:not(#save-playlist-window) #save-playlist-window-buttons,
+.window:not(#load-playlist-window) #load-playlist-window-title,
+.window:not(#load-playlist-window) #load-playlist-window-buttons,
+.window:not(#save-preferences-window) #save-preferences-window-title,
+.window:not(#save-preferences-window) #save-preferences-window-buttons,
+.window:not(#load-preferences-window) #load-preferences-window-title,
+.window:not(#load-preferences-window) #load-preferences-window-buttons
+{
+	display : none;
 }
 
 .nav-ul-a,
@@ -99,27 +283,22 @@ body
 
 #header-left > div:first-child
 {
-	padding : 6px 12px;
+	padding : .13em 0;
 }
 
 .nav-inputs-li
 {
-	cursor : default;
-}
-
-.nav-inputs-li,
-#header-left
-{
+	cursor  : default;
 	padding : 2px;
 }
 
 #header-left
 {
-	width     : 62px;
-	height    : 56px;
-	font-size : 36px;
-	z-index   : 1;
-	outline   : none;
+	position   : relative;
+	z-index    : 1;
+	outline    : none;
+	font-size  : 32px;
+	background : inherit;
 }
 
 #color-bulb
@@ -132,21 +311,13 @@ body
 {
 	margin  : 0;
 	padding : 0;
-	height  : 26px;
 }
 
 .playlists-tabs-li
 {
-	cursor    : default;
-	padding   : 2px 0 2px 5px;
-	border    : 2px solid transparent;
-	font-size : 16px;
+	padding   : 4px 7px;
+	font-size : 18px;
 	outline   : none;
-}
-
-.playlists-tabs-li:not(#add-playlist) > *
-{
-	margin-right : 5px;
 }
 
 .playlist
@@ -154,17 +325,23 @@ body
 	flex : 1 1 auto;
 }
 
-.one-tab #playlists-tabs
+.one-tab #header-left
 {
-	display : none;
+	font-size : 14px;
+}
+
+.one-tab #the-menu
+{
+	font-size : 16px;
 }
 
 .playlist-item
 {
+	height      : 32px;
 	overflow    : hidden;
 	white-space : nowrap;
 	font-size   : 16px;
-	display     : flex;
+	align-items : center;
 }
 
 #footer
@@ -177,9 +354,9 @@ body
 #footer-counter
 {
 	min-width    : 110px;
-	height       : 100%;
 	padding-left : 5px;
 	text-align   : center;
+	border-left  : 1px solid currentColor;
 }
 
 .playlist-item,
@@ -200,12 +377,15 @@ body
 
 #window-backdrop
 {
-	position       : absolute;
-	top            : 0;
-	bottom         : 0;
-	left           : 0;
-	right          : 0;
-	pointer-events : none;
+	position        : absolute;
+	top             : 0;
+	bottom          : 0;
+	left            : 0;
+	right           : 0;
+	pointer-events  : none;
+	align-items     : center;
+	justify-content : center;
+	z-index         : 1;
 }
 
 .window
@@ -214,14 +394,19 @@ body
 	pointer-events : all;
 	width          : 600px;
 	height         : 300px;
+	border         : 2px solid;
+}
+
+#add-window-cloud-chooser
+{
+	align-items     : center;
+	justify-content : center;
 }
 
 :root .preferences-item
 {
-	display     : block;
 	padding     : 0 20px 0 5px;
 	white-space : nowrap;
-	width       : 100%;
 	text-align  : left;
 }
 
@@ -236,44 +421,22 @@ body
 	flex : 1 1 auto;
 }
 
+#preferences-tabs
+{
+	border-right : 1px solid;
+}
+
+label[for|="preference"],
+#translation-contributors-label
+{
+	padding : 4px 10px;
+}
+
 .window-title-span
 {
 	padding   : 4px 0 0 5px;
-	font-size : 16px;
+	font-size : 18px;
 	flex      : 1 1 auto;
-}
-
-.window:not(#preferences-window) #preferences-window-title,
-.window:not(#preferences-window) #preferences-window-content,
-.window:not(#preferences-window) #preferences-window-buttons,
-.window:not(#about-window) #about-window-title,
-.window:not(#about-window) #about-window-content,
-.window:not(#about-window) #about-window-buttons,
-.window:not(#find-window) #find-window-title,
-.window:not(#find-window) #find-window-content,
-.window:not(#connect-window) #connect-window-title,
-.window:not(#connect-window) #connect-window-content,
-.window:not(#connect-window) #connect-window-buttons,
-.window:not(#add-window) #add-window-title,
-.window:not(#add-window):not(#save-playlist-window):not(#load-playlist-window):not(#save-preferences-window):not(#load-preferences-window) #add-window-content,
-.window:not(#add-window) #add-window-buttons,
-.window:not(#welcome-window) #welcome-window-title,
-.window:not(#welcome-window) #welcome-window-content,
-.window:not(#welcome-window) #welcome-window-buttons,
-.window:not(#local-window) #local-window-title,
-.window:not(#local-window) #local-window-content,
-.window:not(#youtube-search-window) #youtube-search-window-title,
-.window:not(#youtube-search-window) #youtube-search-window-content,
-.window:not(#save-playlist-window) #save-playlist-window-title,
-.window:not(#save-playlist-window) #save-playlist-window-buttons,
-.window:not(#load-playlist-window) #load-playlist-window-title,
-.window:not(#load-playlist-window) #load-playlist-window-buttons,
-.window:not(#save-preferences-window) #save-preferences-window-title,
-.window:not(#save-preferences-window) #save-preferences-window-buttons,
-.window:not(#load-preferences-window) #load-preferences-window-title,
-.window:not(#load-preferences-window) #load-preferences-window-buttons
-{
-	display : none;
 }
 
 #connect-window-content,
@@ -283,7 +446,7 @@ body
 }
 
 #preferences-window,
-#welcome-window
+#whats-new-window
 {
 	width  : 700px;
 	height : 450px;
@@ -339,7 +502,7 @@ button,
 #window-close
 {
 	padding-right : 5px;
-	font-size     : 22px;
+	font-size     : 24px;
 }
 
 #window-content
@@ -363,7 +526,8 @@ button,
 
 #window-buttons
 {
-	font-size : 16px;
+	font-size  : 16px;
+	border-top : 1px solid;
 }
 
 .scroll-y
@@ -373,8 +537,8 @@ button,
 
 .playback-options
 {
-	width   : 60px;
-	display : flex;
+	width    : 60px;
+	position : relative;
 }
 
 .item-queue,
@@ -397,45 +561,24 @@ button,
 	font-size : 26px;
 }
 
-.item-queue:empty,
-.selected .item-queue:empty
-{
-	display : none;
-}
-
 .item-add-to-queue,
 .item-remove-from-queue
 {
-	display   : none;
 	font-size : 27px;
 }
 
-.selected .item-queue
+.item-queue
 {
-	display      : block;
-	z-index      : 2;
-	font-size    : 18px;
-	padding-top  : 1px;
-	padding-left : 5px;
-	margin       : 0;
+	z-index   : 2;
+	font-size : 10px;
+	position  : absolute;
+	top       : 8px;
+	left      : 0;
 }
 
 .item-title
 {
 	flex : 1 1 auto;
-}
-
-.item-title,
-.item-duration,
-.delete-icon
-{
-	padding : 7px 0;
-}
-
-.selected:not(.is-in-queue) .item-add-to-queue,
-.selected.is-in-queue .item-remove-from-queue
-{
-	display : block;
 }
 
 .delete-icon
@@ -474,13 +617,14 @@ button,
 #volume,
 #progress
 {
-	margin-top : 3px;
+	margin : 2px 2px 0 0;
 }
 
 .select
 {
-	position : relative;
-	display  : inline-block;
+	position   : relative;
+	display    : inline-block;
+	margin-top : 2px;
 }
 
 .select:after
@@ -501,20 +645,17 @@ button,
 	-webkit-appearance : none;
 	-moz-appearance    : none;
 	appearance         : none;
-	padding            : 7px 30px 7px 7px;
+	padding            : 5px 30px 5px 7px;
 }
 
-.exists-text,
-.invalid-text
+.exists-text
 {
-	visibility : hidden;
-	color      : red;
+	color : red;
 }
 
-.exists .exists-text,
-.invalid .invalid-text
+.exists .required-item
 {
-	visibility : visible;
+	box-shadow : 0 0 5px rgba(255, 0, 0, .75)
 }
 
 .va
@@ -524,7 +665,7 @@ button,
 
 .bold
 {
-	font-weight : bold;
+	font-weight : 700;
 
 }
 
@@ -551,7 +692,8 @@ details ul
 
 summary
 {
-	font-weight : bold;
+	font-weight : 700;
+	outline     : none;
 }
 
 input:required:invalid,
@@ -580,7 +722,9 @@ input::-ms-clear
 
 [contenteditable="true"]
 {
-	padding : 0 5px;
+	padding    : 0 5px;
+	background : #fff;
+	color      : #000;
 }
 
 .inputs
@@ -589,11 +733,6 @@ input::-ms-clear
 	left     : 260px;
 	right    : 5px;
 	top      : 0;
-}
-
-#nav-progress .nav-inputs-li
-{
-	width : 100%;
 }
 
 .controls
@@ -610,28 +749,13 @@ section:focus
 
 .cloud-icon
 {
-	display  : inline-block;
-	width    : 110px;
-	height   : 110px;
-	margin   : 65px 8px;
-	position : relative;
+	width  : 110px;
+	height : 110px;
 }
 
-.cloud-icon[data-notconnected]
+.cloud-icon[title]:not(:hover)
 {
 	opacity : .2;
-}
-
-.cloud-icon[data-notconnected]:hover
-{
-	opacity : 1;
-}
-
-.cloud-icon[data-notconnected]:hover:after
-{
-	top     : auto;
-	content : attr(data-notconnected);
-	left    : -60px;
 }
 
 .local-icon,
@@ -640,11 +764,6 @@ section:focus
 {
 	margin     : 0 8px;
 	text-align : center;
-}
-
-.local-icon
-{
-	display : none;
 }
 
 .local-icon .icon,
@@ -663,17 +782,10 @@ section:focus
 	top       : -18px;
 }
 
-#add-window .local-icon
-{
-	display : inline-block;
-}
-
 .playlist-edit
 {
-	font-size      : 11px;
-	display        : inline-block;
-	padding-top    : 4px;
-	vertical-align : middle;
+	font-size : 12px;
+	margin    : 2px 5px 0 15px;
 }
 
 #clear-console
@@ -684,17 +796,10 @@ section:focus
 
 #add-playlist
 {
-	width      : 25px;
-	text-align : center;
-	height     : 25px;
-	font-size  : 20px;
-	padding    : 0;
-}
-
-.center-vertically
-{
-	display        : inline-block;
-	vertical-align : middle;
+	height    : 25px;
+	font-size : 25px;
+	padding   : 0;
+	border    : 2px solid;
 }
 
 .favicon
@@ -704,7 +809,7 @@ section:focus
 
 h4
 {
-	font-size : 0.83em;
+	font-size : .83em;
 }
 
 h5
@@ -740,11 +845,6 @@ h6
 	padding-left : 18px;
 }
 
-article + #playlist-hints
-{
-	display : none;
-}
-
 #search-playlist-hint-icon
 {
 	display      : inline-block;
@@ -753,21 +853,21 @@ article + #playlist-hints
 
 #the-menu
 {
+	font-size  : 36px;
 	visibility : hidden;
 	opacity    : 0;
-	width      : 66px;
+	width      : 100%;
 	z-index    : 2000;
 	position   : absolute;
 	background : inherit;
 	padding    : 0;
-	margin     : 3px 0 5px -2px;
 	text-align : center;
 	transition : visibility .3s linear;
 }
 
 #footer a
 {
-	font-weight : bold;
+	font-weight : 700;
 }
 
 [data-menulistener]
@@ -783,14 +883,8 @@ article + #playlist-hints
 
 .menu-ul-li
 {
-	white-space : nowrap;
-	width       : 62px;
-	cursor      : default;
-	display     : inline-block;
-	position    : relative;
-	outline     : none;
-	padding     : 0;
-	font-size   : inherit;
+	outline   : none;
+	font-size : inherit;
 }
 
 .menu-ul-li:last-child
@@ -798,25 +892,15 @@ article + #playlist-hints
 	margin-bottom : 2px;
 }
 
+#header
+{
+	background : inherit;
+}
+
 #header-left:focus #the-menu
 {
 	visibility : visible;
 	opacity    : 1;
-}
-
-.playlist-remove
-{
-	display : none;
-}
-
-.active .playlist-remove
-{
-	display : inline-block;
-}
-
-#find-window-results div[data-icon]
-{
-	display : none;
 }
 
 .donation
@@ -846,7 +930,8 @@ article + #playlist-hints
 
 #window-buttons > div
 {
-	padding : 4px;
+	padding         : 4px;
+	justify-content : flex-end;
 }
 
 #connected-table
@@ -856,7 +941,7 @@ article + #playlist-hints
 
 #connected-table tr td:first-child
 {
-	font-weight   : bold;
+	font-weight   : 700;
 	padding-right : 5px;
 	white-space   : nowrap;
 }
@@ -894,7 +979,7 @@ article + #playlist-hints
 #faq-title
 {
 	margin      : 0 0 5px 5px;
-	font-weight : bold;
+	font-weight : 700;
 }
 
 .preference-format-input
@@ -908,32 +993,15 @@ article + #playlist-hints
 	text-align : right;
 }
 
-#preference-general-help,
-#preference-language-help,
-#preference-powersaver-help,
-#preference-dev-channel-help
+.help
 {
 	cursor : help;
-}
-
-#preference-dev-channel-help
-{
-	position : relative;
-	top      : 3px;
-	left     : 0;
-}
-
-#preference-general-help
-{
-	font-weight : bold;
-	margin-top  : 10px;
-	display     : inline-block;
 }
 
 #preference-general,
 #preference-appearance,
 #preference-keyboard,
-#welcome-window-content,
+#whats-new-window-content,
 #local-window-content,
 #youtube-search-window-content
 {
@@ -961,13 +1029,13 @@ article + #playlist-hints
 	height      : 21px;
 	padding-top : 0;
 	font-size   : 18px;
-	overflow    : hidden;
-	display     : block;
 }
 
 #console-title
 {
-	padding-left : 5px;
+	padding-left  : 5px;
+	border-bottom : 1px solid;
+	border-top    : 1px solid;
 }
 
 #preference-language-help
@@ -975,58 +1043,6 @@ article + #playlist-hints
 	position : relative;
 	top      : 3px;
 	left     : 2px;
-}
-
-#preference-general-help:hover:after
-{
-	bottom      : 25px;
-	content     : attr(title);
-	display     : block;
-	left        : 5px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
-}
-
-#preference-language-help:hover:after
-{
-	top         : 20px;
-	content     : attr(title);
-	display     : block;
-	left        : 0;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
-}
-
-#preference-powersaver-help:hover:after
-{
-	top         : 25px;
-	content     : attr(title);
-	display     : block;
-	left        : 3px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
-}
-
-#preference-dev-channel-help:hover:after
-{
-	bottom      : 0;
-	content     : attr(title);
-	display     : block;
-	left        : 20px;
-	padding     : 5px 15px;
-	position    : absolute;
-	white-space : pre;
-	z-index     : 98;
-	font-size   : 11px;
 }
 
 #local-files-form
@@ -1040,6 +1056,11 @@ article + #playlist-hints
 	padding    : 25px;
 	text-align : center;
 	margin-top : 5px;
+}
+
+#drop-zone:hover
+{
+	border-color : #0a0;
 }
 
 #file-input-methods
@@ -1081,17 +1102,19 @@ article + #playlist-hints
 
 #loading-folder-contents
 {
-	position  : absolute;
-	top       : 0;
-	bottom    : 0;
-	left      : 0;
-	right     : 0;
-	font-size : 72px;
+	position        : absolute;
+	top             : 0;
+	bottom          : 0;
+	left            : 0;
+	right           : 0;
+	font-size       : 72px;
+	align-items     : center;
+	justify-content : center;
 }
 
-.align-top
+#loading-folder-contents:not(.visibility-hidden) + #add-window-files
 {
-	vertical-align : top;
+	overflow : hidden;
 }
 
 #about-resources,
@@ -1100,41 +1123,31 @@ article + #playlist-hints
 	margin : 0 0 5px 5px;
 }
 
+#about-follow
+{
+	align-items : center;
+}
+
 #about-used-resources,
 #about-follow-us
 {
-	font-weight : bold;
-}
-
-.slide-text
-{
-	font-size : 26px;
-}
-
-.slide-smaller-text
-{
-	font-size : 16px;
-}
-
-.welcome-slide
-{
-	position : absolute;
-	top      : 0;
-	left     : 0;
-}
-
-#welcome-slide-counter
-{
-	margin : 0 5px;
+	font-weight : 700;
 }
 
 .confirm
 {
-	visibility : hidden;
-	opacity    : 0;
-	position   : absolute;
-	top        : 0;
-	left       : 0;
+	visibility  : hidden;
+	opacity     : 0;
+	position    : absolute;
+	top         : 0;
+	left        : 0;
+	white-space : nowrap;
+	align-items : center;
+}
+
+.confirm button
+{
+	margin-left : 5px;
 }
 
 .confirmation .confirm
@@ -1156,34 +1169,6 @@ article + #playlist-hints
 	margin-left : 25px;
 }
 
-#slideshow-video-placeholder
-{
-	width      : 690px;
-	height     : 380px;
-	position   : relative;
-	background : #fff;
-	cursor     : pointer;
-	top        : 2px;
-	left       : 5px;
-}
-
-#slideshow-video-play
-{
-	display     : block;
-	font-size   : 72px;
-	position    : absolute;
-	top         : 50%;
-	left        : 50%;
-	margin-left : -36px;
-	margin-top  : -36px;
-	opacity     : .7;
-}
-
-#slideshow-video-play:hover
-{
-	opacity : 1;
-}
-
 .scrobble-action
 {
 	margin-left : 2px;
@@ -1191,7 +1176,9 @@ article + #playlist-hints
 
 #battery-level-menu-handle
 {
-	margin   : 5px 0;
+	width    : 2em;
+	height   : 1.15em;
+	margin   : .25em 0;
 	position : relative;
 }
 
@@ -1199,73 +1186,62 @@ article + #playlist-hints
 {
 	width        : 0;
 	height       : 0;
-	margin       : 2px;
+	margin       : 2px auto;
 	background   : currentColor;
-	border-top   : 8px solid transparent;
-	border-right : 32px solid transparent;
+	border-top   : .25em solid transparent;
+	border-right : 1em solid transparent;
 }
 
 #battery-cap
 {
-	width      : 12px;
-	height     : 5px;
+	width      : .4em;
+	height     : .2em;
 	background : currentColor;
 	position   : absolute;
-	top        : 3px;
-	left       : 24px;
-	display    : none;
-}
-
-.cap #battery-cap
-{
-	display : block;
+	top        : .1em;
+	left       : .8em;
+	z-index    : -1;
 }
 
 .battery-level-green-full
 {
-	border-top   : 8px solid lightgreen;
-	border-right : 32px solid lightgreen;
+	border-top-color   : #90ee90;
+	border-right-color : #90ee90;
 }
 
 .battery-level-green-half
 {
-	border-top   : 8px solid transparent;
-	border-right : 32px solid lightgreen;
+	border-top-color   : transparent;
+	border-right-color : #90ee90;
 }
 
 .battery-level-orange-full
 {
-	border-top   : 8px solid #ffb79a;
-	border-right : 32px solid #ffb79a;
+	border-top-color   : #ffb79a;
+	border-right-color : #ffb79a;
 }
 
 .battery-level-orange-half
 {
-	border-top   : 8px solid transparent;
-	border-right : 32px solid #ffb79a;
+	border-top-color   : transparent;
+	border-right-color : #ffb79a;
 }
 
 .battery-level-red-full
 {
-	border-top   : 8px solid #ffa39c;
-	border-right : 32px solid #ffa39c;
+	border-top-color   : #ffa39c;
+	border-right-color : #ffa39c;
 }
 
 .battery-level-red-half
 {
-	border-top   : 8px solid transparent;
-	border-right : 32px solid #ffa39c;
+	border-top-color   : transparent;
+	border-right-color : #ffa39c;
 }
 
 #console-content div:last-child
 {
 	margin-bottom : 5px;
-}
-
-#add-window-buttons .window-buttons-text,
-#load-playlist-window-buttons .window-buttons-text
-{
-	display : none;
 }
 
 #add-window-buttons > *,
@@ -1277,12 +1253,6 @@ article + #playlist-hints
 	margin-left : 3px;
 }
 
-.window.dropbox #add-window-buttons .window-buttons-text,
-.window.dropbox #load-playlist-window-buttons .window-buttons-text
-{
-	display : inline;
-}
-
 .follow-link
 {
 	font-size   : 36px;
@@ -1291,10 +1261,15 @@ article + #playlist-hints
 
 #mark50
 {
-	position : absolute;
-	top      : 10%;
-	left     : 50%;
-	height   : 50%;
+	position        : absolute;
+	top             : 0;
+	left            : 0;
+	bottom          : 0;
+	right           : 0;
+	font-size       : 18px;
+	pointer-events  : none;
+	align-items     : center;
+	justify-content : center;
 }
 
 #youtube-search-window-content
@@ -1343,7 +1318,7 @@ article + #playlist-hints
 .youtube-item-name
 {
 	display     : inline-block;
-	font-weight : bold;
+	font-weight : 700;
 	font-size   : 20px;
 	margin-top  : 7px;
 }
@@ -1416,12 +1391,51 @@ article + #playlist-hints
 	position : relative;
 }
 
-#add-window-files:empty
-{
-	display : none;
-}
-
 i
 {
 	font-style : normal;
+}
+
+.nb-update
+{
+	color : #22da16;
+}
+
+.nb-warn
+{
+	color : #f77814;
+}
+
+.nb-error
+{
+	color : #da1607;
+}
+
+#playlists .can-not-play
+{
+	color      : #fff;
+	background : #950f05;
+}
+
+#whats-new-window-content
+{
+	font-size : 18px;
+	padding   : 0 20px;
+}
+
+#whats-new-heading,
+#whats-new-footer
+{
+	font-size : 1.2em;
+	padding   : 20px 0;
+}
+
+#whats-new-content
+{
+	padding : 0 10px;
+}
+
+#whats-new-content i
+{
+	margin : 0 10px 5px;
 }

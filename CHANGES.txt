@@ -1,6 +1,21 @@
+20170806:
+ - Optimized animations;
+ - Minimized theme sizes;
+ - Introduced new Welcome window - What's New;
+ - Removed Dev Channel;
+ - Removed responsive design (to be re-implemented later);
+ - Removed custom tooltips - now using default browser tooltip;
+ - Made languages and themes asynchronous;
+ - Switched to Material design icons;
+ - Switched to Roboto as a default font;
+ - Added blur bellow every opened window;
+ - Switched loading indicator;
+ - Lots of code was re-written with only new browsers in mind;
+ - A lot of code cleanup;
+
 20170506:
  - Switched Dropbox to APIv2;
- - Removed Application Cache;
+ - Removed Application Cache (offline mode - to be re-implemented later as Service Worker);
  - Other small improvements;
 
 20141123:

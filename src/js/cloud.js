@@ -65,7 +65,7 @@ class Cloud
 			xhr.responseType = responseType;
 		}
 
-		xhr.setRequestHeader( 'Authorization', 'Bearer ' + this.accessToken );
+		xhr.setRequestHeader( 'Authorization', `Bearer ${this.accessToken}` );
 
 		Object.keys( params ).forEach( param =>
 		{
@@ -322,7 +322,7 @@ class Cloud
 					{
 						n.loadPlaylist( response );
 
-						let tab = document.querySelector( 'li[data-for="'.concat( response.id, '"]' ) );
+						let tab = document.querySelector( `li[data-for="${response.id}"]` );
 
 						if ( tab )
 						{
@@ -519,7 +519,7 @@ class Cloud
 						let response = JSON.parse( xhr.responseText );
 
 						item.dataset.tempurl = this.usesIds ? response.downloadUrl : response.link;
-						item.dataset.expires = response.expires ? response.expires : new Date( +new Date() + 14400000 );
+						item.dataset.expires = response.expires ? response.expires : new Date( Date.now() + 14400000 );
 
 						n.saveActivePlaylist();
 
@@ -669,7 +669,7 @@ class Cloud
 					let response = JSON.parse( xhr.responseText );
 
 					item.dataset.tempurl = this.usesIds ? response.downloadUrl.replace( '&gd=true', '' ) : response.link;
-					item.dataset.expires = response.expires ? response.expires : new Date( +new Date() + 14400000 );
+					item.dataset.expires = response.expires ? response.expires : new Date( Date.now() + 14400000 );
 
 					n.saveActivePlaylist();
 					//						if( item.dataset.duration )
@@ -711,7 +711,7 @@ class Cloud
 
 			let savePlaylistURL = this.urls.savePlaylist;
 			let headers         = {};
-			let savePath        = (path + '/' + file).replace( '//', '/' );
+			let savePath        = `${path}/${file}`.replace( '//', '/' );
 			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
 
 			Object.keys( savePlaylistURL.headers ).forEach( header =>
@@ -740,7 +740,7 @@ class Cloud
 								n.log( 'connection-retry', loop.index );
 								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 								loop.next();
-							}, 'PUT', '{"title":"' + file + '","parents":[{"id":"' + path + '"}]}', { 'Content-Type': 'application/json' } );
+							}, 'PUT', `{"title":"${file}","parents":[{"id":"${path}"}]}`, { 'Content-Type': 'application/json' } );
 						}, () =>
 						{
 							n.error( 'failed-to-save', url );
@@ -781,7 +781,7 @@ class Cloud
 
 			let savePlaylistURL = this.urls.savePlaylist;
 			let headers         = {};
-			let savePath        = (path + '/' + file).replace( '//', '/' );
+			let savePath        = `${path}/${file}`.replace( '//', '/' );
 			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
 
 			Object.keys( savePlaylistURL.headers ).forEach( header =>
@@ -810,7 +810,7 @@ class Cloud
 								n.log( 'connection-retry', loop.index );
 								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 								loop.next();
-							}, 'PUT', '{"title":"' + file + '.plst.nsy"}', { 'Content-Type': 'application/json' } );
+							}, 'PUT', `{"title":"${file}.plst.nsy"}`, { 'Content-Type': 'application/json' } );
 						}, () =>
 						{
 							n.error( 'failed-to-save', url );
