@@ -120,35 +120,25 @@ let n = {
 		/**
 		 * Empty function only to avoid errors
 		 */
-		preload(){
+		preload()
+		{
 		}
 	},
 
-	// Indicates if in moving mode
-	moving: false,
-
-	// Playlist Item being moved
+	// Holds the item being moved - playlist item or tab, or volume/progress bar
 	movingItem: null,
 
-	// Playlist tab being moved
-	movingTab: null,
-
-	// Progressbar being changed
-	movingBar: null,
-
 	// Height of the grabbed playlist item. All items should be with the same size
-	//TODO: Items with very long names may brake into a couple of lines, which will braak this. Fix that all lines are
-	//actually on one line and use elipsis for long lines
+	//TODO: Items with very long names may brake into a couple of lines, which will break this. Fix that all lines are
+	//actually on one line and use ellipsis for long lines
+	//TODO: Remove this property by introducing CSS Custom Properties and reading the height of the row from it
 	movingItemHeight: -1,
 
 	// Was anything changed? Save?
 	movingShouldSave: false,
 
-	// Starting position for the drag. Will be overwritten each time an playlist item is moved
-	movingStartY: -1,
-
-	// Starting position for the drag. Will be overwritten each time a playlist tab is moved
-	movingStartX: -1,
+	// Starting position (either X or Y) at the beginning of the drag or when element (playlist item/tab) swap happens
+	movingStart: -1,
 
 	// Shows if Noisy is in power saving mode (meaning the device is not charging and battery level is below the
 	// threshold set) or not
@@ -921,10 +911,6 @@ let n = {
 	 */
 	attachEvents()
 	{
-		// Attach move event. Used when moving objects around.
-		document.body.addEventListener( 'mousemove', n.onBodyMove );
-		document.body.addEventListener( 'mouseup', n.onBodyUp );
-
 		// Init drag and drop functionality for local files playback
 		let filedrag = document.getElementById( 'drop-zone' );
 
@@ -995,7 +981,7 @@ let n = {
 		}
 
 		// Set data-keys property for the input in which the user adds new keyboard shortcuts
-		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function( e )
+		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function ( e )
 		{
 			let keys = n.getKeys( e );
 
@@ -1109,7 +1095,7 @@ let n = {
 		/* End: Window state events */
 
 		// Reset styles of cloud choosing icons in add/save window and select service depending on what the user clicked
-		let _onIconClick = function()
+		let _onIconClick = function ()
 		{
 			let cloud = n[ this.dataset.cloud ];
 
@@ -1255,7 +1241,7 @@ let n = {
 		document.getElementById( 'playlists-wrapper' ).addEventListener( 'keydown', _onPlaylistDown );
 
 		// We need to remember user's choice for showing or not the whats new screen
-		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function()
+		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function ()
 		{
 			n.pref.showWhatsNew = this.checked;
 		} );
@@ -1898,7 +1884,7 @@ let n = {
 			// Check if current item is supported by the browser
 			let mimeType = itm.mimetype;
 
-			if ( mimeType && !~n.formats.indexOf( mimeType ) )
+			if ( mimeType && !n.formats.includes( mimeType ) )
 			{
 				item.classList.add( cannotPlayClass );
 			}
@@ -2193,7 +2179,7 @@ let n = {
 		n.pref.process();
 
 		// Before everything, if user is using the appspot domain, we should redirect him to https://www.noisyplayer.com
-		if ( ~location.host.indexOf( 'appspot' ) )
+		if ( location.host.includes( 'appspot' ) )
 		{
 			location.replace( 'https://www.noisyplayer.com' );
 		}
@@ -2243,7 +2229,7 @@ let n = {
 				let part = split[ i ];
 
 				// Dropbox and Google Drive are returning directly the access token
-				if ( 0 === part.indexOf( accessTokenString ) )
+				if ( part.startsWith( accessTokenString ) )
 				{
 					let accessToken = part.split( equalString ).pop();
 
@@ -2254,7 +2240,7 @@ let n = {
 					break;
 				}
 				// Last.fm returns the token as "token" param and requires a special session token to be generated
-				else if ( 0 === part.indexOf( tokenString ) )
+				else if ( part.startsWith( tokenString ) )
 				{
 					let token = part.split( equalString ).pop();
 
@@ -2281,7 +2267,7 @@ let n = {
 					break;
 				}
 				// Box is returning code with which we should request the access token
-				else if ( 0 === part.indexOf( codeString ) )
+				else if ( part.startsWith( codeString ) )
 				{
 					n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
 
@@ -2336,7 +2322,7 @@ let n = {
 			// Attach menu events
 			let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
 			let prefTabs     = document.querySelectorAll( '.preferences-item' );
-			let _onItemClick = function( e )
+			let _onItemClick = function ( e )
 			{
 				// Stop bubbling otherwise the window (if any) opened will be immediately closed
 				e.stopPropagation();
@@ -2349,7 +2335,7 @@ let n = {
 				// Execute needed method
 				n[ this.dataset.menulistener ].call( this );
 			};
-			let _onTabClick  = function()
+			let _onTabClick  = function ()
 			{
 				// Check if user clicked on the active tab already and stop execution if true
 				if ( this.classList.contains( 'active' ) )
@@ -2389,19 +2375,8 @@ let n = {
 			}
 
 			// Attach progress bar events
-			document.getElementById( 'progress' ).addEventListener( mouseDownEvent, e =>
-			{
-				n.moving       = true;
-				n.movingBar    = this;
-				n.movingStartX = e.clientX;
-			} );
-			document.getElementById( 'volume' ).addEventListener( mouseDownEvent, e =>
-			{
-				n.moving           = true;
-				n.movingBar        = this;
-				n.movingStartX     = e.clientX;
-				n.movingShouldSave = true;
-			} );
+			document.getElementById( 'progress' ).addEventListener( mouseDownEvent, n.onBarDown );
+			document.getElementById( 'volume' ).addEventListener( mouseDownEvent, n.onBarDown );
 
 			// Catch click on body and close windows if any
 			document.body.addEventListener( clickEvent, n.closeAll );
@@ -2462,7 +2437,7 @@ let n = {
 
 			// Double click on the tabs means either rename of playlist (if playlist tab was double clicked) or create
 			// new playlist, so need to listen for dblclick
-			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function( e )
+			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function ( e )
 			{
 				if ( this === e.target )
 				{
@@ -2592,7 +2567,7 @@ let n = {
 		document.body.appendChild( n.audio );
 
 		// When player can play it should
-		n.audio.addEventListener( 'canplay', function()
+		n.audio.addEventListener( 'canplay', function ()
 		{
 			// Play if active audio is paused and inactive audio is not selected. This happens when playing for the
 			// first time
@@ -2603,7 +2578,7 @@ let n = {
 		} );
 
 		// Change state of the item to playing when the player is playing
-		n.audio.addEventListener( 'play', function()
+		n.audio.addEventListener( 'play', function ()
 		{
 			let idx        = parseInt( this.dataset.item, 10 );
 			let playlistId = this.dataset.playlist;
@@ -2637,7 +2612,7 @@ let n = {
 					n.queue.splice( 0, 1 );
 
 					// Remove queue mark from item if not queued again
-					if ( !~n.queue.indexOf( item ) )
+					if ( !n.queue.includes( item ) )
 					{
 						item.classList.remove( 'is-in-queue' );
 					}
@@ -2670,7 +2645,7 @@ let n = {
 		} );
 
 		// Play next item when current finnishes
-		n.audio.addEventListener( 'ended', function()
+		n.audio.addEventListener( 'ended', function ()
 		{
 			let item = document.getElementById( this.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( this.dataset.item, 10 ) ];
 			let next = n.next( 'next', true );
@@ -2782,7 +2757,7 @@ let n = {
 					term = terms[ j ];
 
 					// If this term is not found in current item, mark item as not suitable and move on
-					if ( !~url.indexOf( term ) && !~title.indexOf( term ) )
+					if ( !url.includes( term ) && !title.includes( term ) )
 					{
 						match = false;
 						break;
@@ -2999,6 +2974,20 @@ let n = {
 	},
 
 	/**
+	 * Moves the item being dragged before/after it's previous/next sibling
+	 * @param {String} position Should it be before or after the sibling. This is directly passed as forst param to
+	 *     insertAdjacentElement()
+	 * @param {Element} target Sibling
+	 */
+	moveElement( position, target )
+	{
+		target.insertAdjacentElement( position, n.movingItem );
+
+		// Indicate that save should be happen on drag end
+		n.movingShouldSave = true;
+	},
+
+	/**
 	 * Create playlist.
 	 */
 	newPlaylist()
@@ -3187,7 +3176,7 @@ let n = {
 						body: n.formatString( document.getElementById( 'preference-notification-popup-format' ).value, item )
 					} );
 
-					notification.onshow = function()
+					notification.onshow = function ()
 					{
 						setTimeout( notification.close.bind( this ), 3000 );
 					};
@@ -3213,7 +3202,7 @@ let n = {
 								body: n.formatString( document.getElementById( 'preference-notification-popup-format' ).value, item )
 							} );
 
-							notification.onshow = function()
+							notification.onshow = function ()
 							{
 								setTimeout( notification.close.bind( this ), 3000 );
 							};
@@ -3286,175 +3275,42 @@ let n = {
 	},
 
 	/**
-	 * Event handler called on mouse move over the body. Used for dragging elements.
+	 * Event handler called on when user starts to drag volume or progress bars
+	 * @param {Event} e Event is needed to get the reference to the dragged bar
+	 */
+	onBarDown( e )
+	{
+		n.movingItem = e.currentTarget;
+
+		document.body.addEventListener( 'mousemove', n.onBarMove );
+		document.body.addEventListener( 'mouseup', n.onBarUp );
+	},
+
+	/**
+	 * Event handler called on mouse move over the body. Used for dragging volume/progress bars.
 	 * @param {Event} e Required. Mouse event from which data will be extracted and used in calculations.
 	 */
-	onBodyMove( e )
+	onBarMove( e )
 	{
-		let idx;
-		let itm;
-		let diff;
-		let items;
-		let width;
-		let x;
-		let boundingRect;
+		let bar          = n.movingItem;
+		let boundingRect = bar.getBoundingClientRect();
+		let x            = e.pageX - boundingRect.left;
+		let width        = bar.offsetWidth;
+		let diff         = Math.min( Math.max( 0, x ), width );
+		let percents     = diff * 100 / width;
 
-		// Continue only if playlist item is being moved by the user
-		if ( n.moving && n.movingItem )
+		// Set audio progress if playback's progress bar is being dragged
+		if ( 'progress' === bar.id && !n.audio.paused )
 		{
-			// Get y position of the mouse
-			let y = e.clientY;
+			n.audio.currentTime = n.audio.duration * percents / 100;
 
-			// Get the difference between current mouse position and starting one
-			diff = n.movingStartY - y;
-
-			// Move item in the DOM only if it's moved more than it's height
-			if ( Math.abs( diff ) > n.movingItemHeight )
-			{
-				items = n.getAllItems();
-
-				// Move the item in the right direction on the Y axis
-				if ( 0 < diff )
-				{
-					// Get index of currently dragged item
-					idx = Array.prototype.indexOf.call( items, n.movingItem );
-
-					// Check if there is previous item
-					itm = items[ idx - 1 ];
-
-					// Move dragged item only if there is item to place it before
-					if ( itm )
-					{
-						n.movingItem.parentNode.insertBefore( n.movingItem, itm );
-
-						// Save new starting position
-						n.movingStartY = y;
-
-						// Indicate that save should be happen on drag end
-						n.movingShouldSave = true;
-					}
-				}
-				else
-				{
-					// Get index of currently dragged item
-					idx = Array.prototype.indexOf.call( items, n.movingItem );
-
-					// Check if there is next item
-					itm = items[ idx + 1 ];
-
-					// Move dragged item only if there is item to place it before
-					if ( itm )
-					{
-						n.movingItem.parentNode.insertBefore( n.movingItem, itm.nextSibling );
-
-						// Save new starting position
-						n.movingStartY = y;
-
-						// Indicate that save should be happen on drag end
-						n.movingShouldSave = true;
-					}
-				}
-			}
+			// Set bar only if playing
+			n.setProgress( bar, percents );
 		}
-		// Otherwise check if a tab is being moved
-		else if ( n.moving && n.movingTab )
+		// Otherwise if volume's bar is dragged, then set audio volume
+		else if ( 'volume' === bar.id )
 		{
-			// Tabs are dragged only horizontaly, so get current mouse position on X axis
-			x     = e.clientX;
-			// Get the difference between current mouse position and starting one
-			diff  = n.movingStartX - x;
-			items = document.querySelectorAll( '.playlists-tabs-li' );
-
-			// Move the item in the right direction on the X axis
-			if ( 0 > diff )
-			{
-				// Get index of currently dragged item
-				idx = Array.prototype.indexOf.call( items, n.movingTab );
-
-				// Check if there is next item
-				itm = items[ idx + 1 ];
-
-				// Move dragged item only if there is item to place it before
-				if ( itm && 'add-playlist' !== itm.id )
-				{
-					// Get next item's width
-					width = itm.offsetWidth;
-
-					// Move item in the DOM only if moved over the whole next element
-					if ( Math.abs( diff ) > width )
-					{
-						n.movingTab.parentNode.insertBefore( n.movingTab, itm.nextSibling );
-
-						// Save new starting position
-						n.movingStartX = x;
-
-						// Indicate that save should be happen on drag end
-						n.movingShouldSave = true;
-					}
-				}
-			}
-			else
-			{
-				// Get index of currently dragged item
-				idx = Array.prototype.indexOf.call( items, n.movingTab );
-
-				// Check if there is previous item
-				itm = items[ idx - 1 ];
-
-				// Move dragged item only if there is item to place it before
-				if ( itm && 'add-playlist' !== itm.id )
-				{
-					// Get previous item's width
-					width = itm.offsetWidth;
-
-					// Move item in the DOM only if moved over the whole previous element
-					if ( Math.abs( diff ) > width )
-					{
-						n.movingTab.parentNode.insertBefore( n.movingTab, itm );
-
-						// Save new starting position
-						n.movingStartX = x;
-
-						// Indicate that save should be happen on drag end
-						n.movingShouldSave = true;
-					}
-				}
-			}
-		}
-		// If not, then check for progress bar drag
-		else if ( n.moving && n.movingBar )
-		{
-			if ( e.target === n.movingBar || e.target.parentNode === n.movingBar )
-			{
-				// Progress bars are dragged only horizontaly, so get current mouse position on X axis
-				boundingRect = n.movingBar.getBoundingClientRect();
-				x            = e.pageX - boundingRect.left;
-
-				// Get the width of the bar
-				width = n.movingBar.offsetWidth;
-
-				// Calculate the differance
-				let tmp = Math.max( 0, x );
-
-				diff = Math.min( tmp, width );
-
-				// Convert it into percents
-				let percents = diff * 100 / width;
-
-				// Set audio progress if playback's progress bar is being dragged
-				if ( 'progress' === n.movingBar.id && !n.audio.paused )
-				{
-					n.audio.currentTime = n.audio.duration * percents / 100;
-
-					// Set bar only if playing
-					n.setProgress( n.movingBar, percents );
-				}
-				// Otherwise if volume's bar is dragged, then set audio volume
-				else if ( 'volume' === n.movingBar.id )
-				{
-					n.pref.volume = percents / 100;
-				}
-			}
+			n.pref.volume = percents / 100;
 		}
 	},
 
@@ -3463,66 +3319,16 @@ let n = {
 	 *
 	 * @param {Event} e Required. Mouse event from which data will be extracted and used in calculations.
 	 */
-	//TODO: This code looks very much alike the code for bodyMove
-	onBodyUp( e )
+	onBarUp( e )
 	{
-		let x;
-		let width;
-		let diff;
-		let percents;
-		let boundingRect;
-
-		// If we have moved a progress bar. This code is used in case when
-		//the user only clicks on the bar and does NOT drag it.
-		if ( n.movingBar )
-		{
-			// Set audio progress if moved bar was playback's progress bar
-			if ( 'progress' === n.movingBar.id && !n.audio.paused )
-			{
-				boundingRect        = n.movingBar.getBoundingClientRect();
-				x                   = e.pageX - boundingRect.left;
-				width               = n.movingBar.offsetWidth;
-				diff                = Math.min( Math.max( 0, x ), width );
-				percents            = diff * 100 / width;
-				n.audio.currentTime = n.audio.duration * percents / 100;
-
-				// Set bar only if playing
-				n.setProgress( n.movingBar, percents );
-			}
-			// Otherwise set audio volume if volume progress bar was moved
-			else if ( 'volume' === n.movingBar.id )
-			{
-				boundingRect = n.movingBar.getBoundingClientRect();
-				x            = e.pageX - boundingRect.left;
-				width        = n.movingBar.offsetWidth;
-
-				diff          = Math.min( Math.max( 0, x ), width );
-				percents      = diff * 100 / width;
-				n.pref.volume = percents / 100;
-			}
-		}
-
-		// Save if something has changed
-		if ( n.movingShouldSave )
-		{
-			if ( n.movingItem )
-			{
-				n.savePlaylist( document.getElementById( n.activePlaylistId ) );
-			}
-			else if ( n.movingTab )
-			{
-				n.savePlaylists();
-			}
-			else if ( n.movingBar && 'volume' === n.movingBar.id )
-			{
-				n.pref.volume = percents / 100;
-			}
-		}
+		// If user clicks on the bar instead of dragging, we still need to set the progress of the bar
+		n.onBarMove( e );
 
 		// Reset variables as drag is over
-		n.moving     = false;
-		n.movingItem = n.movingTab = n.movingBar = null;
-		n.movingItemHeight = n.movingStartY = n.movingStartX = -1;
+		n.movingItem = null;
+
+		document.body.removeEventListener( 'mousemove', n.onBarMove );
+		document.body.removeEventListener( 'mouseup', n.onBarUp );
 	},
 
 	/**
@@ -3778,11 +3584,79 @@ let n = {
 			}
 		} );
 
-		// Set variables needed for onBodyMove()
-		n.moving           = true;
-		n.movingItem       = this;
+		n.movingItem       = e.currentTarget;
 		n.movingItemHeight = this.offsetHeight;
-		n.movingStartY     = e.clientY;
+		n.movingStart      = e.clientY;
+
+		document.body.addEventListener( 'mousemove', n.onRowMove );
+		document.body.addEventListener( 'mouseup', n.onRowUp );
+	},
+
+	/**
+	 * Event handler called on mouse move over the body. Used for dragging playlist items.
+	 * @param {Event} e Required. Mouse event from which data will be extracted and used in calculations.
+	 */
+	onRowMove( e )
+	{
+		// Get y position of the mouse
+		let y    = e.clientY;
+		// Get the difference between current mouse position and starting one
+		let diff = n.movingStart - y;
+
+		// Move item in the DOM only if it's moved more than it's height
+		if ( Math.abs( diff ) > n.movingItemHeight )
+		{
+			let itm;
+			let position;
+			// Get all items only when we are about to move
+			let items = n.getAllItems();
+			// Get index of currently dragged item
+			let idx   = Array.prototype.indexOf.call( items, n.movingItem );
+
+			// Move the item in the right direction on the Y axis
+			if ( 0 < diff )
+			{
+				// Check if there is previous item
+				itm      = items[ idx - 1 ];
+				position = 'beforebegin';
+
+			}
+			else
+			{
+				// Check if there is next item
+				itm      = items[ idx + 1 ];
+				position = 'afterend';
+			}
+
+			// Move dragged item only if there is item to place it before
+			if ( itm )
+			{
+				n.moveElement( position, itm );
+
+				// Save new starting position
+				n.movingStart = y;
+			}
+		}
+	},
+
+	/**
+	 * Event handler called on mouse up over the body. Used for dragging elements.
+	 */
+	onRowUp()
+	{
+		// Save if something has changed
+		if ( n.movingShouldSave )
+		{
+			n.savePlaylist( document.getElementById( n.activePlaylistId ) );
+		}
+
+		// Reset variables as drag is over
+		n.movingItem       = null;
+		n.movingItemHeight = n.movingStart = -1;
+		n.movingShouldSave = false;
+
+		document.body.removeEventListener( 'mousemove', n.onRowMove );
+		document.body.removeEventListener( 'mouseup', n.onRowUp );
 	},
 
 	/**
@@ -3820,10 +3694,11 @@ let n = {
 	 */
 	onTabDown( e )
 	{
-		// Set variables needed for onBodyMove()
-		n.moving       = true;
-		n.movingTab    = this;
-		n.movingStartX = e.clientX;
+		n.movingItem  = e.currentTarget;
+		n.movingStart = e.clientX;
+
+		document.body.addEventListener( 'mousemove', n.onTabMove );
+		document.body.addEventListener( 'mouseup', n.onTabUp );
 	},
 
 	/**
@@ -3842,6 +3717,74 @@ let n = {
 		{
 			n.stopBubbling( e );
 		}
+	},
+
+	/**
+	 * Event handler called on mouse move over the body. Used for dragging playlist tabs.
+	 * @param {Event} e Required. Mouse event from which data will be extracted and used in calculations.
+	 */
+	onTabMove( e )
+	{
+		let width;
+		let position;
+		let itm;
+		let items = document.querySelectorAll( '.playlists-tabs-li' );
+		// Get index of currently dragged item
+		let idx   = Array.prototype.indexOf.call( items, n.movingItem );
+		// Tabs are dragged only horizontally, so get current mouse position on X axis
+		let x     = e.clientX;
+		// Get the difference between current mouse position and starting one
+		let diff  = n.movingStart - x;
+
+		// Move the item in the right direction on the X axis
+		if ( 0 < diff )
+		{
+			// Check if there is previous item
+			itm      = items[ idx - 1 ];
+			position = 'beforebegin';
+		}
+		else
+		{
+			// Check if there is next item
+			itm      = items[ idx + 1 ];
+			position = 'afterend';
+		}
+
+		// Move dragged item only if there is item to place it before
+		if ( itm && 'add-playlist' !== itm.id )
+		{
+			// Get p revious item's width
+			width = itm.offsetWidth;
+
+			// Move item in the DOM only if moved over the whole previous element
+			if ( Math.abs( diff ) > width )
+			{
+				n.moveElement( position, itm );
+
+				// Save new starting position
+				n.movingStart = x;
+			}
+		}
+	},
+
+	/**
+	 * Event handler called on mouse up over the body. Used for dragging tabs.
+	 */
+	onTabUp()
+	{
+		// Save if something has changed
+		if ( n.movingShouldSave )
+		{
+			n.savePlaylists();
+		}
+
+		// Reset variables as drag is over
+		n.movingItem       = null;
+		n.movingStart      = -1;
+		n.movingShouldSave = false;
+
+		document.body.removeEventListener( 'mousemove', n.onTabMove );
+		document.body.removeEventListener( 'mouseup', n.onTabUp );
 	},
 
 	/**
@@ -4381,7 +4324,7 @@ let n = {
 			item.querySelector( '.item-queue' ).innerHTML = '';
 
 			// Remove queue mark from item if not queued again
-			if ( !~n.queue.indexOf( item ) )
+			if ( !n.queue.includes( item ) )
 			{
 				item.classList.remove( 'is-in-queue' );
 			}
@@ -4640,7 +4583,6 @@ let n = {
 	{
 		let toSave    = [];
 		let playlists = document.querySelectorAll( '.playlists-tabs-li' );
-		let playlist;
 		const id      = 'add-playlist';
 
 		// Iterate through all playlists and make objects for each of them
@@ -4656,9 +4598,6 @@ let n = {
 
 		// Save to localStorage as JSON string
 		localStorage.setItem( 'playlists', JSON.stringify( toSave ) );
-
-		// Do not save on click till next move
-		n.movingShouldSave = false;
 	},
 
 	/**
