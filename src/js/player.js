@@ -120,7 +120,8 @@ let n = {
 		/**
 		 * Empty function only to avoid errors
 		 */
-		preload(){
+		preload()
+		{
 		}
 	},
 
@@ -995,7 +996,7 @@ let n = {
 		}
 
 		// Set data-keys property for the input in which the user adds new keyboard shortcuts
-		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function( e )
+		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function ( e )
 		{
 			let keys = n.getKeys( e );
 
@@ -1109,7 +1110,7 @@ let n = {
 		/* End: Window state events */
 
 		// Reset styles of cloud choosing icons in add/save window and select service depending on what the user clicked
-		let _onIconClick = function()
+		let _onIconClick = function ()
 		{
 			let cloud = n[ this.dataset.cloud ];
 
@@ -1255,7 +1256,7 @@ let n = {
 		document.getElementById( 'playlists-wrapper' ).addEventListener( 'keydown', _onPlaylistDown );
 
 		// We need to remember user's choice for showing or not the whats new screen
-		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function()
+		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function ()
 		{
 			n.pref.showWhatsNew = this.checked;
 		} );
@@ -2336,7 +2337,7 @@ let n = {
 			// Attach menu events
 			let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
 			let prefTabs     = document.querySelectorAll( '.preferences-item' );
-			let _onItemClick = function( e )
+			let _onItemClick = function ( e )
 			{
 				// Stop bubbling otherwise the window (if any) opened will be immediately closed
 				e.stopPropagation();
@@ -2349,7 +2350,7 @@ let n = {
 				// Execute needed method
 				n[ this.dataset.menulistener ].call( this );
 			};
-			let _onTabClick  = function()
+			let _onTabClick  = function ()
 			{
 				// Check if user clicked on the active tab already and stop execution if true
 				if ( this.classList.contains( 'active' ) )
@@ -2392,13 +2393,13 @@ let n = {
 			document.getElementById( 'progress' ).addEventListener( mouseDownEvent, e =>
 			{
 				n.moving       = true;
-				n.movingBar    = this;
+				n.movingBar    = e.currentTarget;
 				n.movingStartX = e.clientX;
 			} );
 			document.getElementById( 'volume' ).addEventListener( mouseDownEvent, e =>
 			{
 				n.moving           = true;
-				n.movingBar        = this;
+				n.movingBar        = e.currentTarget;
 				n.movingStartX     = e.clientX;
 				n.movingShouldSave = true;
 			} );
@@ -2462,7 +2463,7 @@ let n = {
 
 			// Double click on the tabs means either rename of playlist (if playlist tab was double clicked) or create
 			// new playlist, so need to listen for dblclick
-			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function( e )
+			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function ( e )
 			{
 				if ( this === e.target )
 				{
@@ -2592,7 +2593,7 @@ let n = {
 		document.body.appendChild( n.audio );
 
 		// When player can play it should
-		n.audio.addEventListener( 'canplay', function()
+		n.audio.addEventListener( 'canplay', function ()
 		{
 			// Play if active audio is paused and inactive audio is not selected. This happens when playing for the
 			// first time
@@ -2603,7 +2604,7 @@ let n = {
 		} );
 
 		// Change state of the item to playing when the player is playing
-		n.audio.addEventListener( 'play', function()
+		n.audio.addEventListener( 'play', function ()
 		{
 			let idx        = parseInt( this.dataset.item, 10 );
 			let playlistId = this.dataset.playlist;
@@ -2670,7 +2671,7 @@ let n = {
 		} );
 
 		// Play next item when current finnishes
-		n.audio.addEventListener( 'ended', function()
+		n.audio.addEventListener( 'ended', function ()
 		{
 			let item = document.getElementById( this.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( this.dataset.item, 10 ) ];
 			let next = n.next( 'next', true );
@@ -3187,7 +3188,7 @@ let n = {
 						body: n.formatString( document.getElementById( 'preference-notification-popup-format' ).value, item )
 					} );
 
-					notification.onshow = function()
+					notification.onshow = function ()
 					{
 						setTimeout( notification.close.bind( this ), 3000 );
 					};
@@ -3213,7 +3214,7 @@ let n = {
 								body: n.formatString( document.getElementById( 'preference-notification-popup-format' ).value, item )
 							} );
 
-							notification.onshow = function()
+							notification.onshow = function ()
 							{
 								setTimeout( notification.close.bind( this ), 3000 );
 							};
