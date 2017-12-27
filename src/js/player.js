@@ -1884,7 +1884,7 @@ let n = {
 			// Check if current item is supported by the browser
 			let mimeType = itm.mimetype;
 
-			if ( mimeType && !~n.formats.indexOf( mimeType ) )
+			if ( mimeType && !n.formats.includes( mimeType ) )
 			{
 				item.classList.add( cannotPlayClass );
 			}
@@ -2179,7 +2179,7 @@ let n = {
 		n.pref.process();
 
 		// Before everything, if user is using the appspot domain, we should redirect him to https://www.noisyplayer.com
-		if ( ~location.host.indexOf( 'appspot' ) )
+		if ( location.host.includes( 'appspot' ) )
 		{
 			location.replace( 'https://www.noisyplayer.com' );
 		}
@@ -2229,7 +2229,7 @@ let n = {
 				let part = split[ i ];
 
 				// Dropbox and Google Drive are returning directly the access token
-				if ( 0 === part.indexOf( accessTokenString ) )
+				if ( part.startsWith( accessTokenString ) )
 				{
 					let accessToken = part.split( equalString ).pop();
 
@@ -2240,7 +2240,7 @@ let n = {
 					break;
 				}
 				// Last.fm returns the token as "token" param and requires a special session token to be generated
-				else if ( 0 === part.indexOf( tokenString ) )
+				else if ( part.startsWith( tokenString ) )
 				{
 					let token = part.split( equalString ).pop();
 
@@ -2267,7 +2267,7 @@ let n = {
 					break;
 				}
 				// Box is returning code with which we should request the access token
-				else if ( 0 === part.indexOf( codeString ) )
+				else if ( part.startsWith( codeString ) )
 				{
 					n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
 
@@ -2612,7 +2612,7 @@ let n = {
 					n.queue.splice( 0, 1 );
 
 					// Remove queue mark from item if not queued again
-					if ( !~n.queue.indexOf( item ) )
+					if ( !n.queue.includes( item ) )
 					{
 						item.classList.remove( 'is-in-queue' );
 					}
@@ -2757,7 +2757,7 @@ let n = {
 					term = terms[ j ];
 
 					// If this term is not found in current item, mark item as not suitable and move on
-					if ( !~url.indexOf( term ) && !~title.indexOf( term ) )
+					if ( !url.includes( term ) && !title.includes( term ) )
 					{
 						match = false;
 						break;
@@ -4324,7 +4324,7 @@ let n = {
 			item.querySelector( '.item-queue' ).innerHTML = '';
 
 			// Remove queue mark from item if not queued again
-			if ( !~n.queue.indexOf( item ) )
+			if ( !n.queue.includes( item ) )
 			{
 				item.classList.remove( 'is-in-queue' );
 			}
