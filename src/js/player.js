@@ -672,14 +672,11 @@ let n = {
 
 	/**
 	 * Adds item to playback's queue.
-	 * @param {HTMLElement} [item] Optional. Item to add to the queue. If not supplied, the selected one on the active
-	 * playlist will be added.
+	 * @param {HTMLElement|EventTarget} [item] Optional. Item to add to the queue. If not supplied, the selected one on
+	 *     the active playlist will be added.
 	 */
-	addToQueue( item )
+	addToQueue( item = n.currentlySelectedItem )
 	{
-		// Select item to the queue
-		item = item && item.tagName ? item : n.currentlySelectedItem;
-
 		/**
 		 * The real add to queue happens here. Because user may want to add more than one item, we need an external
 		 * function for the adding part, so we can call it from different places
@@ -690,9 +687,6 @@ let n = {
 		{
 			// Add item to the queue
 			n.queue.push( item );
-
-			// Mark item as in queue
-			item.classList.add( 'is-in-queue' );
 
 			// Set item queue state
 			let queueState = item.querySelector( '.item-queue' );
@@ -1862,7 +1856,7 @@ let n = {
 		const tabIndexString  = 'tabindex';
 		const cloudString     = 'dropbox';
 		const cannotPlayClass = 'can-not-play';
-		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div><div class="item-queue"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
+		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
 		const dblClickEvent   = 'dblclick';
 		const mouseDownEvent  = 'mousedown';
 
@@ -2606,18 +2600,7 @@ let n = {
 				// Check if item is first in the queue
 				if ( item === n.queue[ 0 ] )
 				{
-					// Remove queue number
-					item.querySelector( '.item-queue' ).innerHTML = '';
-
-					n.queue.splice( 0, 1 );
-
-					// Remove queue mark from item if not queued again
-					if ( !n.queue.includes( item ) )
-					{
-						item.classList.remove( 'is-in-queue' );
-					}
-
-					n.updateQueueStates();
+					n.removeFromQueue( item );
 				}
 
 				item.classList.add( 'bold' );
@@ -3539,12 +3522,12 @@ let n = {
 		// Otherwise check if user clicked add to queue icon and add the item to the queue if true
 		else if ( clickedElement.classList.contains( 'item-add-to-queue' ) )
 		{
-			return n.addToQueue( this );
+			return n.addToQueue( row );
 		}
 		// If not, check if user clicked remove from queue icon and remove the item from the queue
 		else if ( clickedElement.classList.contains( 'item-remove-from-queue' ) )
 		{
-			return n.removeFromQueue( this );
+			return n.removeFromQueue( row );
 		}
 
 		requestAnimationFrame( () =>
@@ -4304,13 +4287,11 @@ let n = {
 
 	/**
 	 * Remove item from playback's queue.
-	 * @param {HTMLElement} [item] Optional. Item to be removed. If none passed, the selected one will be taken.
+	 * @param {HTMLElement|EventTarget} [item] Optional. Item to be removed. If none passed, the selected one will be
+	 *     taken.
 	 */
-	removeFromQueue( item )
+	removeFromQueue( item = n.currentlySelectedItem )
 	{
-		// Get item to be removed
-		item = item && item.tagName ? item : n.currentlySelectedItem;
-
 		// Get its index
 		let idx = n.queue.indexOf( item );
 
@@ -4322,12 +4303,6 @@ let n = {
 
 			// Remove queue number from users display
 			item.querySelector( '.item-queue' ).innerHTML = '';
-
-			// Remove queue mark from item if not queued again
-			if ( !n.queue.includes( item ) )
-			{
-				item.classList.remove( 'is-in-queue' );
-			}
 
 			// Update numbers of other queue items
 			n.updateQueueStates();

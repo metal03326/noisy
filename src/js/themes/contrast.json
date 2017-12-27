@@ -98,7 +98,7 @@
   "#drop-zone.hover": {
     "border-color": "#fffd00"
   },
-  ".selected.is-in-queue .item-queue": {
+  ".selected .item-queue:not(:empty)": {
     "color": "#fff"
   },
   ".favicon": {

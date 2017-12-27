@@ -78,7 +78,7 @@
   "#translation-contributors": {
     "background": "#ECECEC"
   },
-  ".selected.is-in-queue .item-queue": {
+  ".selected .item-queue:not(:empty)": {
     "color": "#fff"
   }
 }

@@ -84,7 +84,7 @@
   "#init-search": {
     "background": "#E7E7E7"
   },
-  ".selected.is-in-queue .item-queue": {
+  ".selected .item-queue:not(:empty)": {
     "color": "#fff"
   }
 }
