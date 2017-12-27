@@ -224,11 +224,10 @@ button
 }
 
 .item-queue:empty,
-.playlist-item:not(.selected) .item-queue,
 .playlist-item:not(.selected) .item-add-to-queue,
 .playlist-item:not(.selected) .item-remove-from-queue,
-.playlist-item.selected:not(.is-in-queue) .item-remove-from-queue,
-.playlist-item.selected.is-in-queue .item-add-to-queue,
+.playlist-item.selected .item-queue:empty ~ .item-remove-from-queue,
+.playlist-item.selected .item-queue:not(:empty) ~ .item-add-to-queue,
 .one-tab #playlists-tabs,
 .one-tab [data-icon="#"]:last-child,
 body:not(.one-tab) [data-icon="#"]:not(:last-child),
@@ -569,11 +568,17 @@ button,
 
 .item-queue
 {
-	z-index   : 2;
-	font-size : 10px;
-	position  : absolute;
-	top       : 8px;
-	left      : 0;
+	z-index        : 1;
+	font-size      : 10px;
+	/* Click through the number in order to click on the remove icon below */
+	pointer-events : none;
+}
+
+.playlist-item.selected .item-queue:not(:empty)
+{
+	position : absolute;
+	top      : 8px;
+	left     : 0;
 }
 
 .item-title
