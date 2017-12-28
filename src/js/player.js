@@ -4067,6 +4067,7 @@ let n = {
 						} );
 					}
 				}
+				//TODO: Try reading APEv2 if no ID3v2
 				break;
 			case 'opus':
 			case 'ogg':
@@ -4136,127 +4137,51 @@ let n = {
 				}
 				break;
 			case 'm4a':
-				toGet    = {
+				toGet = {
 					'©art': 'artist',
 					'©nam': 'title',
 					'©alb': 'album',
 					'©day': 'date'
 				};
-				len      = Object.keys( toGet ).length;
-				i        = 50000;
+				len   = Object.keys( toGet ).length;
+				i     = 0;
 
-				// Loop second 50000 bytes
-				while ( i < 100000 && len )
+				let fileSize = dv.byteLength;
+
+				// Loop the whole file, as m4a doesn't have specifications where to place ilst container atom
+				while ( i < fileSize && len )
 				{
-					charCode = dv.getUint8( i++ );
-
 					for ( tag in toGet )
 					{
-						tagCode = tag.charCodeAt( 0 );
-
-						// Check for lower case match
-						if ( charCode === tagCode )
+						if ( isMatchingTag( tag ) || isMatchingTag( tag.toUpperCase() ) )
 						{
-							match = true;
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
+							// Tag is read
+							i += 3;
+
+							// Pattern: @tag [xx xx xx xx] [data] [yy yy yy yy] [00 00 00 00] [actual data] [00 00 00]
+							// Where: @tag tag name, xx size data, yy type data, 00 padding
+
+							// Get the length and subtract [data], [yy yy yy yy], [00 00 00 00] and [00 00 00]
+							tagLength = dv.getUint32( i ) - 15;
+
+							// Length is read, move after [00 00 00 00]
+							i += 16;
+
+							let tagValue = '';
+
+							k = i + tagLength;
+
+							for ( i; i < k; i++ )
 							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
+								let charCode = dv.getUint8( i );
+
+								// Skip adding of 00
+								charCode && (tagValue += `%${charCode.toString( 16 ).padStart( 2, '0' )}`);
 							}
 
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Pattern: @nam 00 00 00 (byte showing length of tag, starting from next
-								// byte) data 00 00 00 (byte showing I don't know what) 00 00 00 00 (text
-								// for tag) 00 00 00 (byte showing I don't know what)
-								i += 6;
-								matchCharCode = dv.getUint8( i );
-								tagLength     = i + matchCharCode;
-								i += 13;
-								matchCharCode = dv.getUint8( i );
-
-								tagValue.length = 0;
-
-								matchCharCode = dv.getUint8( i++ );
-								while ( i <= tagLength && matchCharCode )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								metadata[ toGet[ tag ] ] = decodeURIComponent( str );
-								delete toGet[ tag ];
-								len = Object.keys( toGet ).length;
-
-								continue;
-							}
-						}
-
-						tagCode = tag.toUpperCase().charCodeAt( 0 );
-
-						// Check for lower case match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							tag   = tag.toUpperCase();
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Pattern: @nam 00 00 00 (byte showing length of tag, starting from next
-								// byte) data 00 00 00 (byte showing I don't know what) 00 00 00 00 (text
-								// for tag) 00 00 00 (byte showing I don't know what)
-								i += 6;
-								matchCharCode = dv.getUint8( i );
-								tagLength     = i + matchCharCode;
-								i += 13;
-								matchCharCode = dv.getUint8( i );
-
-								tagValue.length = 0;
-
-								matchCharCode = dv.getUint8( i++ );
-								while ( i <= tagLength && matchCharCode )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								tag = tag.toLowerCase();
-
-								metadata[ toGet[ tag ] ] = decodeURIComponent( str );
-								delete toGet[ tag ];
-								len = Object.keys( toGet ).length;
-							}
+							metadata[ toGet[ tag ] ] = decodeURIComponent( tagValue );
+							delete toGet[ tag ];
+							len = Object.keys( toGet ).length;
 						}
 					}
 				}
