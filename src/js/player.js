@@ -1793,7 +1793,10 @@ let n = {
 		{
 			// Possible codecs
 			let types = [
-				'audio/mpeg;', 'audio/ogg; codecs="vorbis"', 'audio/wav; codecs="1"',
+				'audio/mpeg;',
+				'audio/ogg; codecs="vorbis"',
+				'audio/ogg; codecs="opus"',
+				'audio/wav; codecs="1"',
 				'audio/mp4; codecs="mp4a.40.2"'
 			];
 
@@ -1855,7 +1858,6 @@ let n = {
 		const elementToCreate = 'section';
 		const tabIndexString  = 'tabindex';
 		const cloudString     = 'dropbox';
-		const cannotPlayClass = 'can-not-play';
 		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
 		const dblClickEvent   = 'dblclick';
 		const mouseDownEvent  = 'mousedown';
@@ -1880,7 +1882,7 @@ let n = {
 
 			if ( mimeType && !n.formats.includes( mimeType ) )
 			{
-				item.classList.add( cannotPlayClass );
+				item.classList.add( 'can-not-play' );
 			}
 
 			// Add styling classes
@@ -3894,15 +3896,15 @@ let n = {
 	},
 
 	/**
-	 * Reads tags for MP3, OGG and M4A files.
+	 * Reads tags for MP3, OGG, M4A and OPUS files.
 	 * @param {ArrayBuffer} buffer Required. File represented in an array buffer.
 	 * @param {String} extension Required. File extension. Used to determine which algorithm to apply when reading tags.
 	 * @returns {Object} All read tags.
 	 */
 	readTags( buffer, extension )
 	{
-		let dv       = new DataView( buffer );
-		let toGet    = {};
+		let dv            = new DataView( buffer );
+		let toGet         = {};
 		let i;
 		let j;
 		let k;
@@ -3913,17 +3915,41 @@ let n = {
 		let match;
 		let str;
 		let tagLength;
-		let tagValue = [];
-		let mimeType = 'unknown';
+		let tagValue      = [];
 		let len;
 		let nextMatch;
-		let metadata = {};
+		let metadata      = {};
+		let isMatchingTag = function ( tag )
+		{
+			tagCode = tag.charCodeAt( 0 );
+
+			// Check for lower case match
+			if ( charCode === tagCode )
+			{
+				match = true;
+
+				// loop through all letters to make sure we have found a match
+				for ( k = 1; k < tag.length; k++ )
+				{
+					matchCharCode = dv.getUint8( ( i - 1 ) + k );
+					tagCode       = tag.charCodeAt( k );
+					if ( matchCharCode !== tagCode )
+					{
+						match = false;
+						break;
+					}
+				}
+
+				return match;
+			}
+
+			return false;
+		};
 
 		// Choose algorithm
 		switch ( extension )
 		{
 			case 'mp3':
-				mimeType = 'audio/mpeg';
 				// We need only these tags for now
 				toGet    = {
 					'TPE1': 'artist', //'TPE2'
@@ -4007,9 +4033,8 @@ let n = {
 					} );
 				}
 				break;
+			case 'opus':
 			case 'ogg':
-				mimeType = 'audio/ogg';
-
 				// We need only these tags for now
 				toGet = [
 					'artist',
@@ -4020,81 +4045,23 @@ let n = {
 				len   = toGet.length;
 				i     = 0;
 
+				let zeroCount = 0;
+
 				// Loop first 1000 bytes
 				while ( i < 1000 && len )
 				{
 					charCode = dv.getUint8( i++ );
 
-					for ( j = 0; j < len; j++ )
+					// All tag matches should begin with 3 empty characters (hex 00)
+					if ( charCode && zeroCount === 3 )
 					{
-						tag     = toGet[ j ];
-						tagCode = tag.charCodeAt( 0 );
+						zeroCount = 0;
 
-						// Check for lower case match
-						if ( charCode === tagCode )
+						for ( j = 0; j < len; j++ )
 						{
-							match = true;
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
+							tag = toGet[ j ];
 
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Byte before the 00 00 00 shows how many bytes the tag will be, including the
-								// "artist=" part, so we read everything from "=" sign till the length is reachedl
-								tagLength       = i - 1 + dv.getUint8( i - 5 );
-								tagValue.length = 0;
-								i               = i + tag.length;
-								matchCharCode   = dv.getUint8( i++ );
-								while ( i <= tagLength )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								metadata[ tag ] = decodeURIComponent( str );
-								toGet.splice( j, 1 );
-								len = toGet.length;
-							}
-							continue;
-						}
-
-						tagCode = tag.toUpperCase().charCodeAt( 0 );
-
-						// Check for uppercase match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							tag   = tag.toUpperCase();
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
+							if ( isMatchingTag( tag ) || isMatchingTag( tag.toUpperCase() ) )
 							{
 								// Byte before the 00 00 00 shows how many bytes the tag will be, including the
 								// "artist=" part, so we read everything from "=" sign till the length is reached
@@ -4114,16 +4081,26 @@ let n = {
 									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
 								}
 
-								metadata[ tag.toLowerCase() ] = decodeURIComponent( str );
 								toGet.splice( j, 1 );
 								len = toGet.length;
+
+								metadata[ tag ] = decodeURIComponent( str );
 							}
 						}
+					}
+					// If we have found 0, then increase the counter
+					else if ( !charCode )
+					{
+						zeroCount++;
+					}
+					// If it's not 0 and we didn't find 3 zeroes, then it's just a random zero - reset the counter
+					else
+					{
+						zeroCount = 0;
 					}
 				}
 				break;
 			case 'm4a':
-				mimeType = 'audio/mp4';
 				toGet    = {
 					'©art': 'artist',
 					'©nam': 'title',
@@ -4248,9 +4225,6 @@ let n = {
 						}
 					}
 				}
-				break;
-			case 'wav':
-				mimeType = 'audio/wav';
 				break;
 		}
 

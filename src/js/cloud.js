@@ -8,8 +8,7 @@
 'use strict';
 
 // Clouds class to use as base for other cloud services
-class Cloud
-{
+class Cloud {
 	constructor( props = [] )
 	{
 		// Access token returned by OAuth 2.0
@@ -396,7 +395,6 @@ class Cloud
 			this.ajaxRequest( url, xhr =>
 			{
 				let buffer    = xhr.response;
-				let tag;
 				let extension = item.dataset.placeholder.split( '.' ).pop();
 				let mimeType  = 'unknown';
 
@@ -406,6 +404,7 @@ class Cloud
 						mimeType = 'audio/mpeg';
 						break;
 					case 'ogg':
+					case 'opus':
 						mimeType = 'audio/ogg';
 						break;
 					case 'm4a':
@@ -421,7 +420,7 @@ class Cloud
 				Object.assign( item.dataset, metadata );
 
 				// Check if current item is supported by the browser
-				if ( mimeType && !~n.formats.indexOf( mimeType ) )
+				if ( mimeType && !n.formats.includes( mimeType ) )
 				{
 					item.classList.add( 'can-not-play' );
 				}
