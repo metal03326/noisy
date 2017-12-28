@@ -3950,87 +3950,122 @@ let n = {
 		switch ( extension )
 		{
 			case 'mp3':
-				// We need only these tags for now
-				toGet    = {
-					'TPE1': 'artist', //'TPE2'
-					'TIT2': 'title',
-					'TALB': 'album',
-					'TYER': 'date'
-				};
-				len      = Object.keys( toGet ).length;
-				i        = 0;
-
-				// Loop first 1000 bytes
-				while ( i < 1000 && len )
+				// Check if file has ID3v2 tag - we support only those
+				if ( dv.getInt8( 0 ) === 73 && dv.getInt8( 1 ) === 68 && dv.getInt8( 2 ) === 51 )
 				{
-					charCode = dv.getUint8( i++ );
+					let version           = dv.getInt8( 3 );
+					// We need only these tags for now
+					toGet                 = {
+						'TPE1': 'artist', //'TPE2'
+						'TIT2': 'title',
+						'TALB': 'album',
+						'TYER': 'date'
+					};
+					len                   = Object.keys( toGet ).length;
+					i                     = 4;
+					const compressionFlag = version === 4 ? 8 : 128;
+					const encryptionFlag  = version === 4 ? 4 : 64;
+					const mask            = compressionFlag | encryptionFlag;
 
-					Object.keys( toGet ).forEach( tag =>
+					// 4 bytes, starting from byte 7, shows the length of the tag
+					while ( i < dv.getInt32( 6 ) && len )
 					{
-						tagCode = tag.charCodeAt( 0 );
+						charCode = dv.getUint8( i++ );
 
-						// Check for lower case match
-						if ( charCode === tagCode )
+						Object.keys( toGet ).forEach( tag =>
 						{
-							match = true;
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
+							if ( isMatchingTag( tag ) )
 							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
+								// We have read the tag, so move the cursor by 3 bytes (tag is 4 bytes long, but we
+								// already moved after the first byte)
+								i += 3;
 
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Pattern for tag: TALB 00 00 00 (HEX for length of tag in bytes, grouped
-								// by 2 for each char, the second being the first part in unicode, eg. 0415
-								// for cyrillic ? is written 15 04 here) 00 00 (unicode flag byte. If 00 then
-								// no unicode, else it's the first part of unicode char) (tag itself)
-								tagLength       = i + 9 + dv.getUint8( i + 6 );
-								tagValue.length = 0;
-								// Check for *ÿþ symbols and read after them if found
-								i               = ( 255 === dv.getUint8( i + 10 ) && 254 === dv.getUint8( i + 11 ) ) ? i + 12 : i + 9;
+								// 10 byte header by specification:
+								// 4 bytes of frame id (i - 4, i - 3, i - 2 and i - 1)
+								// 4 bytes of frame size (i, i + 1, i + 2 and i + 3)
+								// 2 bytes of flags (i + 4 and i + 5)
+
+								tagLength = dv.getUint32( i );
+
+								const secondFlagsByte = dv.getInt8( i + 5 );
+
+								// After reading the length of the tag move the cursor even past the flags
+								i += 6;
+
+								// We do not support both compression and encryption
+								if ( secondFlagsByte & mask )
+								{
+									// Skip this tag
+									i += tagLength;
+
+									delete toGet[ tag ];
+									len = Object.keys( toGet ).length;
+
+									return;
+								}
+
+								let tagValue = '';
 
 								// First byte shows if the tag is encoded in Unicode or not
 								matchCharCode = dv.getUint8( i++ );
 
-								// If unicode
-								if ( matchCharCode )
+								// If UTF-16: 1 is with BOM, 2 is without BOM
+								if ( matchCharCode === 1 || matchCharCode === 2 )
 								{
-									nextMatch = ( '00' + dv.getUint8( i - 1 ).toString( 16 ) ).slice( -2 );
-									while ( i <= tagLength )
+									let bomModifier = 0;
+
+									// BE support
+									if ( dv.getUint8( i ) < dv.getUint8( i + 1 ) || matchCharCode === 2 )
 									{
-										matchCharCode = ( '00' + dv.getUint8( i ).toString( 16 ) ).slice( -2 );
-										tagValue.push( `0x${matchCharCode}${nextMatch}` );
-										nextMatch = ( '00' + dv.getUint8( i + 1 ).toString( 16 ) ).slice( -2 );
+										bomModifier = 1;
+									}
+
+									// First 3 bytes are used for encoding and BOM if we matched 01. For 02 we only have
+									// encoding character. This results in: matchCharCode === 1 we have to deduct 3,
+									// otherwise we deduct only 1
+									tagLength -= 1 + 2 * Math.abs( matchCharCode - 2 );
+
+									// Move past BOM, if BOM
+									if ( matchCharCode === 1 )
+									{
 										i += 2;
 									}
+
+									k = i + tagLength;
+
+									for ( i; i < k; i += 2 )
+									{
+										matchCharCode = dv.getUint8( i + bomModifier );
+										nextMatch     = dv.getUint8( i + 1 + bomModifier * -1 );
+
+										// Skip adding of 00
+										matchCharCode && (tagValue += `%${matchCharCode.toString( 16 ).padStart( 2, '0' )}`);
+										nextMatch && (tagValue += `%${nextMatch.toString( 16 ).padStart( 2, '0' )}`);
+									}
 								}
+								// UTF-8 (matchCharCode === 3) and ISO-8859-1 (matchCharCode === 0)
 								else
 								{
-									i++;
-									matchCharCode = ( '00' + dv.getUint8( i - 1 ).toString( 16 ) ).slice( -2 );
-									while ( i <= tagLength )
+									// First byte is encoding
+									tagLength -= 1;
+
+									k = i + tagLength;
+
+									for ( i; i < k; i++ )
 									{
-										tagValue.push( '0x00' + matchCharCode );
-										matchCharCode = ( '00' + dv.getUint8( i++ ).toString( 16 ) ).slice( -2 );
+										tagValue += `%${dv.getUint8( i ).toString( 16 ).padStart( 2, '0' )}`;
 									}
 								}
 
-								// Substract last step increase, as next tag comes right after this one
+								metadata[ toGet[ tag ] ] = decodeURIComponent( tagValue );
+
+								// Subtract last step increase, as next tag comes right after this one
 								i--;
-								metadata[ toGet[ tag ] ] = String.fromCharCode.apply( null, tagValue );
 								delete toGet[ tag ];
 								len = Object.keys( toGet ).length;
 							}
-						}
-					} );
+						} );
+					}
 				}
 				break;
 			case 'opus':
