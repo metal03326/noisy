@@ -4069,6 +4069,7 @@ let n = {
 				}
 				//TODO: Try reading APEv2 if no ID3v2
 				break;
+			// Ogg container is used for Opus codec and some .ogg files can be Ogg Opus instead of Ogg Vorbis
 			case 'opus':
 			case 'ogg':
 				// We need only these tags for now
@@ -4081,60 +4082,94 @@ let n = {
 				len   = toGet.length;
 				i     = 0;
 
-				let zeroCount = 0;
-
-				// Loop first 1000 bytes
-				while ( i < 1000 && len )
+				// Search for comments. They are after header, which is at around 100 byte
+				while ( i < 1000 )
 				{
-					charCode = dv.getUint8( i++ );
-
-					// All tag matches should begin with 3 empty characters (hex 00)
-					if ( charCode && zeroCount === 3 )
+					let firstChar = dv.getInt8( i );
+					// [03][vorbis] ||
+					// [OpusTags]
+					if (
+						firstChar === 3 && dv.getInt8( i + 1 ) === 118 && dv.getInt8( i + 2 ) === 111 && dv.getInt8( i + 3 ) === 114 && dv.getInt8( i + 4 ) === 98 && dv.getInt8( i + 5 ) === 105 && dv.getInt8( i + 6 ) === 115 ||
+						firstChar === 79 && dv.getInt8( i + 1 ) === 112 && dv.getInt8( i + 2 ) === 117 && dv.getInt8( i + 3 ) === 115 && dv.getInt8( i + 4 ) === 84 && dv.getInt8( i + 5 ) === 97 && dv.getInt8( i + 6 ) === 103 && dv.getInt8( i + 7 ) === 115
+					)
 					{
-						zeroCount = 0;
-
-						for ( j = 0; j < len; j++ )
+						// If we are Ogg Vorbis, move past [03][vorbis]
+						if ( firstChar === 3 )
 						{
-							tag = toGet[ j ];
+							i += 7;
+						}
+						// Otherwise move past [OpusTags]
+						else
+						{
+							i += 8;
+						}
+						break;
+					}
+					i++;
+				}
+
+				// If we have found tags
+				if ( i < 999 )
+				{
+					// Skip vendor string (4 bytes for the length and the length itself)
+					i += 4 + dv.getInt32( i, true );
+
+					let numberOfComments = dv.getInt32( i, true );
+
+					let k = 0;
+
+					// Move past number of comments
+					i += 4;
+
+					while ( k < numberOfComments && toGet.length )
+					{
+						k++;
+						let tagLength = dv.getInt32( i, true );
+
+						// Move past comment length
+						i += 4;
+
+						let tagFound = false;
+
+						charCode = dv.getUint8( i++ );
+
+						for ( let l = 0; l < toGet.length; l++ )
+						{
+							let tag = toGet[ l ];
 
 							if ( isMatchingTag( tag ) || isMatchingTag( tag.toUpperCase() ) )
 							{
-								// Byte before the 00 00 00 shows how many bytes the tag will be, including the
-								// "artist=" part, so we read everything from "=" sign till the length is reached
-								tagLength       = i - 1 + dv.getUint8( i - 5 );
-								tagValue.length = 0;
-								i               = i + tag.length;
-								matchCharCode   = dv.getUint8( i++ );
-								while ( i <= tagLength )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
+								tagFound = true;
 
-								for ( k = 0; k < tagValue.length; k++ )
+								// Move past [tag][=]
+								i += tag.length;
+
+								tagLength -= tag.length + 1;
+
+								let end = i + tagLength;
+
+								let tagValue = '';
+
+								for ( i; i < end; i++ )
 								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
+									tagValue += `%${dv.getUint8( i ).toString( 16 ).padStart( 2, '0' )}`;
 								}
 
-								toGet.splice( j, 1 );
-								len = toGet.length;
+								metadata[ tag ] = decodeURIComponent( tagValue );
 
-								metadata[ tag ] = decodeURIComponent( str );
+								toGet.splice( toGet.indexOf( tag ), 1 );
+								break;
 							}
 						}
-					}
-					// If we have found 0, then increase the counter
-					else if ( !charCode )
-					{
-						zeroCount++;
-					}
-					// If it's not 0 and we didn't find 3 zeroes, then it's just a random zero - reset the counter
-					else
-					{
-						zeroCount = 0;
+
+						// If we haven't found the tag, we still need to move the cursor to the next comment
+						if ( !tagFound )
+						{
+							i += tagLength - 1;
+						}
 					}
 				}
+
 				break;
 			case 'm4a':
 				toGet = {
