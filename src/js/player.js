@@ -741,7 +741,7 @@ let n = {
 		}
 		else
 		{
-			return fetch( `/js/themes/${theme}.json` ).then( response => response.json() ).then( json =>
+			return fetch( `/js/themes/${theme}.json?ver=${version}` ).then( response => response.json() ).then( json =>
 			{
 				// Style tag string to be appended in the end
 				let styles = Object.keys( json ).map( selector =>
@@ -3912,7 +3912,7 @@ let n = {
 	{
 		return new Promise( resolve =>
 		{
-			const worker = new Worker( '/js/tagReader.js' );
+			const worker = new Worker( '/js/tagReader.js?ver=' + version );
 			worker.postMessage( { buffer, extension } );
 			worker.onmessage = event => resolve( event.data );
 		} );
@@ -4623,7 +4623,7 @@ let n = {
 		}
 		else
 		{
-			return fetch( `/js/i18n/${lang}.json` ).then( response => response.json() ).then( json =>
+			return fetch( `/js/i18n/${lang}.json?ver=${version}` ).then( response => response.json() ).then( json =>
 			{
 				// Cache the parsed theme if user wants to re-apply it
 				n.langs[ lang ] = json;
