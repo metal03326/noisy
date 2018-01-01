@@ -71,7 +71,7 @@
 		"md5-library"                                    : "MD5 library by",
 		"about-music"                                    : "Music by",
 		"whats-new-heading"                              : "Since your last visit we have released a new version: <b>${version}</b>. Here are the changes made:",
-		"whats-new-footer"                               : "The full changelog can be found <a href=\"/CHANGES.txt\">here</a>."
+		"whats-new-footer"                               : "The full changelog can be found <a href=\"https://github.com/metal03326/noisy/blob/master/CHANGES.md\">here</a>."
 	},
 	"faq"         : {
 		"What do I need to use Noisy?"          : "To use Noisy you'll need a minimum resolution of 800x480 pixels and any modern browser up to date.<br/>We support the <b>latest 2</b> versions of <b>Google Chrome, Mozilla Firefox and Microsoft Edge</b>.<br/><br/><b>Not supported</b>: All mobile browsers.<br/><br/><b>Notes on support</b>: We are working towards better support for smaller screen resolution and mobile browsers.",
