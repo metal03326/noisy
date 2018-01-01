@@ -85,7 +85,9 @@
 	},
 	"whatsnew"    : [
 		"Updated the UI a bit",
-		"Made a few changes that should speedup Noisy a bit",
+		"Made a lot changes that should speedup Noisy noticeably",
+		"Added tag reading for Opus files",
+		"Improved MP3/OGG/M4A tag reading",
 		"Dropped old browser support, like Internet Explorer",
 		"Lots of stability improvements and bugfixes",
 		"We are now on <a href=\"//github.com/metal03326/noisy\">GitHub</a>"

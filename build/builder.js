@@ -6,14 +6,14 @@ const UglifyJS = require( 'uglify-js' );
 let isProd                  = false;
 let foldersToClean          = [ './docs/dev/' ];
 let filesToCopyInDev        = [
-	{ from: 'CHANGES.txt', to: './docs/dev/CHANGES.txt' },
+	{ from: 'CHANGES.md', to: './docs/dev/CHANGES.md' },
 	{ from: 'browserconfig.xml', to: './docs/dev/browserconfig.xml' },
 	{ from: './docs/dev/img/open_graph.png', to: './docs/dev/open_graph.png', method: 'moveSync' },
 	{ from: './docs/dev/img/favicon.ico', to: './docs/dev/favicon.ico', method: 'moveSync' }
 ];
 let filesToCopyInProduction = [
 	{ from: 'browserconfig.xml', to: './docs/browserconfig.xml' },
-	{ from: 'CHANGES.txt', to: './docs/CHANGES.txt' },
+	{ from: 'CHANGES.md', to: './docs/CHANGES.md' },
 	{ from: 'sitemap.xml', to: './docs/sitemap.xml' },
 	{ from: 'robots.txt', to: './docs/robots.txt' },
 	{ from: 'google9638db4c20f16281.html', to: './docs/google9638db4c20f16281.html' },

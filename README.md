@@ -67,7 +67,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## Versioning
 
-For versioning we use [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) with ommited hyphens (YYYYMMDD).
+For versioning we use [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) with omitted hyphens (YYYYMMDD).
 
 ## Changelog
 
