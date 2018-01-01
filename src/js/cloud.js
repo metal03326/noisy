@@ -8,8 +8,7 @@
 'use strict';
 
 // Clouds class to use as base for other cloud services
-class Cloud
-{
+class Cloud {
 	constructor( props = [] )
 	{
 		// Access token returned by OAuth 2.0
@@ -396,7 +395,6 @@ class Cloud
 			this.ajaxRequest( url, xhr =>
 			{
 				let buffer    = xhr.response;
-				let tag;
 				let extension = item.dataset.placeholder.split( '.' ).pop();
 				let mimeType  = 'unknown';
 
@@ -406,6 +404,7 @@ class Cloud
 						mimeType = 'audio/mpeg';
 						break;
 					case 'ogg':
+					case 'opus':
 						mimeType = 'audio/ogg';
 						break;
 					case 'm4a':
@@ -416,12 +415,26 @@ class Cloud
 						break;
 				}
 
-				let metadata = n.powerSaveMode ? {} : n.readTags( buffer, extension );
+				// Read tags if not in Power Save mode
+				if ( !n.powerSaveMode )
+				{
+					const icon = item.querySelector( '.playback-status' ).dataset.icon;
 
-				Object.assign( item.dataset, metadata );
+					// Show loading indicator when reading tags
+					n.setItemState( 'w', false, item, false );
+
+					n.readTags( buffer, extension ).then( tags =>
+					{
+						// Hide loading indicator if it was loading, but keep it otherwise (play)
+						n.setItemState( icon !== 'w' ? icon : null, false, item, false );
+
+						// Update tags
+						n.updateItemTags( tags, item );
+					} );
+				}
 
 				// Check if current item is supported by the browser
-				if ( mimeType && !~n.formats.indexOf( mimeType ) )
+				if ( mimeType && !n.formats.includes( mimeType ) )
 				{
 					item.classList.add( 'can-not-play' );
 				}

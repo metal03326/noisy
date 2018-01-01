@@ -1793,7 +1793,10 @@ let n = {
 		{
 			// Possible codecs
 			let types = [
-				'audio/mpeg;', 'audio/ogg; codecs="vorbis"', 'audio/wav; codecs="1"',
+				'audio/mpeg;',
+				'audio/ogg; codecs="vorbis"',
+				'audio/ogg; codecs="opus"',
+				'audio/wav; codecs="1"',
 				'audio/mp4; codecs="mp4a.40.2"'
 			];
 
@@ -1855,7 +1858,6 @@ let n = {
 		const elementToCreate = 'section';
 		const tabIndexString  = 'tabindex';
 		const cloudString     = 'dropbox';
-		const cannotPlayClass = 'can-not-play';
 		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
 		const dblClickEvent   = 'dblclick';
 		const mouseDownEvent  = 'mousedown';
@@ -1880,7 +1882,7 @@ let n = {
 
 			if ( mimeType && !n.formats.includes( mimeType ) )
 			{
-				item.classList.add( cannotPlayClass );
+				item.classList.add( 'can-not-play' );
 			}
 
 			// Add styling classes
@@ -3406,9 +3408,8 @@ let n = {
 	 */
 	onFilesSupplied( e )
 	{
-		let files      = e.files || e.dataTransfer.files;
-		let filesArray = [];
-		let id         = n.activePlaylistId;
+		const files = Array.from( e.files || e.dataTransfer.files );
+		let id      = n.activePlaylistId;
 
 		// Create new playlist to which to add the files if the user hasn't selected any
 		if ( !id )
@@ -3417,60 +3418,68 @@ let n = {
 			id = n.activePlaylistId;
 		}
 
-		// FileReader is asyncronious so we need to handle the loop through asyncLoop
-		asyncLoop( files.length - 1, loop =>
+		// Create store for local files for this playlist, if it doesn't exist
+		n.local.files[ id ] = n.local.files[ id ] || [];
+
+		// Save original length of local files before the addition of new onces - used to properly calculate position
+		// of the processed file
+		const lengthBefore = n.local.files[ id ].length;
+
+		n.fillPlaylist( id, files.map( ( file, index ) =>
 		{
-			let fr        = new FileReader();
-			let fileToAdd = {};
+			n.local.files[ id ].push( file );
 
-			function _handleFileLoad()
-			{
-				let tags = n.powerSaveMode ? {} : n.readTags( this.result, fileToAdd.placeholder.split( '.' ).pop() );
-
-				// Copy the tags to the file
-				Object.assign( fileToAdd, tags );
-
-				// Stop listening for file loaded as we are going to attach a new listener next time
-				fr.removeEventListener( 'load', _handleFileLoad );
-
-				loop.next();
-			}
-
-			// Start listening for when current file is loaded
-			fr.addEventListener( 'load', _handleFileLoad );
-
-			n.local.files[ id ] = n.local.files[ id ] || [];
-
-			let file = files[ loop.index ];
-
-			// File in the fillPlaylist format
-			fileToAdd = {
+			return {
 				cloud      : 'local',
 				//TODO: Check if browser supports there formats instead of replacing them, and if it is - add them to
 				//the first check, so we have them in n.formats
 				mimetype   : file.type.replace( 'mp3', 'mpeg' ).replace( 'x-m4a', 'mp4' ),
 				placeholder: file.name,
-				url        : loop.index
+				url        : lengthBefore + index
 			};
+		} ), false );
 
-			filesArray.push( fileToAdd );
-			n.local.files[ id ].push( file );
+		// Don't wait for tag reading to close the window - this gives user a feel of speed
+		n.closeAll();
 
-			// We don't read the file if we are in power save mode
-			if ( n.powerSaveMode )
-			{
-				_handleFileLoad();
-			}
-			// Otherwise start file read
-			else
-			{
-				fr.readAsArrayBuffer( file );
-			}
-		}, () =>
+		// Empty selected files.
+		//TODO: We are using DOM selection because onFilesSupplied is being called from two places - the input itself
+		// and on drop. Drop produces normal event, but it's not related to the input in anyway. Input change passes
+		// the input itself instead of event. Fix this part.
+		document.getElementById( 'selected-playback-files' ).value = '';
+
+		// Read tags, if not in a Power Save mode
+		if ( !n.powerSaveMode )
 		{
-			n.fillPlaylist( id, filesArray, false );
-			n.closeAll();
-		} );
+			files.forEach( ( file, index ) =>
+			{
+				const fr   = new FileReader();
+				const item = document.querySelector( `#${id} .playlist-item[data-url="${lengthBefore + index}"]` );
+
+				// Show loading indicator when reading tags
+				n.setItemState( 'w', false, item, false );
+
+				// Start listening for when current file is loaded
+				fr.addEventListener(
+					'load',
+					event =>
+					{
+						n.readTags( event.target.result, file.name.split( '.' ).pop() )
+							.then( tags =>
+							{
+								// Hide loading indicator
+								n.setItemState( null, false, item );
+
+								// Update tags
+								n.updateItemTags( tags, item );
+							} );
+					},
+					{ once: true }
+				);
+
+				fr.readAsArrayBuffer( file );
+			} );
+		}
 
 		return false;
 	},
@@ -3894,367 +3903,19 @@ let n = {
 	},
 
 	/**
-	 * Reads tags for MP3, OGG and M4A files.
+	 * Reads tags for MP3, OGG, M4A and OPUS files.
 	 * @param {ArrayBuffer} buffer Required. File represented in an array buffer.
 	 * @param {String} extension Required. File extension. Used to determine which algorithm to apply when reading tags.
-	 * @returns {Object} All read tags.
+	 * @returns {Promise} Promise that will resolve with read tags as first argument.
 	 */
 	readTags( buffer, extension )
 	{
-		let dv       = new DataView( buffer );
-		let toGet    = {};
-		let i;
-		let j;
-		let k;
-		let charCode;
-		let matchCharCode;
-		let tag;
-		let tagCode;
-		let match;
-		let str;
-		let tagLength;
-		let tagValue = [];
-		let mimeType = 'unknown';
-		let len;
-		let nextMatch;
-		let metadata = {};
-
-		// Choose algorithm
-		switch ( extension )
+		return new Promise( resolve =>
 		{
-			case 'mp3':
-				mimeType = 'audio/mpeg';
-				// We need only these tags for now
-				toGet    = {
-					'TPE1': 'artist', //'TPE2'
-					'TIT2': 'title',
-					'TALB': 'album',
-					'TYER': 'date'
-				};
-				len      = Object.keys( toGet ).length;
-				i        = 0;
-
-				// Loop first 1000 bytes
-				while ( i < 1000 && len )
-				{
-					charCode = dv.getUint8( i++ );
-
-					Object.keys( toGet ).forEach( tag =>
-					{
-						tagCode = tag.charCodeAt( 0 );
-
-						// Check for lower case match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Pattern for tag: TALB 00 00 00 (HEX for length of tag in bytes, grouped
-								// by 2 for each char, the second being the first part in unicode, eg. 0415
-								// for cyrillic ? is written 15 04 here) 00 00 (unicode flag byte. If 00 then
-								// no unicode, else it's the first part of unicode char) (tag itself)
-								tagLength       = i + 9 + dv.getUint8( i + 6 );
-								tagValue.length = 0;
-								// Check for *ÿþ symbols and read after them if found
-								i               = ( 255 === dv.getUint8( i + 10 ) && 254 === dv.getUint8( i + 11 ) ) ? i + 12 : i + 9;
-
-								// First byte shows if the tag is encoded in Unicode or not
-								matchCharCode = dv.getUint8( i++ );
-
-								// If unicode
-								if ( matchCharCode )
-								{
-									nextMatch = ( '00' + dv.getUint8( i - 1 ).toString( 16 ) ).slice( -2 );
-									while ( i <= tagLength )
-									{
-										matchCharCode = ( '00' + dv.getUint8( i ).toString( 16 ) ).slice( -2 );
-										tagValue.push( `0x${matchCharCode}${nextMatch}` );
-										nextMatch = ( '00' + dv.getUint8( i + 1 ).toString( 16 ) ).slice( -2 );
-										i += 2;
-									}
-								}
-								else
-								{
-									i++;
-									matchCharCode = ( '00' + dv.getUint8( i - 1 ).toString( 16 ) ).slice( -2 );
-									while ( i <= tagLength )
-									{
-										tagValue.push( '0x00' + matchCharCode );
-										matchCharCode = ( '00' + dv.getUint8( i++ ).toString( 16 ) ).slice( -2 );
-									}
-								}
-
-								// Substract last step increase, as next tag comes right after this one
-								i--;
-								metadata[ toGet[ tag ] ] = String.fromCharCode.apply( null, tagValue );
-								delete toGet[ tag ];
-								len = Object.keys( toGet ).length;
-							}
-						}
-					} );
-				}
-				break;
-			case 'ogg':
-				mimeType = 'audio/ogg';
-
-				// We need only these tags for now
-				toGet = [
-					'artist',
-					'title',
-					'album',
-					'date'
-				];
-				len   = toGet.length;
-				i     = 0;
-
-				// Loop first 1000 bytes
-				while ( i < 1000 && len )
-				{
-					charCode = dv.getUint8( i++ );
-
-					for ( j = 0; j < len; j++ )
-					{
-						tag     = toGet[ j ];
-						tagCode = tag.charCodeAt( 0 );
-
-						// Check for lower case match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Byte before the 00 00 00 shows how many bytes the tag will be, including the
-								// "artist=" part, so we read everything from "=" sign till the length is reachedl
-								tagLength       = i - 1 + dv.getUint8( i - 5 );
-								tagValue.length = 0;
-								i               = i + tag.length;
-								matchCharCode   = dv.getUint8( i++ );
-								while ( i <= tagLength )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								metadata[ tag ] = decodeURIComponent( str );
-								toGet.splice( j, 1 );
-								len = toGet.length;
-							}
-							continue;
-						}
-
-						tagCode = tag.toUpperCase().charCodeAt( 0 );
-
-						// Check for uppercase match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							tag   = tag.toUpperCase();
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Byte before the 00 00 00 shows how many bytes the tag will be, including the
-								// "artist=" part, so we read everything from "=" sign till the length is reached
-								tagLength       = i - 1 + dv.getUint8( i - 5 );
-								tagValue.length = 0;
-								i               = i + tag.length;
-								matchCharCode   = dv.getUint8( i++ );
-								while ( i <= tagLength )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								metadata[ tag.toLowerCase() ] = decodeURIComponent( str );
-								toGet.splice( j, 1 );
-								len = toGet.length;
-							}
-						}
-					}
-				}
-				break;
-			case 'm4a':
-				mimeType = 'audio/mp4';
-				toGet    = {
-					'©art': 'artist',
-					'©nam': 'title',
-					'©alb': 'album',
-					'©day': 'date'
-				};
-				len      = Object.keys( toGet ).length;
-				i        = 50000;
-
-				// Loop second 50000 bytes
-				while ( i < 100000 && len )
-				{
-					charCode = dv.getUint8( i++ );
-
-					for ( tag in toGet )
-					{
-						tagCode = tag.charCodeAt( 0 );
-
-						// Check for lower case match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Pattern: @nam 00 00 00 (byte showing length of tag, starting from next
-								// byte) data 00 00 00 (byte showing I don't know what) 00 00 00 00 (text
-								// for tag) 00 00 00 (byte showing I don't know what)
-								i += 6;
-								matchCharCode = dv.getUint8( i );
-								tagLength     = i + matchCharCode;
-								i += 13;
-								matchCharCode = dv.getUint8( i );
-
-								tagValue.length = 0;
-
-								matchCharCode = dv.getUint8( i++ );
-								while ( i <= tagLength && matchCharCode )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								metadata[ toGet[ tag ] ] = decodeURIComponent( str );
-								delete toGet[ tag ];
-								len = Object.keys( toGet ).length;
-
-								continue;
-							}
-						}
-
-						tagCode = tag.toUpperCase().charCodeAt( 0 );
-
-						// Check for lower case match
-						if ( charCode === tagCode )
-						{
-							match = true;
-							tag   = tag.toUpperCase();
-							// loop through all letters to make sure we have found a match
-							for ( k = 1; k < tag.length; k++ )
-							{
-								matchCharCode = dv.getUint8( ( i - 1 ) + k );
-								tagCode       = tag.charCodeAt( k );
-								if ( matchCharCode !== tagCode )
-								{
-									match = false;
-									break;
-								}
-							}
-
-							// If a match is found get the tag
-							if ( match )
-							{
-								// Pattern: @nam 00 00 00 (byte showing length of tag, starting from next
-								// byte) data 00 00 00 (byte showing I don't know what) 00 00 00 00 (text
-								// for tag) 00 00 00 (byte showing I don't know what)
-								i += 6;
-								matchCharCode = dv.getUint8( i );
-								tagLength     = i + matchCharCode;
-								i += 13;
-								matchCharCode = dv.getUint8( i );
-
-								tagValue.length = 0;
-
-								matchCharCode = dv.getUint8( i++ );
-								while ( i <= tagLength && matchCharCode )
-								{
-									tagValue.push( matchCharCode );
-									matchCharCode = dv.getUint8( i++ );
-								}
-								str = '';
-
-								for ( k = 0; k < tagValue.length; k++ )
-								{
-									str += '%' + ( '0' + tagValue[ k ].toString( 16 ) ).slice( -2 );
-								}
-
-								tag = tag.toLowerCase();
-
-								metadata[ toGet[ tag ] ] = decodeURIComponent( str );
-								delete toGet[ tag ];
-								len = Object.keys( toGet ).length;
-							}
-						}
-					}
-				}
-				break;
-			case 'wav':
-				mimeType = 'audio/wav';
-				break;
-		}
-
-		return metadata;
+			const worker = new Worker( '/js/tagReader.js' );
+			worker.postMessage( { buffer, extension } );
+			worker.onmessage = event => resolve( event.data );
+		} );
 	},
 
 	/**
@@ -4384,7 +4045,7 @@ let n = {
 	},
 
 	/**
-	 * Render info to the sceen.
+	 * Render info to the screen.
 	 * @param {HTMLElement} item Required. Item to which the changes should appear.
 	 */
 	renderItem( item )
@@ -4684,8 +4345,10 @@ let n = {
 	 * @param {Boolean} [selected] Optional. Set class to the selected item instead of the found item. Used to when
 	 *     play button is clicked for the first time and there is no other item currently playing.
 	 * @param {HTMLElement} [item] Optional. Item to which the state should be set.
+	 * @param {Boolean} [removePrevious] An option to stop removing passed state from previous place. Useful when
+	 *     showing multiple loadings.
 	 */
-	setItemState( state, selected, item )
+	setItemState( state, selected, item, removePrevious = true )
 	{
 		// Get currently active item or selected one on the currently active playlist
 		item = item || document.querySelector( '.preloaded' ) || n.activeItem || n.currentlySelectedItem;
@@ -4699,7 +4362,7 @@ let n = {
 		if ( item )
 		{
 			// State icons shouldn't repeat, so we should remove previous one
-			let playbackStatus = document.getElementById( 'playlists' ).querySelector( `.playback-status[data-icon="${state}"]` );
+			let playbackStatus = removePrevious && document.getElementById( 'playlists' ).querySelector( `.playback-status[data-icon="${state}"]` );
 
 			if ( playbackStatus )
 			{
@@ -5087,6 +4750,25 @@ let n = {
 	{
 		n.console.innerHTML += `<div class="nb-update"><span class="update">${n.lang.console.update}</span></div>`;
 		document.getElementById( 'color-bulb' ).classList.add( 'nb-update' );
+	},
+
+	/**
+	 * Updates already rendered playlist item and adds passed tags to it
+	 * @param {Object} tags Tags to add
+	 * @param {HTMLElement|String|Number} item Item to update. If string or number is passed then the item will be
+	 *     search by the passed value
+	 * @param {String} [playlistId] Id of the playlist containing the item (if to be searched)
+	 */
+	updateItemTags( tags, item, playlistId = n.activePlaylistId )
+	{
+		// Get already rendered item
+		item = item.tagName ? item : document.querySelector( `#${playlistId} .playlist-item[data-url="${item}"]` );
+
+		// Add tags as data attributes
+		Object.assign( item.dataset, tags );
+
+		// Re-render the item
+		n.renderItem( item );
 	},
 
 	/**
