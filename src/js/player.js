@@ -922,10 +922,12 @@ let n = {
 		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', e => n.notify( null, e.currentTarget.checked ) );
 
 		// Save on playback order change
-		document.getElementById( 'playback-order' ).addEventListener( 'change', _ =>
+		document.getElementById( 'playback-order' ).addEventListener( 'change', e =>
 		{
-			n.audio.loop         = !(2 - this.selectedIndex);
-			n.pref.playbackOrder = this.selectedIndex;
+			const target = e.currentTarget;
+
+			n.audio.loop         = !(2 - target.selectedIndex);
+			n.pref.playbackOrder = target.selectedIndex;
 		} );
 
 		// Attach event listeners to the tabs
@@ -959,13 +961,14 @@ let n = {
 		}
 
 		// Set data-keys property for the input in which the user adds new keyboard shortcuts
-		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function ( e )
+		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, e =>
 		{
-			let keys = n.getKeys( e );
+			const target = e.currentTarget;
+			const keys   = n.getKeys( e );
 
-			this.value = keys.keys.join( ' + ' );
+			target.value = keys.keys.join( ' + ' );
 
-			this.dataset.keys = keys.keyProperty.join( '+' );
+			target.dataset.keys = keys.keyProperty.join( '+' );
 
 			e.preventDefault();
 		} );
@@ -1022,10 +1025,7 @@ let n = {
 		// Save preferences when user changes an input inside the preferences window
 		inputs = document.getElementById( 'preferences-container' ).querySelectorAll( 'input:not(#keyboard-shortcut)' );
 
-		let _onChange = event =>
-		{
-			n.pref.input = event.target;
-		};
+		let _onChange = event => n.pref.input = event.currentTarget;
 
 		for ( let i = 0; i < inputs.length; i++ )
 		{
@@ -1049,14 +1049,15 @@ let n = {
 		/* End: Window state events */
 
 		// Reset styles of cloud choosing icons in add/save window and select service depending on what the user clicked
-		let _onIconClick = function ()
+		let _onIconClick = e =>
 		{
-			let cloud = n[ this.dataset.cloud ];
+			const cloudName = e.currentTarget.dataset.cloud;
+			const cloud     = n[ cloudName ];
 
 			if ( cloud.isAuthenticated )
 			{
 				document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
-				n.selectService( this.dataset.cloud );
+				n.selectService( cloudName );
 			}
 			else
 			{
@@ -1195,22 +1196,19 @@ let n = {
 		document.getElementById( 'playlists-wrapper' ).addEventListener( 'keydown', _onPlaylistDown );
 
 		// We need to remember user's choice for showing or not the whats new screen
-		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function ()
-		{
-			n.pref.showWhatsNew = this.checked;
-		} );
+		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, e => n.pref.showWhatsNew = e.currentTarget.checked );
 
 		// We need to make animation setting work immediately
-		document.getElementById( 'preference-enable-animations' ).addEventListener( changeEvent, this.initAnimations );
+		document.getElementById( 'preference-enable-animations' ).addEventListener( changeEvent, n.initAnimations );
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
-		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, _ => n.changeScrobblingState( this.checked ) );
+		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, e => n.changeScrobblingState( e.currentTarget.checked ) );
 
 		// We need to enable/diable threshold dropdown depending on the state of the checkbox
-		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, _ => n.changePowerSaverState( this.checked ) );
+		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, e => n.changePowerSaverState( e.currentTarget.checked ) );
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
-		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, _ => n.changeCounterState( this.checked ) );
+		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, e => n.changeCounterState( e.currentTarget.checked ) );
 	},
 
 	/**
@@ -1235,7 +1233,7 @@ let n = {
 
 	changeCounterState( state )
 	{
-		let counter = document.getElementById( 'footer-counter' );
+		const counter = document.getElementById( 'footer-counter' );
 
 		counter.innerHTML = '';
 
