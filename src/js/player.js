@@ -6,27 +6,15 @@
  */
 
 'use strict';
-/* HIGH PRIORITY */
-//TODO: Check Teddy for a problem with now playing of Five Finger Death Punch - Wrong Side of Heaven. It says invalid
-// signiture supplied
-//TODO: Implement Drag and Drop Directories under Chrome
-
-/* NORMAL PRIORITY */
-//TODO: Make a page with things to be dropped and when (approximately)
-//TODO: Fix double tag read under Firefox
-//TODO: Go around the code and find usages for n.log/warn/error.
-//TODO: Implement WAI-ARIA.
-//TODO: Add WebVTT - Web Video Text Tracks to the intro video
-//TODO: Introduce n.pref.batch() to make changes to n.pref.settings object at once before saving. This should save a
-// few CPU cycles when two or more things needs to be saved; TODO: Add localStorage compression alogorithm (disabled by
-// default, since we save playlists too often)
+//todo: Implement Drag and Drop Directories for all browsers supporting getFilesAndDirectories()
+//todo: Fix double tag read under Firefox
+//todo: Go around the code and find usages for n.log/warn/error.
+//todo: Implement WAI-ARIA.
+//todo: Introduce n.pref.batch() to make changes to n.pref.settings object at once before saving. This should save a
+// few CPU cycles when two or more things needs to be saved;
+//todo: Add localStorage compression alogorithm (disabled by default, since we save playlists too often)
 //todo: Get current browser/os language and try using it as a language of Noisy - just the way it was before the rework.
-
-/* LOW PRIORITY */
-//TODO: Finish tests.
-
-/* After everything else */
-//TODO: Add easter egg somewhere on the about page.
+//todo: Add easter egg somewhere on the about page.
 
 // Noisy singleton
 let n = {
