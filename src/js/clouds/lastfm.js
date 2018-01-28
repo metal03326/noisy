@@ -199,7 +199,7 @@ let lastfm = new Cloud( {
 	 */
 	updateNowPlaying( item )
 	{
-		if ( n.pref.scrobbling )
+		if ( n.pref.scrobbling && lastfm.isAuthenticated )
 		{
 			let { artist, title } = item.dataset;
 			let method            = 'track.updateNowPlaying';
