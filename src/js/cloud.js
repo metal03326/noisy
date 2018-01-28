@@ -257,10 +257,10 @@ class Cloud {
 	}
 
 	/**
-	 * Loads playlist from the cloud.
+	 * Loads playlist or preferences from the cloud.
 	 * @param {HTMLElement} item Required. Item chosen by the user to be loaded.
 	 */
-	loadPlaylist( item )
+	loadNoisyFile( item )
 	{
 		// Google Drive has the loadPlaylist URL saved in the DOM, as data-downloadURL
 		let loadPlaylistURL = this.urls.loadPlaylist || {};
@@ -272,78 +272,18 @@ class Cloud {
 			headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
 		} );
 
-		asyncLoop( 10, loop =>
-		{
-			this.fetch( url, loadPlaylistURL.method, void 0, headers ).then( response =>
-			{
-				if ( 'playlist' !== response.type )
-				{
-					throw new Error( 'Not a valid playlist' );
-				}
-				else
-				{
-					n.loadPlaylist( response );
-
-					let tab = document.querySelector( `li[data-for="${response.id}"]` );
-
-					if ( tab )
-					{
-						n.changePlaylist( tab );
-					}
-				}
-			} ).catch( _ =>
+		return new Promise( resolve => asyncLoop( 10, loop => this.fetch( url, loadPlaylistURL.method || 'GET', '', headers )
+			.then( resolve ).catch( _ =>
 			{
 				n.log( 'connection-retry', loop.index );
 				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 				loop.next();
-			} );
-		} ).then( () =>
+			} )
+		).then( () =>
 		{
 			n.setFooter( null, true );
 			n.error( 'cannot-load-url', url );
-		} );
-	}
-
-	/**
-	 * Loads preferences from the cloud.
-	 * @param {HTMLElement} item Required. Item chosen by the user to be loaded.
-	 */
-	loadPreferences( item )
-	{
-		// Google Drive has the loadPlaylist URL saved in the DOM, as data-downloadURL
-		let loadPlaylistURL = this.urls.loadPlaylist || {};
-		let headers         = {};
-		let url             = this.usesIds ? item.dataset.downloadURL : loadPlaylistURL.url;
-
-		Object.keys( loadPlaylistURL.headers || {} ).forEach( header =>
-		{
-			headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
-		} );
-
-		asyncLoop( 10, loop =>
-		{
-			this.fetch( url, loadPlaylistURL.method || 'GET', '', headers ).then( response =>
-			{
-				if ( 'preferences' !== response.type )
-				{
-					throw new Error( 'Not a valid preferences file' );
-				}
-				else
-				{
-					delete response.type;
-					n.pref.import( response );
-				}
-			} ).catch( _ =>
-			{
-				n.log( 'connection-retry', loop.index );
-				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
-				loop.next();
-			} );
-		} ).then( () =>
-		{
-			n.setFooter( null, true );
-			n.error( 'cannot-load-url', url );
-		} );
+		} ) );
 	}
 
 	_preload( url, item )
@@ -665,85 +605,29 @@ class Cloud {
 	}
 
 	/**
-	 * Saves the active playlist to the cloud.
-	 * @param {String} file Required. Filename of the playlist file being saved.
-	 * @param {String} path Required. Path to the file in which the playlist will be saved.
+	 * Saves the active playlist or preferences to the cloud.
+	 * @param {String} file Filename of the playlist/preferences file being saved.
+	 * @param {String} path Path to the file in which the playlist/preferences will be saved.
 	 */
-	savePlaylist( file, path )
+	saveNoisyFile( file, path )
 	{
-		let pst = n.saveActivePlaylist( true );
+		let toSave;
+		let type;
 
-		if ( pst )
+		if ( file.endsWith( '.plst.nsy' ) )
 		{
-			pst.type = 'playlist';
-
-			let savePlaylistURL = this.urls.savePlaylist;
-			let headers         = {};
-			let savePath        = `${path}/${file}`.replace( '//', '/' );
-			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
-
-			Object.keys( savePlaylistURL.headers || {} ).forEach( header =>
-			{
-				headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
-			} );
-
-			asyncLoop( 10, loop =>
-			{
-				this.fetch( url, 'POST', JSON.stringify( pst ), headers ).then( response =>
-				{
-					if ( this.usesIds )
-					{
-						url = this.urls.savePlaylist2.replace( '{{path}}', response.id );
-
-						asyncLoop( 10, loop =>
-						{
-							this.fetch( url, 'PUT', `{"title":"${file}","parents":[{"id":"${path}"}]}`, { 'Content-Type': 'application/json' } ).then( _ =>
-							{
-								n.log( 'saved', url );
-								n.setFooter( n.lang.footer[ 'operation-successful' ] );
-							} ).catch( _ =>
-							{
-								n.log( 'connection-retry', loop.index );
-								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
-								loop.next();
-							} );
-						} ).then( () =>
-						{
-							n.error( 'failed-to-save', url );
-							n.setFooter( n.lang.footer[ 'error-see-console' ] );
-						} );
-					}
-					else
-					{
-						n.log( 'saved', url );
-						n.setFooter( n.lang.footer[ 'operation-successful' ] );
-					}
-				} ).catch( _ =>
-				{
-					n.log( 'connection-retry', loop.index );
-					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
-					loop.next();
-				} );
-			} ).then( () =>
-			{
-				n.error( 'failed-to-save', url );
-				n.setFooter( n.lang.footer[ 'error-see-console' ] );
-			} );
+			toSave = n.saveActivePlaylist( true );
+			type   = 'playlist';
 		}
-	}
-
-	/**
-	 * Saves the preferences to the cloud.
-	 * @param {String} file Required. Filename of the preferences file being saved.
-	 * @param {String} path Required. Path to the file in which the preferences will be saved.
-	 */
-	savePreferences( file, path )
-	{
-		let pref = n.pref.export();
-
-		if ( pref )
+		else
 		{
-			pref.type = 'preferences';
+			toSave = n.pref.export();
+			type   = 'preferences';
+		}
+
+		if ( toSave )
+		{
+			toSave.type = type;
 
 			let savePlaylistURL = this.urls.savePlaylist;
 			let headers         = {};
@@ -755,17 +639,13 @@ class Cloud {
 				headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
 			} );
 
-			asyncLoop( 10, loop =>
-			{
-				this.fetch( url, 'POST', JSON.stringify( pref ), headers ).then( response =>
+			asyncLoop( 10, loop => this.fetch( url, 'POST', JSON.stringify( toSave ), headers ).then( response =>
 				{
 					if ( this.usesIds )
 					{
 						url = this.urls.savePlaylist2.replace( '{{path}}', response.id );
 
-						asyncLoop( 10, loop =>
-						{
-							this.fetch( url, 'PUT', `{"title":"${file}.plst.nsy"}`, { 'Content-Type': 'application/json' } ).then( _ =>
+						asyncLoop( 10, loop => this.fetch( url, 'PUT', `{"title":"${file}","parents":[{"id":"${path}"}]}`, { 'Content-Type': 'application/json' } ).then( _ =>
 							{
 								n.log( 'saved', url );
 								n.setFooter( n.lang.footer[ 'operation-successful' ] );
@@ -774,8 +654,8 @@ class Cloud {
 								n.log( 'connection-retry', loop.index );
 								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 								loop.next();
-							} );
-						} ).then( () =>
+							} )
+						).then( () =>
 						{
 							n.error( 'failed-to-save', url );
 							n.setFooter( n.lang.footer[ 'error-see-console' ] );
@@ -791,8 +671,8 @@ class Cloud {
 					n.log( 'connection-retry', loop.index );
 					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 					loop.next();
-				} );
-			} ).then( () =>
+				} )
+			).then( _ =>
 			{
 				n.error( 'failed-to-save', url );
 				n.setFooter( n.lang.footer[ 'error-see-console' ] );

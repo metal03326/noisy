@@ -2832,7 +2832,24 @@ let n = {
 		{
 			for ( let i = 0; i < selected.length; i++ )
 			{
-				n[ cloud ].loadPlaylist( selected[ i ] );
+				n[ cloud ].loadNoisyFile( selected[ i ] ).then( response =>
+				{
+					if ( 'playlist' === response.type )
+					{
+						n.loadPlaylist( response );
+
+						let tab = document.querySelector( `li[data-for="${response.id}"]` );
+
+						if ( tab )
+						{
+							n.changePlaylist( tab );
+						}
+					}
+					else
+					{
+						throw new Error( 'Not a valid playlist' );
+					}
+				} );
 			}
 		}
 
@@ -2851,7 +2868,18 @@ let n = {
 
 		if ( selected.length && cloud )
 		{
-			n[ cloud ].loadPreferences( selected[ 0 ] );
+			n[ cloud ].loadNoisyFile( selected[ 0 ] ).then( response =>
+			{
+				if ( 'preferences' === response.type )
+				{
+					delete response.type;
+					n.pref.import( response );
+				}
+				else
+				{
+					throw new Error( 'Not a valid preferences file' );
+				}
+			} );
 		}
 
 		n.closeFileFolderWindow();
@@ -4207,7 +4235,7 @@ let n = {
 		{
 			n.setFooter( n.lang.footer[ 'please-wait' ] );
 
-			n[ cloud ].savePlaylist( `${val}.plst.nsy`, path );
+			n[ cloud ].saveNoisyFile( `${val}.plst.nsy`, path );
 		}
 
 		n.closeAll();
@@ -4240,7 +4268,7 @@ let n = {
 		{
 			n.setFooter( n.lang.footer[ 'please-wait' ] );
 
-			n[ cloud ].savePreferences( `${val}.pref.nsy`, path );
+			n[ cloud ].saveNoisyFile( `${val}.pref.nsy`, path );
 		}
 
 		n.closeAll();
