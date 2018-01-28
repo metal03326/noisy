@@ -919,7 +919,7 @@ let n = {
 		}, false );
 
 		// Ask for permissions if the user has checked that he wants notifications
-		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', _ => n.notify( null, this.checked ) );
+		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', e => n.notify( null, e.currentTarget.checked ) );
 
 		// Save on playback order change
 		document.getElementById( 'playback-order' ).addEventListener( 'change', _ =>
@@ -3056,9 +3056,9 @@ let n = {
 
 	/**
 	 * Pop a desktop notification to the user with the item being played.
-	 * @param {HTMLElement} [item] Optional. Item from which we need to get the information shown in the notification.
+	 * @param {HTMLElement} [item] Item from which we need to get the information shown in the notification.
 	 *     If not supplied the active item will be chosen.
-	 * @param {Boolean} [request] Optional. If true only a permission request will be sent to the user.
+	 * @param {Boolean} [request] If true only a permission request will be sent to the user.
 	 */
 	notify( item = n.activeItem, request )
 	{
@@ -3066,8 +3066,9 @@ let n = {
 		if ( !n.powerSaveMode )
 		{
 			// Request desktop notification permission if not already and user wants to
-			if ( request && 'undefined' !== typeof Notification && Notification.permission !== 'granted' )
+			if ( request && Notification.permission !== 'granted' )
 			{
+				//todo: Convert this to Promise based version once Edge and Safari implement it
 				Notification.requestPermission( status =>
 				{
 					if ( Notification.permission !== status )
