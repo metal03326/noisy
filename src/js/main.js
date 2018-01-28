@@ -161,31 +161,21 @@ function scrollIntoViewIfOutOfView( el )
 }
 
 /**
- * Onload event handler.
+ * Onload event handler. Initialize Noisy.
  */
-window.onload = _ =>
+window.onload = _ => n.init().then( _ =>
 {
-	// Initialize Noisy
-	n.init().then( _ =>
-	{
-		// Remove the splash screen
-		let splash = document.getElementById( 'splash' );
+	// Remove the splash screen
+	let splash = document.getElementById( 'splash' );
 
-		// Timeouts are needed because we want to hide initial animations of the player
-		setTimeout( () =>
-		{
-			splash.classList.add( 'visibility-hidden' );
-
-			setTimeout( () =>
-			{
-				splash.remove();
-			}, 300 );
-		}, 300 );
-	} ).catch( _ =>
+	// Timeouts are needed because we want to hide initial animations of the player
+	setTimeout( _ =>
 	{
-		document.querySelector( '#splash [hidden]' ).hidden = false;
-	} );
-};
+		splash.classList.add( 'visibility-hidden' );
+
+		setTimeout( _ => splash.remove(), 300 );
+	}, 300 );
+} ).catch( _ => document.querySelector( '#splash [hidden]' ).hidden = false );
 
 /**
  * Asyncronious loop.

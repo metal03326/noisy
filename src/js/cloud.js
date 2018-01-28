@@ -167,7 +167,7 @@ class Cloud {
 						n.log( 'connection-retry', loop.index );
 						n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 						loop.next();
-					} ) ).then( () =>
+					} ) ).then( _ =>
 					{
 						n.setFooter( null, true );
 						n.error( 'cannot-load-url', this.urls.folder );
@@ -279,7 +279,7 @@ class Cloud {
 				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 				loop.next();
 			} )
-		).then( () =>
+		).then( _ =>
 		{
 			n.setFooter( null, true );
 			n.error( 'cannot-load-url', url );
@@ -351,7 +351,7 @@ class Cloud {
 				let audio   = document.createElement( 'audio' );
 				audio.muted = true;
 
-				audio.addEventListener( 'loadedmetadata', () =>
+				audio.addEventListener( 'loadedmetadata', _ =>
 				{
 					// Set duration to the item, so we can save it later
 					// Format duration using toHHMMSS() method defined in main.js
@@ -396,7 +396,7 @@ class Cloud {
 				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 				loop.next();
 			} );
-		} ).then( () =>
+		} ).then( _ =>
 		{
 			n.setFooter( null, true );
 			n.error( 'cannot-load-url', url );
@@ -440,7 +440,7 @@ class Cloud {
 						n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 						loop.next();
 					} );
-				} ).then( () =>
+				} ).then( _ =>
 				{
 					n.setFooter( null, true );
 					n.error( 'cannot-load-url', url );
@@ -596,7 +596,7 @@ class Cloud {
 					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 					loop.next();
 				} );
-			} ).then( () =>
+			} ).then( _ =>
 			{
 				n.setFooter( null, true );
 				n.error( 'cannot-load-url', url );
@@ -655,7 +655,7 @@ class Cloud {
 								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 								loop.next();
 							} )
-						).then( () =>
+						).then( _ =>
 						{
 							n.error( 'failed-to-save', url );
 							n.setFooter( n.lang.footer[ 'error-see-console' ] );

@@ -544,7 +544,7 @@ let n = {
 					};
 
 					// Start the recursive looping through the folder tree
-					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId ).then( () =>
+					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId ).then( _ =>
 					{
 						// Print success message in the status bar containing number of items added
 						//todo: Join footer-finished and the counter into 1 template literal
@@ -564,7 +564,7 @@ let n = {
 					loop.next();
 				}
 			}
-		} ).then( () =>
+		} ).then( _ =>
 		{
 			// After everything is finished save the playlist
 			n.savePlaylist( document.getElementById( n.activePlaylistId ) );
@@ -926,13 +926,10 @@ let n = {
 		}, false );
 
 		// Ask for permissions if the user has checked that he wants notifications
-		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', () =>
-		{
-			n.notify( null, this.checked );
-		} );
+		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', _ => n.notify( null, this.checked ) );
 
 		// Save on playback order change
-		document.getElementById( 'playback-order' ).addEventListener( 'change', () =>
+		document.getElementById( 'playback-order' ).addEventListener( 'change', _ =>
 		{
 			n.audio.loop         = !(2 - this.selectedIndex);
 			n.pref.playbackOrder = this.selectedIndex;
@@ -981,7 +978,7 @@ let n = {
 		} );
 
 		// Adds new keyboard shortcut to the table
-		document.getElementById( 'shortcut-add' ).addEventListener( 'click', () =>
+		document.getElementById( 'shortcut-add' ).addEventListener( 'click', _ =>
 		{
 			// Continue only if keyboard shortcut entered
 			let input = document.getElementById( 'keyboard-shortcut' );
@@ -1214,22 +1211,13 @@ let n = {
 		document.getElementById( 'preference-enable-animations' ).addEventListener( changeEvent, this.initAnimations );
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
-		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, () =>
-		{
-			n.changeScrobblingState( this.checked );
-		} );
+		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, _ => n.changeScrobblingState( this.checked ) );
 
 		// We need to enable/diable threshold dropdown depending on the state of the checkbox
-		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, () =>
-		{
-			n.changePowerSaverState( this.checked );
-		} );
+		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, _ => n.changePowerSaverState( this.checked ) );
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
-		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, () =>
-		{
-			n.changeCounterState( this.checked );
-		} );
+		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, _ => n.changeCounterState( this.checked ) );
 	},
 
 	/**
@@ -1564,10 +1552,7 @@ let n = {
 			}
 
 			// Timeout is needed for the CSS transition to finish before hiding the window
-			setTimeout( () =>
-			{
-				window.removeAttribute( 'id' );
-			}, 300 );
+			setTimeout( _ => window.removeAttribute( 'id' ), 300 );
 
 			// Remove other classes from the window
 			//todo: Do we actually change this class somewhere?
@@ -2153,7 +2138,7 @@ let n = {
 			n.applyTheme()
 		] ).then( _ =>
 		{
-			n.initBatteryWatcher().then( () =>
+			n.initBatteryWatcher().then( _ =>
 			{
 				n.markNotSupportedPreferences();
 				n.applyPowerSaveMode();
@@ -2221,10 +2206,7 @@ let n = {
 							cloud      : n.pref.tokenCloud,
 							accessToken: response.session.key
 						};
-					} ).catch( _ =>
-					{
-						n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
-					} );
+					} ).catch( _ => n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name ) );
 
 					break;
 				}
@@ -2265,10 +2247,7 @@ let n = {
 					let scrollTop = n.pref.scrollTop;
 
 					// Let the rendering engine catchup
-					setTimeout( () =>
-					{
-						playlist.scrollTop = scrollTop;
-					}, 0 );
+					setTimeout( _ => playlist.scrollTop = scrollTop );
 
 					n.changePlaylist( document.querySelector( `div[data-for="${n.pref.activePlaylistId}"]` ) );
 				}
@@ -2367,7 +2346,7 @@ let n = {
 			} );
 
 			// Double click on footer should bring the currently active item into the view
-			document.getElementById( 'footer' ).addEventListener( dblClickEvent, () =>
+			document.getElementById( 'footer' ).addEventListener( dblClickEvent, _ =>
 			{
 				let activeItem = n.activeItem;
 				let parentItem;
@@ -2590,10 +2569,7 @@ let n = {
 		} );
 
 		// Change state of the item to paused when the player is paused
-		n.audio.addEventListener( 'pause', () =>
-		{
-			n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] );
-		} );
+		n.audio.addEventListener( 'pause', _ => n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] ) );
 
 		// Play next item when current finnishes
 		n.audio.addEventListener( 'ended', function ()
@@ -2651,7 +2627,7 @@ let n = {
 		let results          = document.getElementById( 'find-window-results' );
 		const mouseDownEvent = 'mousedown';
 		const dblClickEvent  = 'dblclick';
-		const _cleanup       = () =>
+		const _cleanup       = _ =>
 		{
 			let oldResults = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
@@ -3518,7 +3494,7 @@ let n = {
 			return n.removeFromQueue( row );
 		}
 
-		requestAnimationFrame( () =>
+		requestAnimationFrame( _ =>
 		{
 			// Deselect previous items if not in a multi-select mode
 			if ( !e.ctrlKey && !e.shiftKey )
@@ -3664,17 +3640,7 @@ let n = {
 	 */
 	onTabClick()
 	{
-		requestAnimationFrame( () =>
-		{
-			if ( 'add-playlist' === this.id )
-			{
-				n.newPlaylist();
-			}
-			else
-			{
-				n.changePlaylist( this );
-			}
-		} );
+		requestAnimationFrame( _ => 'add-playlist' === this.id ? n.newPlaylist() : n.changePlaylist( this ) );
 	},
 
 	/**
@@ -4248,10 +4214,7 @@ let n = {
 	saveActivePlaylistIdDelayed()
 	{
 		clearTimeout( n.saveTimeout );
-		n.saveTimeout = setTimeout( () =>
-		{
-			n.pref.activePlaylistId = n.activePlaylistId;
-		}, 1000 );
+		n.saveTimeout = setTimeout( _ => n.pref.activePlaylistId = n.activePlaylistId, 1000 );
 	},
 
 	/**
@@ -4518,10 +4481,7 @@ let n = {
 		n.window( 'find-window' );
 
 		// Focus input element after CSS3 animation is over
-		setTimeout( () =>
-		{
-			document.getElementById( 'find-item' ).focus();
-		}, 300 );
+		setTimeout( _ => document.getElementById( 'find-item' ).focus(), 300 );
 	},
 
 	/**
@@ -4783,7 +4743,7 @@ let n = {
 			}
 
 			// Using animation frames to lower CPU usage when Noisy is not in focus
-			requestAnimationFrame( () =>
+			requestAnimationFrame( _ =>
 			{
 				n.setProgress( document.getElementById( 'progress' ), progress );
 
