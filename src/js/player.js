@@ -1059,7 +1059,7 @@ let n = {
 		// Change window state when save playlist name entered
 		document.getElementById( 'save-playlist-window-filename' ).addEventListener( keyUpEvent, e =>
 		{
-			let val = this.value.trim();
+			let val = e.currentTarget.value.trim();
 
 			if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
 			{
