@@ -430,13 +430,6 @@ let n = {
 		// Translate FAQ window
 		document.getElementById( 'faq-content' ).innerHTML = Object.keys( faq ).map( question => `<details><summary>${question}</summary><p>${faq[ question ]}</p></details>` ).join( '' );
 
-		// Add not supported text to all options which are not supported by the current browser
-		let notSupported = document.querySelectorAll( '.not-supported' );
-		for ( let i = 0; i < notSupported.length; i++ )
-		{
-			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
-		}
-
 		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( '[data-cloud]:not([data-cloud*="local"])' );
 		for ( let i = 0; i < notConnecteds.length; i++ )
 		{
@@ -2138,11 +2131,7 @@ let n = {
 			n.applyTheme()
 		] ).then( _ =>
 		{
-			n.initBatteryWatcher().then( _ =>
-			{
-				n.markNotSupportedPreferences();
-				n.applyPowerSaveMode();
-			} );
+			n.initBatteryWatcher().then( _ => n.applyPowerSaveMode() );
 
 			n.initAudio();
 
@@ -2892,24 +2881,6 @@ let n = {
 
 		// Return the array of objects as a result
 		return toSave;
-	},
-
-	/**
-	 * Some features are known not to work on some browsers, so we have to mark them as not supported and disable them
-	 */
-	markNotSupportedPreferences()
-	{
-		if ( !n.battery )
-		{
-			document.getElementById( 'preference-enable-powersaver' ).disabled = true;
-			document.getElementById( 'preference-performance-powersaver' ).classList.add( 'not-supported' );
-		}
-
-		if ( 'undefined' === typeof Notification )
-		{
-			document.getElementById( 'preference-enable-notifications' ).disabled = true;
-			document.getElementById( 'preference-performance-notifications' ).classList.add( 'not-supported' );
-		}
 	},
 
 	/**

@@ -206,7 +206,7 @@ let pref = {
 		// Un-check Power Saver checkbox if it's not supported by the browser
 		let powerSaver = document.getElementById( 'preference-enable-powersaver' );
 
-		if ( powerSaver.checked && document.getElementById( 'preference-performance-powersaver' ).classList.contains( 'not-supported' ) )
+		if ( powerSaver.checked )
 		{
 			powerSaver.checked = false;
 			n.changePowerSaverState( false );

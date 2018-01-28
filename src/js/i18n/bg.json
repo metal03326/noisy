@@ -183,7 +183,6 @@
 	"other"       : {
 		"new-playlist"      : "Нов Плейлист",
 		"notification-title": "Noisy пуска",
-		"not-supported"     : " (не се поддържа на този браузър)",
 		"not-connected"     : "Няма връзка. Цъкни за да се свържеш"
 	},
 	"help"        : {
