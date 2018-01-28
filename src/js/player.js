@@ -538,15 +538,13 @@ let n = {
 				if ( selected.dataset.folder === 'true' )
 				{
 					// Setup counter of how many files are added. As this is an object, passing it as a param will
-					// actually pass a reference, meaning all modifications to it will be available in the callback
-					// closure
+					// actually pass a reference, meaning all modifications to it will be available in the Promise then
 					let count = {
 						added: 0
 					};
 
-					// Start the recursive looping through the folder tree and call the callback when the tree has been
-					// walked
-					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId, () =>
+					// Start the recursive looping through the folder tree
+					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId ).then( () =>
 					{
 						// Print success message in the status bar containing number of items added
 						//todo: Join footer-finished and the counter into 1 template literal
@@ -566,7 +564,7 @@ let n = {
 					loop.next();
 				}
 			}
-		}, () =>
+		} ).then( () =>
 		{
 			// After everything is finished save the playlist
 			n.savePlaylist( document.getElementById( n.activePlaylistId ) );
@@ -588,19 +586,18 @@ let n = {
 	 * @param {String} cloud Required. Cloud name from which we currently read items
 	 * @param {Object} count Required. Object instance created at the beginning of the file/folder add process
 	 * @param {String} playlistId Required. The id of the playlist to which the files should be added
-	 * @param {Function} [callback] Optional. Function to call after all items in this folder were processed
 	 */
 	//TODO: Check if cloud is Google Drive and print different message to the status bar, as the id of the folder
 	// doesn't bring any valuable information to him
 	//TODO: Maybe make the count object not required
-	addFolder( folder, cloud, count, playlistId, callback = new Function() )
+	addFolder( folder, cloud, count, playlistId )
 	{
 		// Show the new folder to the user
 		//todo: Join adding-files-from and added-items into 1 template literal
 		n.setFooter( `<span id="footer-progress">${n.lang.footer[ 'adding-files-from' ]} ${folder} ${n.lang.footer[ 'added-items' ]} ${count.added}</span>` );
 
 		// Request folder contents
-		n[ cloud ].getFolderContents( folder, ( files, folders ) =>
+		return n[ cloud ].getFolderContents( folder, true ).then( ( { files, folders } ) =>
 		{
 			let toAdd = [];
 
@@ -619,7 +616,7 @@ let n = {
 			if ( folders.length )
 			{
 				// Asyncronius loop as we are waiting for server response
-				asyncLoop( folders.length - 1, loop =>
+				return new Promise( resolve => asyncLoop( folders.length - 1, loop =>
 				{
 					// Stop if flag raised
 					if ( n.cancelAction )
@@ -629,15 +626,12 @@ let n = {
 					// Otherwise call ourselfs again
 					else
 					{
-						n.addFolder( folders[ loop.index ].path, cloud, count, playlistId, loop.next );
+						n.addFolder( folders[ loop.index ].path, cloud, count, playlistId ).then( loop.next );
 					}
-				}, callback );
+				} ).then( resolve ) );
 			}
-			// Call the callback in the end
-			else
-			{
-				callback();
-			}
+
+			return Promise.resolve();
 		} );
 	},
 
@@ -940,7 +934,7 @@ let n = {
 		// Save on playback order change
 		document.getElementById( 'playback-order' ).addEventListener( 'change', () =>
 		{
-			n.audio.loop         = !( 2 - this.selectedIndex );
+			n.audio.loop         = !(2 - this.selectedIndex);
 			n.pref.playbackOrder = this.selectedIndex;
 		} );
 
@@ -1361,15 +1355,16 @@ let n = {
 			'lastfm'
 		];
 
-		toCheck.forEach( cloud =>
+		toCheck.forEach( cloudName =>
 		{
-			if ( n[ cloud ].isAuthenticated )
+			const cloud = n[ cloudName ];
+			if ( cloud.isAuthenticated )
 			{
 				// Some tokens expire so we need to check if they are still valid, as isAuthenticated shows only if we
 				// have token
 				//TODO: Maybe integrate checkToken method call inside isAuthenticated getter and return
 				// true only if token is good
-				n[ cloud ].checkToken( cloud =>
+				cloud.checkToken().then( _ =>
 				{
 					let as = ` <span class="as">${n.lang.console.as}</span>${cloud.display_name}`;
 
@@ -1378,7 +1373,7 @@ let n = {
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = as;
 
 					document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` ).removeAttribute( 'title' );
-				}, cloud =>
+				} ).catch( _ =>
 				{
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = n.lang.console.no;
 
@@ -1395,7 +1390,7 @@ let n = {
 			else
 			{
 				// Visually disable the icon in file chooser for that cloud
-				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud}"]` );
+				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloudName}"]` );
 
 				if ( icon )
 				{
@@ -1403,7 +1398,7 @@ let n = {
 				}
 				// Special case for Last.fm - we don't have an icon to disable, but we do have a checkbox in the
 				// preferences that needs disabling
-				else if ( 'lastfm' === cloud )
+				else if ( 'lastfm' === cloudName )
 				{
 					let checkbox     = document.getElementById( 'preference-enable-scrobbling' );
 					checkbox.checked = false;
@@ -1411,7 +1406,7 @@ let n = {
 					checkbox.disabled = true;
 				}
 
-				document.getElementById( `connected-${cloud}` ).innerHTML = n.lang.console.no;
+				document.getElementById( `connected-${cloudName}` ).innerHTML = n.lang.console.no;
 			}
 		} );
 	},
@@ -1444,11 +1439,11 @@ let n = {
 		}
 		else if ( 4194304 <= length )
 		{
-			n.warn( 'quota-limit-nearing', `${( ( length / 1024 ) / 1024 ).toFixed( 2 )} MB` );
+			n.warn( 'quota-limit-nearing', `${((length / 1024) / 1024).toFixed( 2 )} MB` );
 		}
 		else
 		{
-			n.log( 'quota-used', `${( ( length / 1024 ) / 1024 ).toFixed( 2 )} MB` );
+			n.log( 'quota-used', `${((length / 1024) / 1024).toFixed( 2 )} MB` );
 		}
 	},
 
@@ -2158,7 +2153,7 @@ let n = {
 			n.applyTheme()
 		] ).then( _ =>
 		{
-			n.initBatteryWatcher( () =>
+			n.initBatteryWatcher().then( () =>
 			{
 				n.markNotSupportedPreferences();
 				n.applyPowerSaveMode();
@@ -2213,10 +2208,8 @@ let n = {
 				{
 					let token = part.split( equalString ).pop();
 
-					n[ n.pref.tokenCloud ].getAccessToken( token, xhr =>
+					n[ n.pref.tokenCloud ].getAccessToken( token ).then( response =>
 					{
-						let response = JSON.parse( xhr.responseText );
-
 						n[ n.pref.tokenCloud ].userName    = response.session.name;
 						n[ n.pref.tokenCloud ].accessToken = response.session.key;
 
@@ -2228,7 +2221,7 @@ let n = {
 							cloud      : n.pref.tokenCloud,
 							accessToken: response.session.key
 						};
-					}, () =>
+					} ).catch( _ =>
 					{
 						n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
 					} );
@@ -2630,40 +2623,24 @@ let n = {
 
 	/**
 	 * Watches battery levels and enters power saving mode if user chose so when battery level is low
-	 *
-	 * @param {Function} callback Required. Callback introduced to mark the power save option in Preferences as active
 	 */
-	initBatteryWatcher( callback )
+	initBatteryWatcher()
 	{
-		function attachEvents()
-		{
-			n.battery.addEventListener( 'chargingchange', n.updateBatteryStatus );
-			n.battery.addEventListener( 'levelchange', n.updateBatteryStatus );
-
-			// Delay initial set, to wait for the proper Noisy initialization
-			setTimeout( n.updateBatteryStatus, 1000 );
-
-			callback();
-		}
-
 		// Check for newer specification of Battery API
 		if ( navigator.getBattery )
 		{
-			navigator.getBattery().then( battery =>
+			return navigator.getBattery().then( battery =>
 			{
 				n.battery = battery;
-				attachEvents();
+				n.battery.addEventListener( 'chargingchange', n.updateBatteryStatus );
+				n.battery.addEventListener( 'levelchange', n.updateBatteryStatus );
+
+				// Delay initial set, to wait for the proper Noisy initialization
+				setTimeout( n.updateBatteryStatus, 1000 );
 			} );
 		}
-		// Otherwise use the old one
-		else
-		{
-			n.battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
-			if ( n.battery )
-			{
-				attachEvents();
-			}
-		}
+
+		return Promise.reject( new Error( 'No Battery API support' ) );
 	},
 
 	/**
@@ -2780,7 +2757,7 @@ let n = {
 
 				if ( !playlist || !playlist.id || !playlist.name || !playlist.items )
 				{
-					n.error( errorString, playlist ? ( playlist.id || playlist.name || emptyString ) : emptyString );
+					n.error( errorString, playlist ? (playlist.id || playlist.name || emptyString) : emptyString );
 					return;
 				}
 
@@ -2802,7 +2779,7 @@ let n = {
 		// Cannot continue if id, name and items properties are not available or the playlist param is not passed
 		if ( !playlist || !playlist.id || !playlist.name || !playlist.items )
 		{
-			n.error( 'error-loading-playlist', playlist ? ( playlist.id || playlist.name || '' ) : '' );
+			n.error( 'error-loading-playlist', playlist ? (playlist.id || playlist.name || '') : '' );
 			return;
 		}
 
@@ -3045,7 +3022,7 @@ let n = {
 				// Random mode
 				case 3:
 					let items = n.getAllItems();
-					next      = items[ Math.floor( ( Math.random() * items.length ) ) ];
+					next      = items[ Math.floor( (Math.random() * items.length) ) ];
 					break;
 			}
 		}

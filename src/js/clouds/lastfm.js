@@ -124,15 +124,8 @@ let lastfm = new Cloud( {
 
 					let params = `api_key=${lastfm.apiKey}&api_sig=${hex_md5( `api_key${lastfm.apiKey}${artists}method${method}sk${lastfm.accessToken}${timestamps}${tracks}${lastfm.apiSecret}` )}${artistsEq}&format=json&method=${method}&sk=${lastfm.accessToken}${timestampsEq}${tracksEq}`;
 
-					lastfm.ajaxRequest( `//ws.audioscrobbler.com/2.0/?${params}`,
-						() =>
-						{
-							//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
-							lastfm.queue.reset();
-
-						}, () =>
-						{
-						}, 'POST', params );
+					//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
+					lastfm.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST', params ).then( _ => lastfm.queue.reset.bind( lastfm ) );
 				}
 			}
 		},
@@ -156,40 +149,31 @@ let lastfm = new Cloud( {
 	/**
 	 * Gets the access token from Last.fm servers.
 	 * @param {String} token Required. Token got from the connect().
-	 * @param {Function} successCallback Required. Function to be called if the access token is successfuly received.
-	 * @param {Function} failureCallback Required. Function to be called if there is a problem with the access token.
 	 */
-	getAccessToken( token, successCallback, failureCallback )
+	getAccessToken( token )
 	{
-		this.ajaxRequest( `//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=${token}&api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}methodauth.getSessiontoken${token}c11941c36875f14d1dfe392848a43685` )}`, successCallback, failureCallback );
+		return this.fetch( `//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=${token}&api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}methodauth.getSessiontoken${token}c11941c36875f14d1dfe392848a43685` )}` );
 	},
 
 	/**
 	 * Tokens in last.fm do not expire. So we check if we can get info for our user. If we have user, then we should
 	 * have a valid token.
-	 * @param {Function} successCallback Required. Function to be called if access token is valid.
-	 * @param {Function} failureCallback Required. Function to be called if access token is invalid.
 	 */
 	//TODO: Find a way to verify token.
-	checkToken( successCallback, failureCallback )
+	checkToken()
 	{
-		this.ajaxRequest( `//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=${this.userName}&api_key=72e8177b21934e08c11195b8e559c925`, xhr =>
+		this.fetch( `//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=${this.userName}&api_key=72e8177b21934e08c11195b8e559c925` ).then( response =>
 		{
-			let response = JSON.parse( xhr.responseText );
 			let username = response.user.name;
 
 			if ( 'undefined' === username )
 			{
-				failureCallback( this, xhr );
+				throw new Error( 'No username' );
 			}
 			else
 			{
 				this.display_name = username;
-				successCallback( this );
 			}
-		}, xhr =>
-		{
-			failureCallback( this, xhr );
 		} );
 	},
 
@@ -208,13 +192,8 @@ let lastfm = new Cloud( {
 			{
 				let params = `api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}artist${artist}method${method}sk${this.accessToken}track${title}${this.apiSecret}` )}&artist=${artist}&format=json&method=${method}&sk=${this.accessToken}&track=${title}`;
 
-				this.ajaxRequest( `//ws.audioscrobbler.com/2.0/?${params}`,
-					xhr =>
-					{
-						//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
-					}, () =>
-					{
-					}, 'POST', '' );
+				//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
+				this.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST', '' );
 			}
 		}
 	},

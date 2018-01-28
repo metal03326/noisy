@@ -26,52 +26,40 @@ class Cloud {
 
 	/**
 	 * All AJAX calls to all cloud services are made through here.
-	 * @param {String} url Required. URL to which to connect.
-	 * @param {Function} successCallback Required. Function to be called if the AJAX request is a success.
-	 * @param {Function} failureCallback Required. Function to be called if the AJAX request is a failure.
-	 * @param {String} [method] Optional. Request method. Defaults to GET.
-	 * @param {String} [body] Optional. Request body.
-	 * @param {Object} [params] Optional. Request headers. Key is the header, value is the value.
-	 * @param {String} [responseType] Optional. Request response type.
+	 * @param {String} url URL to which to connect.
+	 * @param {String} [method] Request method. Defaults to GET.
+	 * @param {String} [body] Request body.
+	 * @param {Object} [headers] Request headers. Key is the header, value is the value.
+	 * @param {String} [responseType] Request response type.
 	 */
-	ajaxRequest( url, successCallback, failureCallback, method = 'GET', body, params = {}, responseType )
+	fetch( url, method = 'GET', body, headers = {}, responseType )
 	{
-		//todo: Try using Fetch API. If not - at lease convert this to Promises
-		let xhr = new XMLHttpRequest();
-
-		// Make sure the request won't give up
-		xhr.timeout = 0;
-
-		xhr.onreadystatechange = () =>
+		return fetch( url, {
+			mode   : 'cors',
+			method,
+			// Remove empty ('') body - GET requests do not have body
+			body   : body || void 0,
+			headers: Object.assign( { 'Authorization': `Bearer ${this.accessToken}` }, headers )
+		} ).then( response =>
 		{
-			if ( 4 === xhr.readyState )
+			if ( response.status >= 200 && response.status < 300 )
 			{
-				if ( 200 === xhr.status )
+				if ( responseType === 'arraybuffer' )
 				{
-					successCallback( xhr );
+					return response.arrayBuffer();
 				}
-				else
-				{
-					failureCallback( xhr );
-				}
+
+				return response.json();
 			}
-		};
-
-		xhr.open( method, url, true );
-
-		if ( responseType )
-		{
-			xhr.responseType = responseType;
-		}
-
-		xhr.setRequestHeader( 'Authorization', `Bearer ${this.accessToken}` );
-
-		Object.keys( params ).forEach( param =>
-		{
-			xhr.setRequestHeader( param, params[ param ] );
+			else
+			{
+				let error      = new Error( response.status );
+				error.name     = 'FetchError';
+				error.response = response;
+				error.url      = url;
+				throw error;
+			}
 		} );
-
-		xhr.send( body );
 	}
 
 	/**
@@ -94,20 +82,17 @@ class Cloud {
 
 	/**
 	 * Checks if cloud token is valied.
-	 * @param {Function} successCallback Required. Function to be called if the token is valid.
-	 * @param {Function} failureCallback Required. Function to be called if the token is invalid.
 	 */
-	checkToken( successCallback, failureCallback )
+	checkToken()
 	{
 		let infoURL = this.urls.info;
 
-		this.ajaxRequest( infoURL.url, xhr =>
+		return this.fetch( infoURL.url, infoURL.method ).then( response =>
 		{
 			let display_name = '';
 
 			// Support for nested objects (name.display_name)
 			let namePath = this.responseKeys.display_name.split( '.' );
-			let response = JSON.parse( xhr.responseText );
 
 			namePath.forEach( ( part, index ) =>
 			{
@@ -124,25 +109,18 @@ class Cloud {
 			} );
 
 			this.display_name = display_name;
-
-			successCallback( this );
-		}, xhr =>
-		{
-			failureCallback( this, xhr );
-		}, infoURL.method );
+		} );
 	}
 
 	/**
 	 * Lists all the files/folders in a cloud services.
 	 * @param {String} path Required. Path/ID of the folder to be loaded.
-	 * @param {Function} [successCallback] Optional. Function to be called if folder list was a success.
-	 * @param {Function} [failureCallback] Optional. Function to be called if folder list was a failure.
+	 * @param {String} [recursive] Is this function being used in a recursive way to load all files in depth.
 	 */
-	getFolderContents( path, successCallback, failureCallback )
+	getFolderContents( path, recursive )
 	{
-		// Empty window and create "up" element only if call to getFolderContents does not have callbacks (it's not a
-		// deep folder listing)
-		if ( !successCallback )
+		// Empty the window and create "up" element only if call to getFolderContents is not being used by addFolder
+		if ( !recursive )
 		{
 			n.emptyAddWindow();
 
@@ -167,44 +145,38 @@ class Cloud {
 					path  : up
 				};
 
-				// If we are not using ids, we know the path for previous folder so we just render it
-				if ( !this.usesIds )
-				{
-					n.addItemToWindow( toAdd );
-				}
-				// Otherwise we need to get the id from the cloud
-				else
+				// If we use ids we need to get the id of the parent folder (up button) from the cloud
+				if ( this.usesIds )
 				{
 					up = n.addItemToWindow( toAdd );
 
 					// 10 retries for this request.
 					//TODO: Make this 10 iterations a CONST and use it everywhere
-					asyncLoop( 10, loop =>
+					asyncLoop( 10, loop => this.fetch( this.urls.folder.replace( '{{path}}', path ) ).then( response =>
 					{
-						this.ajaxRequest( this.urls.folder.replace( '{{path}}', path ), xhr =>
-							{
-								let resp = JSON.parse( xhr.responseText );
-
-								if ( resp.parents.length )
-								{
-									up.dataset.path = resp.parents[ 0 ].id;
-								}
-								else
-								{
-									up.parentNode.removeChild( up );
-								}
-							},
-							() =>
-							{
-								n.log( 'connection-retry', loop.index );
-								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
-								loop.next();
-							} );
-					}, () =>
+						if ( response.parents.length )
+						{
+							up.dataset.path = response.parents[ 0 ].id;
+						}
+						else
+						{
+							up.parentNode.removeChild( up );
+						}
+					} ).catch( _ =>
+					{
+						n.log( 'connection-retry', loop.index );
+						n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
+						loop.next();
+					} ) ).then( () =>
 					{
 						n.setFooter( null, true );
 						n.error( 'cannot-load-url', this.urls.folder );
 					} );
+				}
+				// Otherwise we know the path for previous folder so we just render it
+				else
+				{
+					n.addItemToWindow( toAdd );
 				}
 			}
 			else
@@ -236,11 +208,10 @@ class Cloud {
 			body = queryURL.jsonBody.replace( '{{path}}', path );
 		}
 
-		this.ajaxRequest( queryURL.url.replace( '{{path}}', path ), xhr =>
+		return this.fetch( queryURL.url.replace( '{{path}}', path ), queryURL.method, body, queryURL.headers ).then( response =>
 		{
-			let response = JSON.parse( xhr.responseText );
-			let files    = [];
-			let folders  = [];
+			let files   = [];
+			let folders = [];
 
 			response[ this.responseKeys.contents ].forEach( item =>
 			{
@@ -270,10 +241,9 @@ class Cloud {
 				}
 			} );
 
-			if ( 'function' === typeof successCallback )
+			if ( recursive )
 			{
-				successCallback( files, folders );
-				return;
+				return Promise.resolve( { files, folders } );
 			}
 
 			folders.forEach( n.addItemToWindow );
@@ -283,13 +253,7 @@ class Cloud {
 			n.applyWindowState( 'semi' );
 
 			document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
-		}, () =>
-		{
-			if ( 'function' === typeof failureCallback )
-			{
-				failureCallback();
-			}
-		}, queryURL.method, body, queryURL.headers );
+		} );
 	}
 
 	/**
@@ -298,44 +262,42 @@ class Cloud {
 	 */
 	loadPlaylist( item )
 	{
-		let loadPlaylistURL = this.urls.loadPlaylist;
+		// Google Drive has the loadPlaylist URL saved in the DOM, as data-downloadURL
+		let loadPlaylistURL = this.urls.loadPlaylist || {};
 		let headers         = {};
 		let url             = this.usesIds ? item.dataset.downloadURL : loadPlaylistURL.url;
 
-		Object.keys( loadPlaylistURL.headers ).forEach( header =>
+		Object.keys( loadPlaylistURL.headers || {} ).forEach( header =>
 		{
 			headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
 		} );
 
 		asyncLoop( 10, loop =>
 		{
-			this.ajaxRequest( url, xhr =>
+			this.fetch( url, loadPlaylistURL.method, void 0, headers ).then( response =>
+			{
+				if ( 'playlist' !== response.type )
 				{
-					let response = JSON.parse( xhr.responseText );
-
-					if ( 'playlist' !== response.type )
-					{
-						throw new Error( 'Not a valid playlist' );
-					}
-					else
-					{
-						n.loadPlaylist( response );
-
-						let tab = document.querySelector( `li[data-for="${response.id}"]` );
-
-						if ( tab )
-						{
-							n.changePlaylist( tab );
-						}
-					}
-				},
-				() =>
+					throw new Error( 'Not a valid playlist' );
+				}
+				else
 				{
-					n.log( 'connection-retry', loop.index );
-					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
-					loop.next();
-				}, loadPlaylistURL.method, void 0, headers );
-		}, () =>
+					n.loadPlaylist( response );
+
+					let tab = document.querySelector( `li[data-for="${response.id}"]` );
+
+					if ( tab )
+					{
+						n.changePlaylist( tab );
+					}
+				}
+			} ).catch( _ =>
+			{
+				n.log( 'connection-retry', loop.index );
+				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
+				loop.next();
+			} );
+		} ).then( () =>
 		{
 			n.setFooter( null, true );
 			n.error( 'cannot-load-url', url );
@@ -348,38 +310,36 @@ class Cloud {
 	 */
 	loadPreferences( item )
 	{
-		let loadPlaylistURL = this.urls.loadPlaylist;
+		// Google Drive has the loadPlaylist URL saved in the DOM, as data-downloadURL
+		let loadPlaylistURL = this.urls.loadPlaylist || {};
 		let headers         = {};
 		let url             = this.usesIds ? item.dataset.downloadURL : loadPlaylistURL.url;
 
-		Object.keys( loadPlaylistURL.headers ).forEach( header =>
+		Object.keys( loadPlaylistURL.headers || {} ).forEach( header =>
 		{
 			headers[ header ] = loadPlaylistURL.headers[ header ].replace( '{{path}}', item.dataset.path );
 		} );
 
 		asyncLoop( 10, loop =>
 		{
-			this.ajaxRequest( url, xhr =>
+			this.fetch( url, loadPlaylistURL.method || 'GET', '', headers ).then( response =>
+			{
+				if ( 'preferences' !== response.type )
 				{
-					let response = JSON.parse( xhr.responseText );
-
-					if ( 'preferences' !== response.type )
-					{
-						throw new Error( 'Not a valid preferences file' );
-					}
-					else
-					{
-						delete response.type;
-						n.pref.import( response );
-					}
-				},
-				() =>
+					throw new Error( 'Not a valid preferences file' );
+				}
+				else
 				{
-					n.log( 'connection-retry', loop.index );
-					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
-					loop.next();
-				}, loadPlaylistURL.method || 'GET', '', headers );
-		}, () =>
+					delete response.type;
+					n.pref.import( response );
+				}
+			} ).catch( _ =>
+			{
+				n.log( 'connection-retry', loop.index );
+				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
+				loop.next();
+			} );
+		} ).then( () =>
 		{
 			n.setFooter( null, true );
 			n.error( 'cannot-load-url', url );
@@ -392,9 +352,8 @@ class Cloud {
 
 		asyncLoop( 10, loop =>
 		{
-			this.ajaxRequest( url, xhr =>
+			this.fetch( url, 'GET', void 0, {}, 'arraybuffer' ).then( buffer =>
 			{
-				let buffer    = xhr.response;
 				let extension = item.dataset.placeholder.split( '.' ).pop();
 				let mimeType  = 'unknown';
 
@@ -486,18 +445,18 @@ class Cloud {
 				// Third check shows if the player is stopped by the user (data-item gets removed then)
 				if (
 					n.audio.paused &&
-					( 0 === n.audio.currentTime || n.audio.currentTime === n.audio.duration ) &&
+					(0 === n.audio.currentTime || n.audio.currentTime === n.audio.duration) &&
 					n.audio.dataset.item )
 				{
 					n[ item.dataset.cloud ].play( item );
 				}
-			}, () =>
+			} ).catch( _ =>
 			{
 				n.log( 'connection-retry', loop.index );
 				n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 				loop.next();
-			}, 'GET', void 0, {}, 'arraybuffer' );
-		}, () =>
+			} );
+		} ).then( () =>
 		{
 			n.setFooter( null, true );
 			n.error( 'cannot-load-url', url );
@@ -527,23 +486,21 @@ class Cloud {
 
 				asyncLoop( 10, loop =>
 				{
-					this.ajaxRequest( url, xhr =>
+					this.fetch( url, playURL.method, body, playURL.headers ).then( response =>
 					{
-						let response = JSON.parse( xhr.responseText );
-
 						item.dataset.tempurl = this.usesIds ? response.downloadUrl : response.link;
 						item.dataset.expires = response.expires ? response.expires : new Date( Date.now() + 14400000 );
 
 						n.saveActivePlaylist();
 
 						this._preload( item.dataset.tempurl, item );
-					}, () =>
+					} ).catch( _ =>
 					{
 						n.log( 'connection-retry', loop.index );
 						n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 						loop.next();
-					}, playURL.method, body, playURL.headers );
-				}, () =>
+					} );
+				} ).then( () =>
 				{
 					n.setFooter( null, true );
 					n.error( 'cannot-load-url', url );
@@ -677,10 +634,8 @@ class Cloud {
 
 			asyncLoop( 10, loop =>
 			{
-				this.ajaxRequest( url, xhr =>
+				this.fetch( url, playURL.method, body, playURL.headers ).then( response =>
 				{
-					let response = JSON.parse( xhr.responseText );
-
 					item.dataset.tempurl = this.usesIds ? response.downloadUrl.replace( '&gd=true', '' ) : response.link;
 					item.dataset.expires = response.expires ? response.expires : new Date( Date.now() + 14400000 );
 
@@ -695,13 +650,13 @@ class Cloud {
 					//						{
 					this._loadItemFromURL( item.dataset.tempurl, item );
 					//						}
-				}, () =>
+				} ).catch( _ =>
 				{
 					n.log( 'connection-retry', loop.index );
 					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 					loop.next();
-				}, playURL.method, body, playURL.headers );
-			}, () =>
+				} );
+			} ).then( () =>
 			{
 				n.setFooter( null, true );
 				n.error( 'cannot-load-url', url );
@@ -727,34 +682,32 @@ class Cloud {
 			let savePath        = `${path}/${file}`.replace( '//', '/' );
 			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
 
-			Object.keys( savePlaylistURL.headers ).forEach( header =>
+			Object.keys( savePlaylistURL.headers || {} ).forEach( header =>
 			{
 				headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
 			} );
 
 			asyncLoop( 10, loop =>
 			{
-				this.ajaxRequest( url, xhr =>
+				this.fetch( url, 'POST', JSON.stringify( pst ), headers ).then( response =>
 				{
 					if ( this.usesIds )
 					{
-						let response = JSON.parse( xhr.responseText );
-
 						url = this.urls.savePlaylist2.replace( '{{path}}', response.id );
 
 						asyncLoop( 10, loop =>
 						{
-							this.ajaxRequest( url, () =>
+							this.fetch( url, 'PUT', `{"title":"${file}","parents":[{"id":"${path}"}]}`, { 'Content-Type': 'application/json' } ).then( _ =>
 							{
 								n.log( 'saved', url );
 								n.setFooter( n.lang.footer[ 'operation-successful' ] );
-							}, () =>
+							} ).catch( _ =>
 							{
 								n.log( 'connection-retry', loop.index );
 								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 								loop.next();
-							}, 'PUT', `{"title":"${file}","parents":[{"id":"${path}"}]}`, { 'Content-Type': 'application/json' } );
-						}, () =>
+							} );
+						} ).then( () =>
 						{
 							n.error( 'failed-to-save', url );
 							n.setFooter( n.lang.footer[ 'error-see-console' ] );
@@ -765,13 +718,13 @@ class Cloud {
 						n.log( 'saved', url );
 						n.setFooter( n.lang.footer[ 'operation-successful' ] );
 					}
-				}, () =>
+				} ).catch( _ =>
 				{
 					n.log( 'connection-retry', loop.index );
 					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 					loop.next();
-				}, 'POST', JSON.stringify( pst ), headers );
-			}, () =>
+				} );
+			} ).then( () =>
 			{
 				n.error( 'failed-to-save', url );
 				n.setFooter( n.lang.footer[ 'error-see-console' ] );
@@ -797,34 +750,32 @@ class Cloud {
 			let savePath        = `${path}/${file}`.replace( '//', '/' );
 			let url             = savePlaylistURL.url.replace( '{{path}}', savePath );
 
-			Object.keys( savePlaylistURL.headers ).forEach( header =>
+			Object.keys( savePlaylistURL.headers || {} ).forEach( header =>
 			{
 				headers[ header ] = savePlaylistURL.headers[ header ].replace( '{{path}}', savePath );
 			} );
 
 			asyncLoop( 10, loop =>
 			{
-				this.ajaxRequest( url, xhr =>
+				this.fetch( url, 'POST', JSON.stringify( pref ), headers ).then( response =>
 				{
 					if ( this.usesIds )
 					{
-						let response = JSON.parse( xhr.responseText );
-
 						url = this.urls.savePlaylist2.replace( '{{path}}', response.id );
 
 						asyncLoop( 10, loop =>
 						{
-							this.ajaxRequest( url, () =>
+							this.fetch( url, 'PUT', `{"title":"${file}.plst.nsy"}`, { 'Content-Type': 'application/json' } ).then( _ =>
 							{
 								n.log( 'saved', url );
 								n.setFooter( n.lang.footer[ 'operation-successful' ] );
-							}, () =>
+							} ).catch( _ =>
 							{
 								n.log( 'connection-retry', loop.index );
 								n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 								loop.next();
-							}, 'PUT', `{"title":"${file}.plst.nsy"}`, { 'Content-Type': 'application/json' } );
-						}, () =>
+							} );
+						} ).then( () =>
 						{
 							n.error( 'failed-to-save', url );
 							n.setFooter( n.lang.footer[ 'error-see-console' ] );
@@ -835,13 +786,13 @@ class Cloud {
 						n.log( 'saved', url );
 						n.setFooter( n.lang.footer[ 'operation-successful' ] );
 					}
-				}, () =>
+				} ).catch( _ =>
 				{
 					n.log( 'connection-retry', loop.index );
 					n.setFooter( n.lang.console[ 'connection-retry' ] + loop.index );
 					loop.next();
-				}, 'POST', JSON.stringify( pref ), headers );
-			}, () =>
+				} );
+			} ).then( () =>
 			{
 				n.error( 'failed-to-save', url );
 				n.setFooter( n.lang.footer[ 'error-see-console' ] );
