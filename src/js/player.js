@@ -939,7 +939,6 @@ let n = {
 		const mouseDownEvent = 'mousedown';
 		const keyDownEvent   = 'keydown';
 		const changeEvent    = 'change';
-		const keyUpEvent     = 'keyup';
 
 		for ( let i = 0; i < tabs.length; i++ )
 		{
@@ -1041,10 +1040,10 @@ let n = {
 		/* Start: Window state events */
 
 		// Change window state when save playlist name entered
-		document.getElementById( 'save-playlist-window-filename' ).addEventListener( keyUpEvent, n.onSaveNameKeyUp );
+		document.getElementById( 'save-playlist-window-filename' ).addEventListener( 'input', n.onSaveNameInput );
 
 		// Change window state when save preferences name entered
-		document.getElementById( 'save-preferences-window-filename' ).addEventListener( keyUpEvent, n.onSaveNameKeyUp );
+		document.getElementById( 'save-preferences-window-filename' ).addEventListener( 'input', n.onSaveNameInput );
 
 		/* End: Window state events */
 
@@ -3580,7 +3579,7 @@ let n = {
 	 * Fired on key up when user types in the filename box in save playlist/preferences dialog.
 	 * @param {Event} e
 	 */
-	onSaveNameKeyUp( e )
+	onSaveNameInput( e )
 	{
 		let val = e.currentTarget.value.trim();
 
