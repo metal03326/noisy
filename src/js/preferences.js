@@ -12,7 +12,8 @@ let pref = {
 
 	// Default settings
 	settings: {
-		values                     : {
+		//todo: Join values and checkboxes and use Object.values() with typeof to figure out if it's a checkbox or not
+		values                       : {
 			'power-saver-state'                   : '15',
 			'preference-user-language'            : 'en',
 			'preference-theme'                    : 'default',
@@ -22,7 +23,7 @@ let pref = {
 			'preference-window-title-format'      : '%artist% - %title%',
 			'preference-playlist-format'          : '%artist% - %title%'
 		},
-		checkboxes                 : {
+		checkboxes                   : {
 			'preference-enable-notifications'   : false,
 			'preference-enable-counter'         : true,
 			'preference-enable-animations'      : true,
@@ -32,8 +33,8 @@ let pref = {
 			'preference-playback-follows-cursor': false,
 			'preference-cursor-follows-playback': false
 		},
-		[`showWhatsNew-${version}`]: true,
-		keys                       : [
+		[ `showWhatsNew-${version}` ]: true,
+		keys                         : [
 			{ key: '17+81', action: 'addToQueue' },
 			{ key: '81', action: 'addToQueue' },
 			{ key: '74', action: 'showSearch' },
@@ -47,17 +48,17 @@ let pref = {
 			{ key: '77', action: 'toggleMute' },
 			{ key: '46', action: 'removeFromPlaylist' }
 		],
-		volume                     : 1,
-		activePlaylistId           : null,
-		muted                      : false,
-		playbackOrder              : 0,
-		dropbox                    : {
+		volume                       : 1,
+		activePlaylistId             : null,
+		muted                        : false,
+		playbackOrder                : 0,
+		dropbox                      : {
 			accessToken: null
 		},
-		googledrive                : {
+		googledrive                  : {
 			accessToken: null
 		},
-		lastfm                     : {
+		lastfm                       : {
 			accessToken: null
 		}
 	},
@@ -176,7 +177,7 @@ let pref = {
 		if ( playbackOrder )
 		{
 			playbackOrder.selectedIndex = this.settings.playbackOrder || 0;
-			n.audio.loop                = !( 2 - playbackOrder.selectedIndex );
+			n.audio.loop                = !(2 - playbackOrder.selectedIndex);
 		}
 		else
 		{
@@ -454,6 +455,16 @@ let pref = {
 	get powerSaverEnabled()
 	{
 		return this.settings.checkboxes[ 'preference-enable-powersaver' ];
+	},
+
+	get cursorFollowsPlaybackEnabled()
+	{
+		return this.settings.checkboxes[ 'preference-cursor-follows-playback' ];
+	},
+
+	get playbackFollowsCursorEnabled()
+	{
+		return this.settings.checkboxes[ 'preference-playback-follows-cursor' ];
 	}
 };
 

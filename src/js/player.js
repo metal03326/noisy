@@ -959,7 +959,7 @@ let n = {
 		// Attach event handlers to the events for changing the checkboxes for playback order in the preferences
 		for ( let i = 0; i < checkboxes.length; i++ )
 		{
-			checkboxes[ i ].addEventListener( changeEvent, n.onCheckboxChange );
+			checkboxes[ i ].addEventListener( changeEvent, n.onCursorCheckboxChange );
 		}
 
 		// Stop bubbling to all input fields as keyboard shortcuts may prevent user from typing in them
@@ -2981,7 +2981,7 @@ let n = {
 		}
 
 		// Play next song depending on user's selection if any
-		if ( document.getElementById( 'preference-playback-follows-cursor' ).checked && selected && 4 !== idx )
+		if ( n.pref.playbackFollowsCursorEnabled && selected && 4 !== idx )
 		{
 			next = selected;
 		}
@@ -3334,20 +3334,21 @@ let n = {
 	},
 
 	/**
-	 * Handler for change event on all checkboxes in the preferences window.
+	 * Handler for change event on checkboxes for cursor behaviour.
 	 */
-	onCheckboxChange()
+	onCursorCheckboxChange()
 	{
-		let checked = this.checked;
-
 		// If one of the two checkboxes is checked, un-check the other
-		if ( 'preference-cursor-follows-playback' === this.id && checked )
+		if ( this.checked )
 		{
-			document.getElementById( 'preference-playback-follows-cursor' ).checked = false;
-		}
-		else if ( 'preference-playback-follows-cursor' === this.id && checked )
-		{
-			document.getElementById( 'preference-cursor-follows-playback' ).checked = false;
+			// ids of the two checkboxes
+			let ids = [ 'preference-cursor-follows-playback', 'preference-playback-follows-cursor' ];
+
+			// Remove the id of the checked checkbox
+			ids.splice( ids.indexOf( this.id ), 1 );
+
+			// The remaining id is the id of the checkbox needed to be unchecked
+			document.getElementById( ids[ 0 ] ).checked = false;
 		}
 	},
 
@@ -3776,7 +3777,7 @@ let n = {
 		}
 
 		// Select item if cursor follows playback
-		if ( document.getElementById( 'preference-cursor-follows-playback' ).checked )
+		if ( n.pref.cursorFollowsPlaybackEnabled )
 		{
 			n._deselectItems();
 			n._selectItems.call( item, {}, n.activePlaylistId, '.playlist-item', 'selected' );
