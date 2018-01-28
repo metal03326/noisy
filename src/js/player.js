@@ -1745,18 +1745,15 @@ let n = {
 		if ( tab && playlist )
 		{
 			// Remove event listeners
-			let triggers = tab.querySelectorAll( 'a' );
-
-			triggers[ 0 ].removeEventListener( 'click', n.renamePlaylist, false );
-			triggers[ 1 ].removeEventListener( 'click', n.deletePlaylist, false );
+			tab.querySelector( '.playlist-edit' ).removeEventListener( 'click', n.renamePlaylist, false );
+			tab.querySelector( '.playlist-remove' ).removeEventListener( 'click', n.deletePlaylist, false );
 			tab.removeEventListener( 'click', n.onTabClick, false );
 			tab.removeEventListener( 'mousedown', n.onTabDown, false );
 			tab.removeEventListener( 'keydown', n.onTabKeyDown, false );
 
 			// Remove DOM elements
-			tab.parentNode.removeChild( tab );
-			playlist = playlist.parentNode;
-			playlist.parentNode.removeChild( playlist );
+			tab.remove();
+			playlist.remove();
 
 			// Save change
 			n.savePlaylists();
@@ -4217,23 +4214,11 @@ let n = {
 	 */
 	savePlaylists()
 	{
-		let toSave    = [];
-		let playlists = document.querySelectorAll( '.playlists-tabs-li' );
-		const id      = 'add-playlist';
-
-		// Iterate through all playlists and make objects for each of them
-		for ( let i = 0; i < playlists.length; i++ )
-		{
-			let playlist = playlists[ i ];
-
-			if ( id !== playlist.id )
-			{
-				toSave.push( n.savePlaylist( document.getElementById( playlists[ i ].dataset.for ), true ) );
-			}
-		}
-
 		// Save to localStorage as JSON string
-		localStorage.setItem( 'playlists', JSON.stringify( toSave ) );
+		localStorage.setItem( 'playlists', JSON.stringify(
+			Array.from( document.getElementById( 'playlists' ).querySelectorAll( 'article.playlist' ) )
+				.map( playlist => n.savePlaylist( playlist, true ) )
+		) );
 	},
 
 	/**
