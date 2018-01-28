@@ -160,7 +160,7 @@ class Cloud {
 						}
 						else
 						{
-							up.parentNode.removeChild( up );
+							up.remove();
 						}
 					} ).catch( _ =>
 					{
@@ -417,7 +417,7 @@ class Cloud {
 					// Format duration using toHHMMSS() method defined in main.js
 					item.dataset.duration = Math.floor( audio.duration ).toString().toHHMMSS();
 
-					audio.parentNode.removeChild( audio );
+					audio.remove();
 
 					n.renderItem( item );
 

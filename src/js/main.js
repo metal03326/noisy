@@ -178,7 +178,7 @@ window.onload = _ =>
 
 			setTimeout( () =>
 			{
-				splash.parentNode.removeChild( splash );
+				splash.remove();
 			}, 300 );
 		}, 300 );
 	} ).catch( _ =>

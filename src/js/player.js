@@ -1682,7 +1682,7 @@ let n = {
 		for ( let i = 0; i < len; i++ )
 		{
 			let selected = toDelete[ i ];
-			selected.parentNode.removeChild( selected );
+			selected.remove();
 		}
 
 		// Save playlist if selected items(s) found
@@ -3281,7 +3281,7 @@ let n = {
 		let idx = Array.prototype.indexOf.call( row.parentNode.children, row );
 
 		// Remove the row
-		row.parentNode.removeChild( row );
+		row.remove();
 
 		// Save preferences
 		n.pref.deleteKey = idx;
@@ -4048,7 +4048,7 @@ let n = {
 		for ( let i = 0; i < rows.length; i++ )
 		{
 			let row = rows[ i ];
-			row.parentNode.removeChild( row );
+			row.remove();
 		}
 
 		// Find appending place
