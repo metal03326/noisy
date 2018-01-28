@@ -1057,34 +1057,10 @@ let n = {
 		/* Start: Window state events */
 
 		// Change window state when save playlist name entered
-		document.getElementById( 'save-playlist-window-filename' ).addEventListener( keyUpEvent, e =>
-		{
-			let val = e.currentTarget.value.trim();
-
-			if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
-			{
-				n.applyWindowState( 'save' );
-			}
-			else if ( !val )
-			{
-				n.applyWindowState( 'semi' );
-			}
-		} );
+		document.getElementById( 'save-playlist-window-filename' ).addEventListener( keyUpEvent, n.onSaveNameKeyUp );
 
 		// Change window state when save preferences name entered
-		document.getElementById( 'save-preferences-window-filename' ).addEventListener( keyUpEvent, e =>
-		{
-			let val = this.value.trim();
-
-			if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
-			{
-				n.applyWindowState( 'save' );
-			}
-			else if ( !val )
-			{
-				n.applyWindowState( 'semi' );
-			}
-		} );
+		document.getElementById( 'save-preferences-window-filename' ).addEventListener( keyUpEvent, n.onSaveNameKeyUp );
 
 		/* End: Window state events */
 
@@ -3646,6 +3622,24 @@ let n = {
 
 		document.body.removeEventListener( 'mousemove', n.onRowMove );
 		document.body.removeEventListener( 'mouseup', n.onRowUp );
+	},
+
+	/**
+	 * Fired on key up when user types in the filename box in save playlist/preferences dialog.
+	 * @param {Event} e
+	 */
+	onSaveNameKeyUp( e )
+	{
+		let val = e.currentTarget.value.trim();
+
+		if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
+		{
+			n.applyWindowState( 'save' );
+		}
+		else if ( !val )
+		{
+			n.applyWindowState( 'semi' );
+		}
 	},
 
 	/**
