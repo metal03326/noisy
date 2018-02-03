@@ -345,7 +345,7 @@ article + #playlist-hints,
 
 #find-window-results .playlist-item
 {
-	padding: 0 10px;
+	padding : 0 10px;
 }
 
 #footer
@@ -1393,7 +1393,7 @@ h6
 
 .flex-no-shrink
 {
-	flex-shrink: 0;
+	flex-shrink : 0;
 }
 
 [hidden]
@@ -1453,4 +1453,9 @@ i
 #whats-new-content i
 {
 	margin : 0 10px 5px;
+}
+
+#playlists-wrapper
+{
+	outline : none;
 }

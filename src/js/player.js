@@ -1050,122 +1050,77 @@ let n = {
 		// Listen for key presses on playlists to control the selected item/playlist
 		let _onPlaylistDown = e =>
 		{
-			let keyCode = e.keyCode;
-			let tab;
-			let tabs;
-			let toSelect;
-			let keys    = n.getKeys( e );
-			let item    = document.getElementById( 'keyboard-shortcuts' ).querySelector( `tr[data-keys="${keys.keyProperty.join( '+' )}"]` );
+			const keyCode = e.keyCode;
+			const keys    = n.getKeys( e );
+			const item    = document.getElementById( 'keyboard-shortcuts' ).querySelector( `tr[data-keys="${keys.keyProperty.join( '+' )}"]` );
 
 			// Check if we have key combination with Down happening and do nothing if we have
 			if ( !item )
 			{
-				switch ( keyCode )
+				// Left and Right
+				if ( keyCode === 37 || keyCode === 39 )
 				{
-					// Left
-					case 37:
-						// Get selected tab
-						tab = document.querySelector( `div[data-for="${n.activePlaylistId}"]` ) || document.getElementById( 'playlists-tabs' ).querySelector( 'div[data-for]' );
+					let toSelect;
 
-						// If we have one
-						if ( tab )
-						{
-							// Get previous tab
-							toSelect = tab.previousElementSibling;
+					// Get all tabs
+					const tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'div[data-for]' );
 
-							// Get last tab if no previous (we've reached the beginning)
-							if ( !toSelect )
-							{
-								// Don't get exatly the last element, because it's the Add playlist button
-								toSelect = tab.parentNode.lastElementChild.previousElementSibling;
-							}
+					// Get selected tab
+					let tab = document.querySelector( `div[data-for="${n.activePlaylistId}"]` );
 
-							// Select it
-							n.changePlaylist( toSelect );
+					const idx = Array.prototype.indexOf.call( tabs, tab );
 
-							// Focus is needed so next time our keydown is working
-							toSelect.focus();
-						}
+					if ( tab )
+					{
+						// Get previous or next tab
+						toSelect = tabs[ idx + (keyCode === 37 ? -1 : 1) ];
 
-						e.preventDefault();
-						break;
-					// Right
-					case 39:
-						// Get selected tab
-						tab = document.querySelector( `div[data-for="${n.activePlaylistId}"]` );
-
-						// Get last tab if no active tab found
-						if ( !tab )
-						{
-							tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'div[data-for]' );
-							tab  = tabs.item( tabs.length - 1 );
-						}
-
-						// If we have one
-						if ( tab )
-						{
-							// Get next tab
-							toSelect = tab.nextElementSibling;
-
-							// Get first tab if no next (we've reached the end)
-							if ( 'add-playlist' === toSelect.id )
-							{
-								toSelect = tab.parentNode.firstElementChild;
-							}
-
-							// Select it
-							n.changePlaylist( toSelect );
-
-							// Focus is needed so next time our keydown is working
-							toSelect.focus();
-						}
-
-						e.preventDefault();
-						break;
-					// Up
-					case 38:
-						// Get previous playlist item
-						toSelect = n.currentlySelectedItem.previousElementSibling;
-
-						// Get last playlist item if no previous (we've reached the beginning)
+						// Get last/first tab if no previous/next (we've reached the beginning/end)
 						if ( !toSelect )
 						{
-							toSelect = document.getElementById( n.activePlaylistId ).lastElementChild;
+							toSelect = tabs[ keyCode === 37 ? tabs.length - 1 : 0 ];
 						}
+					}
+					// If we have one
+					else
+					{
+						toSelect = tabs[ 0 ];
+					}
 
-						// Deselect items
-						n._deselectItems();
+					// If there are not tabs created, we won't have anything to select
+					if ( toSelect )
+					{
+						// Select it
+						n.changePlaylist( toSelect );
 
-						// Select chosen item
-						n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
+						// Focus is needed so next time our keydown is working
+						document.getElementById( 'playlists-wrapper' ).focus();
+					}
 
-						// Scroll the item into the view
-						toSelect.scrollIntoView();
+					e.preventDefault();
+				}
+				// Up and Down
+				else if ( keyCode === 38 || keyCode === 40 )
+				{
+					// Get previous playlist item
+					let toSelect = n.currentlySelectedItem[ `${keyCode === 38 ? 'previous' : 'next'}ElementSibling` ];
 
-						e.preventDefault();
-						break;
-					// Down
-					case 40:
-						// Get previous playlist item
-						toSelect = n.currentlySelectedItem.nextElementSibling;
+					// Get last playlist item if no previous (we've reached the beginning)
+					if ( !toSelect )
+					{
+						toSelect = document.getElementById( n.activePlaylistId )[ `${keyCode === 38 ? 'last' : 'first'}ElementChild` ];
+					}
 
-						// Get first playlist item if no next (we've reached the end)
-						if ( !toSelect )
-						{
-							toSelect = document.getElementById( n.activePlaylistId ).firstElementChild;
-						}
+					// Deselect items
+					n._deselectItems();
 
-						// Deselect items
-						n._deselectItems();
+					// Select chosen item
+					n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
 
-						// Select chosen item
-						n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
+					// Scroll the item into the view
+					scrollIntoViewIfOutOfView( toSelect );
 
-						// Scroll the item into the view
-						toSelect.scrollIntoView( false );
-
-						e.preventDefault();
-						break;
+					e.preventDefault();
 				}
 			}
 		};
@@ -1535,7 +1490,7 @@ let n = {
 		name = name.trim();
 
 		// Create the tab
-		let tab = document.createElement( 'div' );
+		const tab = document.createElement( 'div' );
 
 		tab.dataset.for  = id;
 		tab.dataset.name = name;
@@ -1543,10 +1498,8 @@ let n = {
 		tab.tabIndex     = 0;
 		tab.innerHTML    = `<div>${name}</div> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
 
-		let triggers = tab.querySelectorAll( 'div' );
-
-		triggers[ 0 ].addEventListener( 'click', n.renamePlaylist );
-		triggers[ 1 ].addEventListener( 'click', n.deletePlaylist );
+		tab.querySelector( '.playlist-edit' ).addEventListener( 'click', n.renamePlaylist );
+		tab.querySelector( '.playlist-remove' ).addEventListener( 'click', n.deletePlaylist );
 
 		document.getElementById( 'playlists-tabs' ).insertBefore( tab, document.getElementById( 'add-playlist' ) );
 
@@ -1555,7 +1508,7 @@ let n = {
 		tab.addEventListener( 'keydown', n.onTabKeyDown );
 
 		// Create the playlist
-		let playlist = document.createElement( 'article' );
+		const playlist = document.createElement( 'article' );
 
 		playlist.hidden       = true;
 		playlist.id           = id;
