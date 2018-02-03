@@ -6,15 +6,6 @@
  */
 
 'use strict';
-//todo: Implement Drag and Drop Directories for all browsers supporting getFilesAndDirectories()
-//todo: Fix double tag read under Firefox
-//todo: Go around the code and find usages for n.log/warn/error.
-//todo: Implement WAI-ARIA.
-//todo: Introduce n.pref.batch() to make changes to n.pref.settings object at once before saving. This should save a
-// few CPU cycles when two or more things needs to be saved;
-//todo: Add localStorage compression alogorithm (disabled by default, since we save playlists too often)
-//todo: Get current browser/os language and try using it as a language of Noisy - just the way it was before the rework.
-//todo: Add easter egg somewhere on the about page.
 
 // Noisy singleton
 let n = {
@@ -117,8 +108,6 @@ let n = {
 	movingItem: null,
 
 	// Height of the grabbed playlist item. All items should be with the same size
-	//TODO: Items with very long names may brake into a couple of lines, which will break this. Fix that all lines are
-	//actually on one line and use ellipsis for long lines
 	//TODO: Remove this property by introducing CSS Custom Properties and reading the height of the row from it
 	movingItemHeight: -1,
 
@@ -528,7 +517,8 @@ let n = {
 					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId ).then( _ =>
 					{
 						// Print success message in the status bar containing number of items added
-						//todo: Join footer-finished and the counter into 1 template literal
+						//todo: This doesn't seems to be dynamically translatable - if user switches language it won't
+						// be translated properly
 						n.setFooter( `<span id="footer-finished">${n.lang.footer[ 'footer-finished' ]} ${count.added}</span>` );
 
 						// Save playlist as new items are added
@@ -1453,28 +1443,6 @@ let n = {
 	closeAll()
 	{
 		n.closeWindow();
-		n.closeFileFolderWindow();
-	},
-
-	/**
-	 * Resets file window to default state
-	 */
-	closeFileFolderWindow()
-	{
-		let source = document.getElementById( 'add-window-files' );
-
-		// Remove cloud contents
-		source.innerHTML = '';
-
-		// Show cloud selection
-		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
-
-		delete source.dataset.path;
-		delete source.dataset.cloud;
-		delete source.dataset.filter;
-
-		// Hide loading indicator, in case user clicked X before loading finished
-		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
 	/**
@@ -1522,18 +1490,12 @@ let n = {
 			{
 				n.closePreferences();
 			}
-			// Empty find window
-			else if ( 'find-window' === id )
-			{
-				document.getElementById( 'find-item' ).value = '';
-				n.initSearch( '' );
-			}
 
 			// Timeout is needed for the CSS transition to finish before hiding the window
 			setTimeout( _ => window.removeAttribute( 'id' ), 300 );
 
 			// Remove other classes from the window
-			//todo: Do we actually change this class somewhere?
+			//todo: Do we actually change this class somewhere? .exists???
 			window.className = 'window';
 
 			n.clearWindow();
@@ -1579,7 +1541,7 @@ let n = {
 		tab.dataset.name = name;
 		tab.className    = 'playlists-tabs-li flex';
 		tab.tabIndex     = 0;
-		tab.innerHTML    = `<span>${name}</span> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
+		tab.innerHTML    = `<div>${name}</div> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
 
 		let triggers = tab.querySelectorAll( 'div' );
 
@@ -1745,21 +1707,15 @@ let n = {
 	/**
 	 * Removes all files listed on the file dialog.
 	 */
-	//TODO: Maybe combine this with closeFileFolderWindow()?
 	emptyAddWindow()
 	{
-		let items            = document.querySelectorAll( '.add-item' );
-		const mouseDownEvent = 'mousedown';
-		const dblClickEvent  = 'dblclick';
-
-		for ( let i = 0; i < items.length; i++ )
-		{
-			let item = items[ i ];
-			item.removeEventListener( mouseDownEvent, n.onAddItemDown );
-			item.removeEventListener( dblClickEvent, n.onAddItemDblClick );
-		}
-
+		// Remove cloud contents
 		document.getElementById( 'add-window-files' ).innerHTML = '';
+	},
+
+	emptyFindWindow()
+	{
+		n.initSearch( document.getElementById( 'find-item' ).value = n.lastSearchTerm = '' );
 	},
 
 	/**
@@ -1849,23 +1805,12 @@ let n = {
 	 */
 	find( e )
 	{
-		let results;
-		let selected;
-		let idx;
-		let mousedownEvent = document.createEvent( 'MouseEvent' );
-		let mouseupEvent   = document.createEvent( 'MouseEvent' );
-		let val;
-
-		// We need mouse events because we need to trigger mousedown/mouseup events on playlist items, so they get
-		// highlighted
-		//TODO: Find something smarter
-		mousedownEvent.initMouseEvent( 'mousedown', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
-		mouseupEvent.initMouseEvent( 'mouseup', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
+		const keyCode = e.keyCode;
 
 		// Enter pressed
-		if ( 13 === e.keyCode )
+		if ( 13 === keyCode )
 		{
-			val = document.getElementById( 'find-item' ).value.toLowerCase().trim();
+			const val = e.currentTarget.value.toLowerCase().trim();
 
 			// If user pressed Enter again, without changing the search term, we need to initiate play on the selected
 			// item
@@ -1879,70 +1824,61 @@ let n = {
 				n.initSearch( n.lastSearchTerm = val );
 
 				// Select first result
-				results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
+				const item = document.getElementById( 'find-window-results' ).querySelector( '.playlist-item' );
 
-				if ( results.length )
+				if ( item )
 				{
-					// Select first item in results window
-					results[ 0 ].dispatchEvent( mousedownEvent );
-					results[ 0 ].dispatchEvent( mouseupEvent );
+					// Select first item in results window and in playlist
+					n.onRowDown( { target: item, currentTarget: item } );
 				}
 			}
 		}
-		// Up key pressed
-		else if ( 38 === e.keyCode )
+		// Up or Down key pressed
+		else if ( 38 === keyCode || 40 === keyCode )
 		{
-			results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
+			let results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 			if ( results.length )
 			{
 				// Get selected item
-				selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
+				const selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
 
 				// Find it's index in the parent's children
-				idx = Array.prototype.indexOf.call( results, selected );
+				const idx = Array.prototype.indexOf.call( results, selected );
 
-				// Check if we are the first item and select the last one if true
-				if ( 0 > idx - 1 )
+				let item;
+
+				if ( 38 === keyCode )
 				{
-					results[ results.length - 1 ].dispatchEvent( mousedownEvent );
-					results[ results.length - 1 ].dispatchEvent( mouseupEvent );
+					// Check if we are the first item and select the last one if true
+					if ( 0 > idx - 1 )
+					{
+						item = results[ results.length - 1 ];
+					}
+					else
+					{
+						item = results[ idx - 1 ];
+					}
 				}
 				else
 				{
-					results[ idx - 1 ].dispatchEvent( mousedownEvent );
-					results[ idx - 1 ].dispatchEvent( mouseupEvent );
+					// Check if we are the last item and select the first one if true
+					if ( results.length <= idx + 1 )
+					{
+						item = results[ 0 ];
+					}
+					else
+					{
+						item = results[ idx + 1 ];
+					}
 				}
-			}
-		}
-		// Down key pressed
-		else if ( 40 === e.keyCode )
-		{
-			results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
-			if ( results.length )
-			{
-				// Get selected item
-				selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
-
-				// Find it's index in the parent's children
-				idx = Array.prototype.indexOf.call( results, selected );
-
-				// Check if we are the last item and select the first one if true
-				if ( results.length <= idx + 1 )
-				{
-					results[ 0 ].dispatchEvent( mousedownEvent );
-					results[ 0 ].dispatchEvent( mouseupEvent );
-				}
-				else
-				{
-					results[ idx + 1 ].dispatchEvent( mousedownEvent );
-					results[ idx + 1 ].dispatchEvent( mouseupEvent );
-				}
+				// Select first item in results window and in playlist
+				n.onRowDown( { target: item, currentTarget: item } );
 			}
 		}
 		// Esc key pressed
-		else if ( 27 === e.keyCode )
+		else if ( 27 === keyCode )
 		{
 			n.closeAll();
 		}
@@ -2125,7 +2061,6 @@ let n = {
 
 			n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
 
-			//TODO: currently we are saving preferences twice - can we optimize smartly?
 			const hash              = location.hash;
 			const search            = location.search;
 			let split               = [];
@@ -2241,11 +2176,6 @@ let n = {
 			{
 				// Stop bubbling otherwise the window (if any) opened will be immediately closed
 				e.stopPropagation();
-
-				// Close all previous file browsing windows. Need in case user have entered in file browser (lets say
-				// Save playlist) and tries to open another one (lets say Load playlist). We need to re-initialize the
-				// add files window in original state
-				n.closeFileFolderWindow();
 
 				// Execute needed method
 				n[ this.dataset.menulistener ].call( this );
@@ -2598,82 +2528,49 @@ let n = {
 	 */
 	initSearch( val )
 	{
-		let results          = document.getElementById( 'find-window-results' );
-		const mouseDownEvent = 'mousedown';
-		const dblClickEvent  = 'dblclick';
-		const _cleanup       = _ =>
-		{
-			let oldResults = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
+		const results = document.getElementById( 'find-window-results' );
 
-			// Remove listeners from old results
-			for ( let i = 0; i < oldResults.length; i++ )
-			{
-				oldResults[ i ].removeEventListener( mouseDownEvent, n.onRowDown, false );
-				oldResults[ i ].removeEventListener( dblClickEvent, n.onRowDblClick, false );
-			}
-
-			// Clear old results
-			results.innerHTML = '';
-		};
+		results.innerHTML = '';
 
 		if ( val )
 		{
-			let items = document.getElementById( 'playlists' ).querySelectorAll( 'div:not([hidden]) section[data-url]' );
+			const items = document.getElementById( 'playlists' ).querySelectorAll( 'article:not([hidden]) section[data-url]' );
 
 			// We'll search by all words, so we split them
-			let terms = val.split( ' ' );
-
-			// Remove old search results
-			_cleanup();
+			const terms = val.split( ' ' );
 
 			// Loop through all playlist items
-			for ( let i = 0; i < items.length; i++ )
+			main: for ( let i = 0; i < items.length; i++ )
 			{
-				let item  = items[ i ];
-				let url   = item.dataset.url.toLowerCase();
+				const item  = items[ i ];
+				const url   = item.dataset.url.toLowerCase();
 				// By default we have a match
-				let match = true;
-				let term;
-				let title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
+				const title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
 
 				// Loop through all search terms (words)
 				for ( let j = 0; j < terms.length; j++ )
 				{
-					term = terms[ j ];
+					const term = terms[ j ];
 
 					// If this term is not found in current item, mark item as not suitable and move on
 					if ( !url.includes( term ) && !title.includes( term ) )
 					{
-						match = false;
-						break;
+						continue main;
 					}
 				}
 
-				// Clone found item, if any, and append the cloning to the results
-				if ( match )
-				{
-					let cloning  = item.cloneNode( true );
-					let duration = cloning.children[ 2 ];
+				const cloning = item.cloneNode( true );
 
-					// Remove queue and duration elements from the cloning
-					cloning.removeChild( cloning.children[ 0 ] );
+				// Remove queue and duration elements from the cloning
+				cloning.querySelector( '.playback-options' ).remove();
+				cloning.querySelector( '.item-duration' ).remove();
 
-					if ( duration )
-					{
-						cloning.removeChild( duration );
-					}
+				results.appendChild( cloning );
 
-					results.appendChild( cloning );
-
-					// Add event listeners for the cloning
-					cloning.addEventListener( mouseDownEvent, n.onRowDown );
-					cloning.addEventListener( dblClickEvent, n.onRowDblClick );
-				}
+				// Add event listeners for the cloning
+				cloning.addEventListener( 'mousedown', n.onRowDown );
+				cloning.addEventListener( 'dblclick', n.onRowDblClick );
 			}
-		}
-		else
-		{
-			_cleanup();
 		}
 	},
 
@@ -2831,8 +2728,6 @@ let n = {
 				}
 			} );
 		}
-
-		n.closeFileFolderWindow();
 	},
 
 	/**
@@ -3404,20 +3299,12 @@ let n = {
 
 	/**
 	 * On item double click event handler. Plays the clicked item.
-	 * @this {HTMLElement} Item clicked.
 	 */
 	onRowDblClick()
 	{
 		n.setItemState();
 
-		if ( 'find-window-results' === this.parentNode.id )
-		{
-			n.play();
-		}
-		else
-		{
-			n.play( this );
-		}
+		n.play();
 	},
 
 	/**
@@ -3460,10 +3347,10 @@ let n = {
 			}
 
 			// Select clicked item depending on the keyboard keys pressed
-			n._selectItems.call( this, e, n.activePlaylistId, '.playlist-item', 'selected' );
+			n._selectItems.call( row, e, n.activePlaylistId, '.playlist-item', 'selected' );
 
 			// Manage search results, if window is opened
-			if ( 'find-window-results' === this.parentNode.id )
+			if ( document.getElementById( 'find-window-results' ).contains( row ) )
 			{
 				let toSelect        = document.querySelectorAll( '.window .selected' );
 				const selectedClass = 'selected';
@@ -3480,16 +3367,17 @@ let n = {
 					document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${toSelect[ i ].dataset.url}"]` ).classList.add( selectedClass );
 				}
 
-				let el = document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${this.dataset.url}"]` );
+				let el = document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${row.dataset.url}"]` );
 
 				el.classList.add( selectedClass );
 
 				scrollIntoViewIfOutOfView( el );
+				scrollIntoViewIfOutOfView( row );
 			}
 		} );
 
 		n.movingItem       = e.currentTarget;
-		n.movingItemHeight = this.offsetHeight;
+		n.movingItemHeight = row.offsetHeight;
 		n.movingStart      = e.clientY;
 
 		document.body.addEventListener( 'mousemove', n.onRowMove );
@@ -3959,8 +3847,6 @@ let n = {
 
 		n.changePlaylist( title.parentNode );
 
-		//TODO: Check if Firefox is happy with this selectAll - as of Feb. 2014 they still have problems with selecting
-		// all the contents of a contenteditable element
 		document.execCommand( 'selectAll', false, null );
 	},
 
@@ -4039,6 +3925,26 @@ let n = {
 
 		// Append the fragment to the DOM
 		insertBefore.parentNode.insertBefore( df, insertBefore );
+	},
+
+	/**
+	 * Sets add-window in it's initial state.
+	 */
+	resetAddWindow()
+	{
+		n.emptyAddWindow();
+
+		const source = document.getElementById( 'add-window-files' );
+
+		// Show cloud selection
+		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
+
+		delete source.dataset.path;
+		delete source.dataset.cloud;
+		delete source.dataset.filter;
+
+		// Hide loading indicator, in case user clicked X before loading finished
+		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
 	/**
@@ -4830,11 +4736,15 @@ let n = {
 				break;
 			// All other classes are ids and should replace old id
 			default:
-				n.emptyAddWindow();
+				[ 'add-window', 'save-playlist-window', 'load-playlist-window', 'save-preferences-window', 'load-preferences-window' ].includes( cls ) && n.resetAddWindow();
+
+				// Empty find window only when we are about to open it
+				cls === 'find-window' && n.emptyFindWindow();
+
 				window.id = cls;
 
 				// Add blur
-				window.parentNode.classList.add( 'window-opened' );
+				document.getElementById( 'window-backdrop' ).classList.add( 'window-opened' );
 		}
 	}
 };

@@ -15,7 +15,6 @@ let urlManager = {
 	},
 
 	// What's the maximum amount of ObjectUrls to store. This will limit memory usage
-	//TODO: Make this as an option to the user
 	maxUrlCount: 10,
 
 	/**

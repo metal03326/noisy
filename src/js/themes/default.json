@@ -65,6 +65,7 @@
     "background": "#eee"
   },
   "#find-window-results": {
+    "color": "#fff",
     "background": "#2e2e2e"
   },
   "#window-title": {

@@ -137,26 +137,23 @@ let keyCodes = {
 
 /**
  * Scroll item into the user's viewport if not already there.
- * @param {HTMLElement} el Required. Element which we need to scroll into view.
+ * @param {HTMLElement} el Element which we need to scroll into view.
  */
-//TODO: This function is not working as expected. Fix.
 function scrollIntoViewIfOutOfView( el )
 {
-	let topOfPage    = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-	let heightOfPage = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-	let elY          = 0;
+	// We always assume current element is direct child of the scroll container to which is visible calculations will
+	// be done.
+	const parent     = el.parentNode;
+	const elRect     = el.getBoundingClientRect();
+	const parentRect = parent.getBoundingClientRect();
 
-	for ( let p = el; p && p.tagName !== 'BODY'; p = p.offsetParent )
+	// This condition both shows if our element sticks out ot the top of the parent and if we need to align to top when
+	// scrolling
+	const alignToTop = elRect.top < parentRect.top;
+
+	if ( alignToTop || elRect.bottom > parentRect.bottom )
 	{
-		elY += p.offsetTop;
-	}
-	if ( (topOfPage + heightOfPage) < (elY + el.offsetHeight) )
-	{
-		el.scrollIntoView( false );
-	}
-	else if ( elY < topOfPage )
-	{
-		el.scrollIntoView( true );
+		el.scrollIntoView( alignToTop );
 	}
 }
 

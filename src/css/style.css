@@ -343,6 +343,11 @@ article + #playlist-hints,
 	align-items : center;
 }
 
+#find-window-results .playlist-item
+{
+	padding: 0 10px;
+}
+
 #footer
 {
 	height      : 26px;

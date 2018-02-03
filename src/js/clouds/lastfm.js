@@ -124,7 +124,6 @@ let lastfm = new Cloud( {
 
 					let params = `api_key=${lastfm.apiKey}&api_sig=${hex_md5( `api_key${lastfm.apiKey}${artists}method${method}sk${lastfm.accessToken}${timestamps}${tracks}${lastfm.apiSecret}` )}${artistsEq}&format=json&method=${method}&sk=${lastfm.accessToken}${timestampsEq}${tracksEq}`;
 
-					//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
 					lastfm.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST', params ).then( _ => lastfm.queue.reset.bind( lastfm ) );
 				}
 			}
@@ -192,7 +191,6 @@ let lastfm = new Cloud( {
 			{
 				let params = `api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}artist${artist}method${method}sk${this.accessToken}track${title}${this.apiSecret}` )}&artist=${artist}&format=json&method=${method}&sk=${this.accessToken}&track=${title}`;
 
-				//TODO: Make an option for the user to accept last.fm's corrections on artist/song names
 				this.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST', '' );
 			}
 		}
