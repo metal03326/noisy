@@ -377,7 +377,7 @@
             </div>
             <div id="find-window-content" class="flex-column">
                 <!--todo: Convert this to form, so Enter key works out of the box-->
-                <div class="flex">
+                <div class="flex flex-no-shrink">
                     <input id="find-item" type="text" class="border-box"/>
                     <button id="init-search" onclick="n.initSearch();" data-icon="#"></button>
                 </div>
@@ -502,7 +502,7 @@
         </div>
     </div>
 </div>
-<header id="header" class="flex">
+<header id="header" class="flex flex-no-shrink">
     <div id="header-left" tabindex="0">
         <div id="battery-level-menu-handle">
             <div id="battery-cap"></div>
@@ -591,7 +591,7 @@
         </div>
     </div>
 </div>
-<footer id="footer" class="flex">
+<footer id="footer" class="flex flex-no-shrink">
     <div class="flex flex-item-full">
         <div id="footer-text" class="flex-item-full"></div>
         <button onclick="n.setFooter(null,true);" id="cancel-action" data-icon="*" hidden class="link"></button>

@@ -1386,6 +1386,11 @@ h6
 	flex : 1 1 auto;
 }
 
+.flex-no-shrink
+{
+	flex-shrink: 0;
+}
+
 [hidden]
 {
 	display : none !important;
