@@ -1945,6 +1945,7 @@ let n = {
 		let keyProperty = [];
 		// Contains human readable key names
 		let keys        = [];
+		const keyCode = e.keyCode;
 
 		if ( e.altKey )
 		{
@@ -1959,17 +1960,17 @@ let n = {
 		if ( e.shiftKey )
 		{
 			keys.push( keyCodes[ 16 ] );
-			keyProperty.push( 17 );
+			keyProperty.push( 16 );
 		}
 		if ( e.metaKey )
 		{
 			keys.push( keyCodes[ 91 ] );
 			keyProperty.push( 91 );
 		}
-		if ( 16 !== e.keyCode && 17 !== e.keyCode && 18 !== e.keyCode && 91 !== e.keyCode )
+		if ( [16, 17, 18, 91].includes( keyCode ) )
 		{
-			keys.push( keyCodes[ e.keyCode ] );
-			keyProperty.push( e.keyCode );
+			keys.push( keyCodes[ keyCode ] );
+			keyProperty.push( keyCode );
 		}
 
 		return { keys, keyProperty };
