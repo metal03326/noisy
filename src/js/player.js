@@ -922,7 +922,6 @@ let n = {
 		{
 			tabs[ i ].addEventListener( clickEvent, n.onTabClick );
 			tabs[ i ].addEventListener( mouseDownEvent, n.onTabDown );
-			tabs[ i ].addEventListener( keyDownEvent, n.onTabKeyDown );
 		}
 
 		// Attach event handlers to the events for changing the checkboxes for playback order in the preferences
@@ -1148,19 +1147,10 @@ let n = {
 	 */
 	stopRenames()
 	{
-		// Get all playlist being renamed (shouldn't be more than one, but to be sure we take all of them)
-		let renamings               = document.querySelectorAll( '[contenteditable="true"]' );
-		const contentEditableString = 'contenteditable';
-		const clickEvent            = 'click';
+		const title = document.querySelector( '[contenteditable="true"]' );
 
-		// Iterate all and remove contentaeditable attribute, remove class and event listener for name check
-		for ( let i = 0; i < renamings.length; i++ )
-		{
-			let renaming = renamings[ i ];
-
-			renaming.removeAttribute( contentEditableString );
-			document.body.removeEventListener( clickEvent, n.playlistNameCheck );
-		}
+		title.removeAttribute( 'contenteditable' );
+		title.removeEventListener( 'keydown', n.onRenameKeyDown );
 	},
 
 	changeCounterState( state )
@@ -1496,8 +1486,9 @@ let n = {
 		tab.dataset.name = name;
 		tab.className    = 'playlists-tabs-li flex';
 		tab.tabIndex     = 0;
-		tab.innerHTML    = `<div>${name}</div> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
+		tab.innerHTML    = `<div class="playlist-name">${name}</div> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
 
+		tab.querySelector( '.playlist-name' ).addEventListener( 'dblclick', n.renamePlaylist );
 		tab.querySelector( '.playlist-edit' ).addEventListener( 'click', n.renamePlaylist );
 		tab.querySelector( '.playlist-remove' ).addEventListener( 'click', n.deletePlaylist );
 
@@ -1505,7 +1496,6 @@ let n = {
 
 		tab.addEventListener( 'click', n.onTabClick );
 		tab.addEventListener( 'mousedown', n.onTabDown );
-		tab.addEventListener( 'keydown', n.onTabKeyDown );
 
 		// Create the playlist
 		const playlist = document.createElement( 'article' );
@@ -1572,61 +1562,35 @@ let n = {
 
 	/**
 	 * Deletes playlist.
-	 *
-	 * @this {HTMLElement} Element should be the X button inside the tab.
 	 */
-	deletePlaylist( tab )
+	deletePlaylist( e )
 	{
-		tab = tab.tagName ? tab : this.parentNode;
-
-		let toActivate = tab.previousElementSibling || tab.nextElementSibling;
-		let playlist   = document.getElementById( tab.dataset.for );
+		const tab        = e.currentTarget.closest( '[data-for]' );
+		const toActivate = tab.previousElementSibling || tab.nextElementSibling;
 
 		// If we have closed last tab and we don't have next tab to activate, we need to show to the user the hints
 		// screen
-		if ( document.getElementById( 'add-playlist' ) === toActivate )
+		if ( toActivate.id === 'add-playlist' )
 		{
-			toActivate                                         = null;
+			n.pref.activePlaylistId                            = null;
 			document.getElementById( 'playlist-hints' ).hidden = false;
 		}
-
-		// Should continue only if both tab and playlist elements are found
-		if ( tab && playlist )
-		{
-			// Remove event listeners
-			tab.querySelector( '.playlist-edit' ).removeEventListener( 'click', n.renamePlaylist, false );
-			tab.querySelector( '.playlist-remove' ).removeEventListener( 'click', n.deletePlaylist, false );
-			tab.removeEventListener( 'click', n.onTabClick, false );
-			tab.removeEventListener( 'mousedown', n.onTabDown, false );
-			tab.removeEventListener( 'keydown', n.onTabKeyDown, false );
-
-			// Remove DOM elements
-			tab.remove();
-			playlist.remove();
-
-			// Save change
-			n.savePlaylists();
-
-			// Remove tab view if only one tab
-			n.oneTabCheck();
-		}
-		// Otherwise throw an error
 		else
-		{
-			//TODO: Add n.error() here
-			console.error( 'deletePlaylist: tab or playlist not found' );
-		}
-
-		// Activate tab after deletion, if there are remaining tabs
-		if ( toActivate )
 		{
 			n.changePlaylist( toActivate );
 		}
-		// Otherwise save in the preferences that we shouldn't search to playlist to focus next time Noisy loads
-		else
-		{
-			n.pref.activePlaylistId = null;
-		}
+
+		// Remove tab
+		tab.remove();
+		
+		// Remove playlist itself
+		document.getElementById( tab.dataset.for ).remove();
+
+		// Save change
+		n.savePlaylists();
+
+		// Remove tab view if only one tab
+		n.oneTabCheck();
 	},
 
 	/**
@@ -1674,9 +1638,8 @@ let n = {
 	/**
 	 * Adds an error line to the console.
 	 *
-	 * @param {String} section Required. Contains property name in the
-	 * language object for the action we are logging.
-	 * @param {String} data Required. Text to be printed in the console.
+	 * @param {String} section Contains property name in the language object for the action we are logging.
+	 * @param {String} [data] Text to be printed in the console.
 	 */
 	error( section, data = '' )
 	{
@@ -1935,7 +1898,7 @@ let n = {
 	/**
 	 * Gets all the pressed keyboard keys.
 	 *
-	 * @param {Event} e Required. Keyboard event from which keyCodes will be read.
+	 * @param {Event} e Keyboard event from which keyCodes will be read.
 	 *
 	 * @return {Object} Object containing both keyCodes and names of the pressed keys.
 	 */
@@ -1945,7 +1908,7 @@ let n = {
 		let keyProperty = [];
 		// Contains human readable key names
 		let keys        = [];
-		const keyCode = e.keyCode;
+		const keyCode   = e.keyCode;
 
 		if ( e.altKey )
 		{
@@ -1967,7 +1930,7 @@ let n = {
 			keys.push( keyCodes[ 91 ] );
 			keyProperty.push( 91 );
 		}
-		if ( [16, 17, 18, 91].includes( keyCode ) )
+		if ( [ 16, 17, 18, 91 ].includes( keyCode ) )
 		{
 			keys.push( keyCodes[ keyCode ] );
 			keyProperty.push( keyCode );
@@ -2226,56 +2189,8 @@ let n = {
 				}
 			} );
 
-			// We need to stop the bubbling so if the user is renaming the playlist it won't get saved while moving the
-			// caret to a new location with the mouse
-			document.getElementById( 'playlists-tabs' ).addEventListener( clickEvent, e =>
-			{
-				n.closeAll();
-				n.stopBubbling.call( this, e );
-			} );
-
-			// Double click on the tabs means either rename of playlist (if playlist tab was double clicked) or create
-			// new playlist, so need to listen for dblclick
-			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function ( e )
-			{
-				if ( this === e.target )
-				{
-					n.newPlaylist();
-				}
-				else
-				{
-					n.renamePlaylist( e.target );
-				}
-			} );
-
-			// Need to listen for Enter and Esc keys when renaming
-			document.getElementById( 'playlists-tabs' ).addEventListener( keyDownEvent, e =>
-			{
-				let keyCode  = e.keyCode;
-				let renaming = document.querySelector( `div[data-for="${n.activePlaylistId}"] [contenteditable="true"]` );
-
-				// Shouldn't do anything if we are not renaming
-				if ( !renaming )
-				{
-					return;
-				}
-
-				if ( 13 === keyCode )
-				{
-					e.preventDefault();
-					n.playlistNameCheck();
-				}
-				else if ( 27 === keyCode )
-				{
-					e.preventDefault();
-
-					let name = e.target;
-
-					name.innerHTML = name.parentNode.dataset.name;
-
-					n.stopRenames();
-				}
-			} );
+			// Support for create playlist when double clicking on empty space next to tabs
+			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, e => e.currentTarget === e.target && n.newPlaylist() );
 
 			if ( n.pref.showWhatsNew )
 			{
@@ -2547,27 +2462,22 @@ let n = {
 		// Continue only if there are playlists saved
 		if ( playlists )
 		{
-			const errorString = 'error-loading-playlist';
-			const emptyString = '';
-
 			// Iterate through all the saved playlists
-			for ( let i = 0; i < playlists.length; i++ )
+			playlists.forEach( playlist =>
 			{
-				// Shorthand for current playlist
-				let playlist = playlists[ i ];
-
-				if ( !playlist || !playlist.id || !playlist.name || !playlist.items )
+				if ( playlist.id && playlist.name && playlist.items )
 				{
-					n.error( errorString, playlist ? (playlist.id || playlist.name || emptyString) : emptyString );
-					return;
+					// Create tab and playlist DOM elements
+					n.createPlaylist( playlist.name, playlist.id, false );
+
+					// Fill the playlist with the saved data
+					n.fillPlaylist( playlist.id, playlist.items, false );
 				}
-
-				// Create tab and playlist DOM elements
-				n.createPlaylist( playlist.name, playlist.id, false );
-
-				// Fill the playlist with the saved data
-				n.fillPlaylist( playlist.id, playlist.items, false );
-			}
+				else
+				{
+					n.error( 'error-loading-playlist', playlist.name || playlist.id );
+				}
+			} );
 		}
 	},
 
@@ -2589,7 +2499,7 @@ let n = {
 		if ( tab )
 		{
 			// Delete playlist because it'll be recreated again.
-			n.deletePlaylist( tab );
+			n.deletePlaylist( { currentTarget: tab } );
 		}
 
 		n.createPlaylist( playlist.name, playlist.id );
@@ -2741,7 +2651,7 @@ let n = {
 
 		if ( tab )
 		{
-			n.renamePlaylist( tab.querySelector( 'span' ) );
+			n.renamePlaylist( { currentTarget: tab.querySelector( '.playlist-name' ) } );
 		}
 	},
 
@@ -3251,6 +3161,30 @@ let n = {
 		n.updateBatteryStatus();
 	},
 
+	onRenameKeyDown( e )
+	{
+		const keyCode = e.keyCode;
+
+		// We should stop bubbling while renaming in order to prevent Noisy's keyboard shortcuts from kicking in.
+		e.stopPropagation();
+
+		if ( 13 === keyCode )
+		{
+			e.preventDefault();
+			n.playlistNameCheck();
+		}
+		else if ( 27 === keyCode )
+		{
+			e.preventDefault();
+
+			const title = e.currentTarget;
+
+			title.innerHTML = title.closest( '[data-for]' ).dataset.name;
+
+			n.stopRenames();
+		}
+	},
+
 	/**
 	 * On item double click event handler. Plays the clicked item.
 	 */
@@ -3435,11 +3369,24 @@ let n = {
 
 	/**
 	 * On tab click event handler. Switches tabs.
-	 * @this {HTMLElement} Tab clicked.
 	 */
-	onTabClick()
+	onTabClick( e )
 	{
-		requestAnimationFrame( _ => 'add-playlist' === this.id ? n.newPlaylist() : n.changePlaylist( this ) );
+		const target = e.currentTarget;
+
+		// Stop click event propagation because if it reaches body it'll accept renaming - user might just be moving
+		// the caret to correct the text.
+		e.stopPropagation();
+
+		// Select playlist
+		if ( 'add-playlist' === target.id )
+		{
+			n.newPlaylist();
+		}
+		else
+		{
+			n.changePlaylist( target );
+		}
 	},
 
 	/**
@@ -3453,24 +3400,6 @@ let n = {
 
 		document.body.addEventListener( 'mousemove', n.onTabMove );
 		document.body.addEventListener( 'mouseup', n.onTabUp );
-	},
-
-	/**
-	 * Stop bubbling of all keys except Enter and Esc when renaming.
-	 * @param {Event} e Required.
-	 */
-	onTabKeyDown( e )
-	{
-		let keyCode = e.keyCode;
-
-		if (
-			e.target.contentEditable &&
-			13 !== keyCode &&
-			27 !== keyCode
-		)
-		{
-			n.stopBubbling( e );
-		}
 	},
 
 	/**
@@ -3605,36 +3534,24 @@ let n = {
 	 */
 	playlistNameCheck()
 	{
-		let title  = document.querySelector( `div[data-for="${n.activePlaylistId}"] span` );
-		let name   = title.innerHTML.trim();
-		let rename = title.contentEditable;
-
-		// Remove event listener, as next time rename is issued, this event listener will be attached again
-		document.body.removeEventListener( 'click', n.playlistNameCheck );
+		const title = document.querySelector( `div[data-for="${n.activePlaylistId}"] .playlist-name` );
+		const name  = title.innerHTML.trim();
 
 		if ( name )
 		{
 			// Are we renaming an existing playlist?
-			if ( rename )
+			if ( title.contentEditable )
 			{
 				document.querySelector( `#playlists-tabs [data-for="${n.activePlaylistId}"]` ).dataset.name = name;
 				n.savePlaylist( document.getElementById( n.activePlaylistId ) );
-				n.stopRenames();
-
-				// Need to save preferences, as new id is generated and after refresh, there won't be an element with
-				// the old id to focus it. Do it with delay, as we might have already pending delay, which will happen
-				// after this and erase the proper activeId from the settings.
-				n.saveActivePlaylistIdDelayed();
 			}
 			// or we are creating a new one
 			else
 			{
-				if ( n.createPlaylist( name, n.activePlaylistId, true ) )
-				{
-					// Close window only if everything went well
-					n.stopRenames();
-				}
+				n.createPlaylist( name, n.activePlaylistId, true );
 			}
+
+			n.stopRenames();
 		}
 	},
 
@@ -3789,17 +3706,23 @@ let n = {
 	/**
 	 * Rename playlist dialog window.
 	 */
-	renamePlaylist( title )
+	renamePlaylist( e )
 	{
-		title = title.tagName ? title : this.previousElementSibling;
+		const tab = e.currentTarget.closest( '[data-for]' );
+		// n.renamePlaylist can be called either when double clicking on .playlist-name or when clicking on
+		// .playlist-edit. In both cases we need to work with .playlist-name
+		const title = tab.querySelector( '.playlist-name' );
 
 		title.setAttribute( 'contenteditable', 'true' );
 
-		document.body.addEventListener( 'click', n.playlistNameCheck );
+		document.body.addEventListener( 'click', n.playlistNameCheck, { once: true } );
+
+		// Need to listen for Enter and Esc keys when renaming
+		title.addEventListener( 'keydown', n.onRenameKeyDown );
 
 		title.focus();
 
-		n.changePlaylist( title.parentNode );
+		n.changePlaylist( tab );
 
 		document.execCommand( 'selectAll', false, null );
 	},
@@ -3955,7 +3878,7 @@ let n = {
 	{
 		let id   = playlist.id;
 		let tab  = document.querySelector( `#playlists-tabs [data-for="${id}"]` );
-		let name = tab.querySelector( 'span' ).textContent;
+		let name = tab.querySelector( '.playlist-name' ).textContent;
 
 		// Object that will represent the playlist
 		let obj = { id, name, items: n.makePlaylistItems( id ) };
