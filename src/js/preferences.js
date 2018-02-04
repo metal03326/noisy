@@ -237,7 +237,8 @@ let pref = {
 
 	set deleteKey( idx )
 	{
-		this.settings.keys.splice( this.settings.keys.length - idx, 1 );
+		this.settings.keys.splice( idx, 1 );
+
 		this.save();
 	},
 

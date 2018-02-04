@@ -205,41 +205,45 @@
                         </div>
                         <div id="preference-keyboard" hidden>
                             <table id="keyboard-shortcuts">
-                                <tr>
-                                    <th id="preference-keyboard-shortcut"></th>
-                                    <th id="preference-keyboard-action"></th>
-                                    <th></th>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <input id="keyboard-shortcut" type="text" data-keys="" required
-                                               class="required-item"/>
-                                        <div class="exists-text"></div>
-                                    </td>
-                                    <td>
-                                        <label class="select">
-                                            <select id="actions">
-                                                <option value="play"></option>
-                                                <option value="pause"></option>
-                                                <option value="stop"></option>
-                                                <option value="playPause"></option>
-                                                <option value="next"></option>
-                                                <option value="nextRandom"></option>
-                                                <option value="prev"></option>
-                                                <option value="showSearch"></option>
-                                                <option value="addToQueue"></option>
-                                                <option value="removeFromQueue"></option>
-                                                <option value="volumeUp"></option>
-                                                <option value="volumeDown"></option>
-                                                <option value="toggleMute"></option>
-                                                <option value="removeFromPlaylist"></option>
-                                            </select>
-                                        </label>
-                                    </td>
-                                    <td>
-                                        <button id="shortcut-add" class="button-add"></button>
-                                    </td>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th id="preference-keyboard-shortcut"></th>
+                                        <th id="preference-keyboard-action"></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <input id="keyboard-shortcut" type="text" data-keys="" required
+                                                   class="required-item"/>
+                                            <div class="exists-text"></div>
+                                        </td>
+                                        <td>
+                                            <label class="select">
+                                                <select id="actions">
+                                                    <option value="play"></option>
+                                                    <option value="pause"></option>
+                                                    <option value="stop"></option>
+                                                    <option value="playPause"></option>
+                                                    <option value="next"></option>
+                                                    <option value="nextRandom"></option>
+                                                    <option value="prev"></option>
+                                                    <option value="showSearch"></option>
+                                                    <option value="addToQueue"></option>
+                                                    <option value="removeFromQueue"></option>
+                                                    <option value="volumeUp"></option>
+                                                    <option value="volumeDown"></option>
+                                                    <option value="toggleMute"></option>
+                                                    <option value="removeFromPlaylist"></option>
+                                                </select>
+                                            </label>
+                                        </td>
+                                        <td>
+                                            <button id="shortcut-add" class="button-add"></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </div>
                         <div id="preference-performance" class="flex-column" hidden>

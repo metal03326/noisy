@@ -1582,7 +1582,7 @@ let n = {
 
 		// Remove tab
 		tab.remove();
-		
+
 		// Remove playlist itself
 		document.getElementById( tab.dataset.for ).remove();
 
@@ -2995,10 +2995,10 @@ let n = {
 	onDeleteKeyboardShortcut( button )
 	{
 		// Get the row on which the delete button was clicked
-		let row = button.parentNode.parentNode;
+		let row = button.closest( 'tr' );
 
 		// Get row index
-		let idx = Array.prototype.indexOf.call( row.parentNode.children, row );
+		let idx = Array.prototype.indexOf.call( row.closest( 'tbody' ).children, row );
 
 		// Remove the row
 		row.remove();
