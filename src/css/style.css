@@ -231,7 +231,6 @@ button
 .one-tab #playlists-tabs,
 .one-tab [data-icon="#"]:last-child,
 body:not(.one-tab) [data-icon="#"]:not(:last-child),
-article + #playlist-hints,
 #find-window-results div[data-icon],
 .playlists-tabs-li:not(.active) .playlist-edit,
 .playlists-tabs-li:not(.active) .playlist-remove,
@@ -267,7 +266,9 @@ article + #playlist-hints,
 .window:not(#save-preferences-window) #save-preferences-window-title,
 .window:not(#save-preferences-window) #save-preferences-window-buttons,
 .window:not(#load-preferences-window) #load-preferences-window-title,
-.window:not(#load-preferences-window) #load-preferences-window-buttons
+.window:not(#load-preferences-window) #load-preferences-window-buttons,
+#playlists:empty,
+#playlists:not(:empty) + #playlist-hints
 {
 	display : none;
 }

@@ -1506,7 +1506,7 @@ let n = {
 		playlist.className    = 'playlist scroll-y';
 		playlist.setAttribute( 'onscroll', 'n.saveActivePlaylistIdDelayed()' );
 
-		document.getElementById( 'playlist-hints' ).insertAdjacentElement( 'beforebegin', playlist );
+		document.getElementById( 'playlists' ).appendChild( playlist );
 
 		// Save the playlist if needed
 		if ( save )
@@ -1572,8 +1572,7 @@ let n = {
 		// screen
 		if ( toActivate.id === 'add-playlist' )
 		{
-			n.pref.activePlaylistId                            = null;
-			document.getElementById( 'playlist-hints' ).hidden = false;
+			n.pref.activePlaylistId = null;
 		}
 		else
 		{
