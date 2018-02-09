@@ -1905,36 +1905,18 @@ let n = {
 	getKeys( e )
 	{
 		// Contains keyCode items
-		let keyProperty = [];
+		let keyProperty    = [];
 		// Contains human readable key names
-		let keys        = [];
-		const keyCode   = e.keyCode;
+		let keys           = [];
+		const keyCode      = e.keyCode;
+		const special      = { 16: e.shiftKey, 17: e.ctrlKey, 18: e.altKey, 91: e.metaKey };
+		const specialCodes = Object.keys( special );
 
-		if ( e.altKey )
-		{
-			keys.push( keyCodes[ 18 ] );
-			keyProperty.push( 18 );
-		}
-		if ( e.ctrlKey )
-		{
-			keys.push( keyCodes[ 17 ] );
-			keyProperty.push( 17 );
-		}
-		if ( e.shiftKey )
-		{
-			keys.push( keyCodes[ 16 ] );
-			keyProperty.push( 16 );
-		}
-		if ( e.metaKey )
-		{
-			keys.push( keyCodes[ 91 ] );
-			keyProperty.push( 91 );
-		}
-		if ( [ 16, 17, 18, 91 ].includes( keyCode ) )
-		{
-			keys.push( keyCodes[ keyCode ] );
-			keyProperty.push( keyCode );
-		}
+		// Add every special key pressed
+		specialCodes.forEach( code => special[ code ] && keys.push( keyCodes[ code ] ) && keyProperty.push( code ) );
+
+		// Add non-special key
+		!specialCodes.includes( keyCode ) && keys.push( keyCodes[ keyCode ] ) && keyProperty.push( keyCode );
 
 		return { keys, keyProperty };
 	},
