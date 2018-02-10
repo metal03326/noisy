@@ -1660,7 +1660,7 @@ let n = {
 		const elementToCreate = 'section';
 		const tabIndexString  = 'tabindex';
 		const cloudString     = 'dropbox';
-		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
+		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title flex-ellipsis"></div>';
 		const dblClickEvent   = 'dblclick';
 		const mouseDownEvent  = 'mousedown';
 

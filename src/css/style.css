@@ -929,7 +929,6 @@ h6
 #footer-text
 {
 	margin-left : 2px;
-	height      : 100%;
 	padding     : 0 5px;
 }
 
@@ -1395,6 +1394,16 @@ h6
 .flex-no-shrink
 {
 	flex-shrink : 0;
+}
+
+.flex-ellipsis
+{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+
+	/* This seems to make browsers not to expand the title more that screens width */
+	width: 0;
 }
 
 [hidden]
