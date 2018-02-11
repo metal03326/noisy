@@ -5,6 +5,7 @@ Versionning of This project adheres to [ISO 8601](https://en.wikipedia.org/wiki/
 ## dev:
 - Added support for tag reading of Opus files
 - Improved MP3/OGG/M4A tag reading
+- Fixed and improved last.fm scrobbling
 - Optimized animations
 - Minimized theme sizes
 - Introduced new Welcome window - What's New
