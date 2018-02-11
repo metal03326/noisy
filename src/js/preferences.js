@@ -202,15 +202,6 @@ let pref = {
 		{
 			document.getElementById( 'footer-counter' ).hidden = true;
 		}
-
-		// Un-check Power Saver checkbox if it's not supported by the browser
-		let powerSaver = document.getElementById( 'preference-enable-powersaver' );
-
-		if ( powerSaver.checked )
-		{
-			powerSaver.checked = false;
-			n.changePowerSaverState( false );
-		}
 	},
 
 	set playbackOrder( value )
