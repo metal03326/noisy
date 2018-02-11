@@ -252,9 +252,9 @@
                                 <span id="preference-performance-powersaver"></span>
                                 <i id="preference-powersaver-help" class="help" data-icon="H"></i>
                             </label>
-                            <label>
+                            <label class="form-row">
                                 <span id="preference-performance-powersaver-threshold"></span>
-                                <span class="select">
+                                <span class="select form-control">
                                     <select id="power-saver-state" onchange="n.onPowerSaverStateChange(this);">
                                         <option>5</option>
                                         <option>10</option>
@@ -285,15 +285,21 @@
                                 <span id="preference-performance-scrobbling"></span>
                             </label>
                             <fieldset id="lastfm-preferences">
-                                <label>
-                                    <span id="preference-performance-scrobbling-position"></span>
+                                <label class="form-row">
+                                    <span id="preference-performance-scrobbling-position" class="form-label"></span>
                                     50%
-                                    <input type="range" id="preference-scrobbling-position" min="50" max="100"/>
+                                    <input
+                                            id="preference-scrobbling-position"
+                                            class="form-control"
+                                            type="range"
+                                            min="50"
+                                            max="100"
+                                    />
                                     100%
                                 </label>
-                                <div>
-                                    <span id="preference-performance-scrobbling-queued-tracks"></span>
-                                    <span id="preference-performance-scrobbling-tracks-to-scrobble"></span>
+                                <div class="form-row">
+                                    <span id="preference-performance-scrobbling-queued-tracks" class="form-label"></span>
+                                    <span id="preference-performance-scrobbling-tracks-to-scrobble" class="form-label"></span>
                                     <button class="button-submit scrobble-action"
                                             onclick="n.lastfm.queue.process();"></button>
                                     <button class="button-clear scrobble-action"

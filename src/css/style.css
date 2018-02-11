@@ -1175,19 +1175,19 @@ h6
 #lastfm-preferences
 {
 	border  : 0;
-	margin  : 0;
+	margin  : 5px 0 0 0;
 	padding : 0;
 }
 
 #preference-performance-powersaver-threshold,
 #lastfm-preferences
 {
-	margin-left : 25px;
+	margin-left : 30px;
 }
 
 .scrobble-action
 {
-	margin-left : 2px;
+	margin-left : 4px;
 }
 
 #battery-level-menu-handle
@@ -1410,6 +1410,22 @@ h6
 
 	/* This seems to make browsers not to expand the title more that screens width */
 	width         : 0;
+}
+
+.form-row
+{
+	display     : flex;
+	align-items : center;
+}
+
+.form-control
+{
+	margin: 0 10px;
+}
+
+.form-label
+{
+	margin-right: 3px;
 }
 
 [hidden]
