@@ -534,9 +534,7 @@ class Cloud {
 		// Check with UrlManager if we already have this file pre-loaded and just play it if we have it
 		if ( this.urlManager.get( item.dataset.url ) )
 		{
-			n.lastfm.scrobble();
-
-			let items = item.parentNode.querySelectorAll( '.playlist-item' );
+			let items = item.closest( '.playlist' ).querySelectorAll( '.playlist-item' );
 
 			// Get the index of the focused item and tell the audio element which item is being played, so we can later
 			// get it

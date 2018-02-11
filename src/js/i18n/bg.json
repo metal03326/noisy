@@ -170,7 +170,8 @@
 		"manifest-downloading"      : "Сваляне на ъпдейт...",
 		"manifest-noupdate"         : "Noisy е последна версия",
 		"manifest-checking"         : "Проверка за ъпдейти...",
-		"manifest-cached"           : "Noisy се свали"
+		"manifest-cached"           : "Noisy се свали",
+		"lastfm-queue-overflow"     : "Внимание! last.fm опашката е пълна. Премахване на първия файл от нея: "
 	},
 	"footer"      : {
 		"footer-finished"     : "Добавянето на файлове завърши. Добавени файлове:",

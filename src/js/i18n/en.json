@@ -171,7 +171,8 @@
 		"manifest-downloading"      : "Downloading update...",
 		"manifest-noupdate"         : "Noisy is up to date",
 		"manifest-checking"         : "Checking for updates...",
-		"manifest-cached"           : "Noisy downloaded"
+		"manifest-cached"           : "Noisy downloaded",
+		"lastfm-queue-overflow"     : "Warning! Your last.fm queue is full. Removing first item from it: "
 	},
 	"footer"      : {
 		"footer-finished"     : "Adding files finished. Added items:",

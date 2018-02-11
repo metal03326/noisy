@@ -9,19 +9,28 @@
 let lastfm = new Cloud( {
 	name: 'Last.fm',
 
-	apiKey   : '72e8177b21934e08c11195b8e559c925',
-	apiSecret: 'c11941c36875f14d1dfe392848a43685',
+	get apiKey()
+	{
+		return location.hostname === 'localhost' ? '9d7f26c9783e4e08ee455ec3129830ce' : '72e8177b21934e08c11195b8e559c925';
+	},
+	get apiSecret()
+	{
+		return location.hostname === 'localhost' ? '8f649f54488224c2d056dc40ec3a12d1' : 'c11941c36875f14d1dfe392848a43685';
+	},
 
 	urls: {
 		connect: '//www.last.fm/api/auth/?api_key='
 	},
 
 	queue: {
-		q: {},
+		q: new Map(),
+
+		// last.fm doesn't allow more than 50 songs scrobbled in one request
+		maxSize: 50,
 
 		reset()
 		{
-			this.q = {};
+			this.q.clear();
 			this.save();
 			n.updateScrobbleCounter();
 		},
@@ -49,42 +58,38 @@ let lastfm = new Cloud( {
 
 					if ( position >= neededPosition )
 					{
-						let count = Object.keys( this.q ).length;
-
-						// Last.fm allows a maximum of 50 songs to be scrobbled at one call to track.scrobble, so we
-						// limit the user to maximum of 50 songs in the queue
-						if ( 50 > count )
+						// Remove the first item from queue in order to save the new one
+						if ( this.maxSize <= this.q.size )
 						{
-							let { artist, title } = item.dataset;
-							let timestamp         = n.audio.dataset.start;
+							const [ key, value ] = this.q.entries().next().value;
 
-							if ( artist && title && timestamp )
+							n.warn( 'lastfm-queue-overflow', n.formatString( document.getElementById( 'preference-playlist-format' ).value, {
+								dataset: {
+									artist: value.artist,
+									title : value.track
+								}
+							} ) );
+
+							this.q.delete( key );
+						}
+
+						let { artist, title } = item.dataset;
+						let timestamp         = n.audio.dataset.start;
+
+						if ( artist && title && timestamp )
+						{
+							// Add the item if unique
+							if ( !this.q.has( timestamp ) )
 							{
-								// Check if we already have an item to scrobble for this timestamp
-								let exists = false;
+								this.q.set( timestamp, {
+									artist,
+									track: title,
+									timestamp
+								} );
 
-								for ( let q in this.q )
-								{
-									if ( this.q.hasOwnProperty( q ) && this.q[ q ].timestamp === timestamp )
-									{
-										exists = true;
-										break;
-									}
-								}
-
-								// Add the item if unique
-								if ( !exists )
-								{
-									this.q[ count ] = {
-										artist,
-										track: title,
-										timestamp
-									};
-
-									this.save();
-									n.updateScrobbleCounter();
-									this.process();
-								}
+								this.save();
+								n.updateScrobbleCounter();
+								this.process();
 							}
 						}
 					}
@@ -96,7 +101,7 @@ let lastfm = new Cloud( {
 		{
 			if ( lastfm.isAuthenticated )
 			{
-				let keys         = Object.keys( this.q );
+				let keys         = [ ...this.q.keys() ];
 				let artists      = '';
 				let artistsEq    = '';
 				let method       = 'track.scrobble';
@@ -108,30 +113,39 @@ let lastfm = new Cloud( {
 				// Proceed only if we have at least one item to scrobble
 				if ( keys.length )
 				{
-					keys.sort();
-
-					keys.forEach( ( key, i ) =>
+					// last.fm wants params ordered alphabetically, which means [1] will be after [10], thus we need to
+					// sort them like so without losing the original key, as it's the only connection to the data in
+					// the Map. This is why we create a new key, which is string (easily sortable), starting with
+					// [number] and having the original key after "-" separator.
+					keys.map( ( key, i ) => `[${i}]-${key}` ).sort().forEach( pair =>
 					{
-						let q = this.q[ i ];
+						// Split the pair into its components
+						pair = pair.split( '-' );
 
-						artists += `artist[${i}]${q.artist}`;
-						artistsEq += `&artist[${i}]=${encodeURIComponent( q.artist )}`;
-						timestamps += `timestamp[${i}]${q.timestamp}`;
-						timestampsEq += `&timestamp[${i}]=${q.timestamp}`;
-						tracks += `track[${i}]${q.track}`;
-						tracksEq += `&track[${i}]=${encodeURIComponent( q.track )}`;
+						// Fist part in the pair is the sorted [number]
+						const i = pair[ 0 ];
+
+						// Second part of of the pair is the key in the Map
+						const q = this.q.get( pair[ 1 ] );
+
+						artists += `artist${i}${q.artist}`;
+						artistsEq += `&artist${i}=${encodeURIComponent( q.artist )}`;
+						timestamps += `timestamp${i}${q.timestamp}`;
+						timestampsEq += `&timestamp${i}=${q.timestamp}`;
+						tracks += `track${i}${q.track}`;
+						tracksEq += `&track${i}=${encodeURIComponent( q.track )}`;
 					} );
 
 					let params = `api_key=${lastfm.apiKey}&api_sig=${hex_md5( `api_key${lastfm.apiKey}${artists}method${method}sk${lastfm.accessToken}${timestamps}${tracks}${lastfm.apiSecret}` )}${artistsEq}&format=json&method=${method}&sk=${lastfm.accessToken}${timestampsEq}${tracksEq}`;
 
-					lastfm.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST', params ).then( _ => lastfm.queue.reset.bind( lastfm ) );
+					lastfm.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST' ).then( lastfm.queue.reset.bind( lastfm.queue ) );
 				}
 			}
 		},
 
 		save()
 		{
-			localStorage.setItem( 'lastfm-queue', JSON.stringify( this.q ) );
+			localStorage.setItem( 'lastfm-queue', JSON.stringify( [ ...this.q ] ) );
 		},
 
 		load()
@@ -140,7 +154,7 @@ let lastfm = new Cloud( {
 
 			if ( loaded )
 			{
-				this.q = JSON.parse( loaded );
+				this.q = new Map( JSON.parse( loaded ) );
 			}
 		}
 	},
@@ -151,7 +165,7 @@ let lastfm = new Cloud( {
 	 */
 	getAccessToken( token )
 	{
-		return this.fetch( `//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=${token}&api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}methodauth.getSessiontoken${token}c11941c36875f14d1dfe392848a43685` )}` );
+		return this.fetch( `//ws.audioscrobbler.com/2.0/?method=auth.getSession&format=json&token=${token}&api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}methodauth.getSessiontoken${token}${this.apiSecret}` )}` );
 	},
 
 	/**
@@ -161,7 +175,7 @@ let lastfm = new Cloud( {
 	//TODO: Find a way to verify token.
 	checkToken()
 	{
-		this.fetch( `//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=${this.userName}&api_key=72e8177b21934e08c11195b8e559c925` ).then( response =>
+		return this.fetch( `//ws.audioscrobbler.com/2.0/?method=user.getinfo&format=json&user=${this.userName}&api_key=${this.apiKey}` ).then( response =>
 		{
 			let username = response.user.name;
 
@@ -191,7 +205,7 @@ let lastfm = new Cloud( {
 			{
 				let params = `api_key=${this.apiKey}&api_sig=${hex_md5( `api_key${this.apiKey}artist${artist}method${method}sk${this.accessToken}track${title}${this.apiSecret}` )}&artist=${artist}&format=json&method=${method}&sk=${this.accessToken}&track=${title}`;
 
-				this.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST', '' );
+				this.fetch( `//ws.audioscrobbler.com/2.0/?${params}`, 'POST' );
 			}
 		}
 	},

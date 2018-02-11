@@ -1273,7 +1273,13 @@ let n = {
 
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = as;
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` ).removeAttribute( 'title' );
+					const icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` );
+
+					// last.fm doesn't have icon in Add window
+					if ( icon )
+					{
+						icon.removeAttribute( 'title' );
+					}
 				} ).catch( _ =>
 				{
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = n.lang.console.no;
@@ -1285,7 +1291,13 @@ let n = {
 						accessToken: null
 					};
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` ).title = n.lang.other[ 'not-connected' ];
+					const icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` );
+
+					// last.fm doesn't have icon in Add window
+					if ( icon )
+					{
+						icon.title = n.lang.other[ 'not-connected' ];
+					}
 				} );
 			}
 			else
@@ -4511,7 +4523,7 @@ let n = {
 	 */
 	updateScrobbleCounter()
 	{
-		document.getElementById( 'preference-performance-scrobbling-tracks-to-scrobble' ).innerText = `${Object.keys( n.lastfm.queue.q ).length}/50`;
+		document.getElementById( 'preference-performance-scrobbling-tracks-to-scrobble' ).innerText = `${n.lastfm.queue.q.size}/${n.lastfm.queue.maxSize}`;
 	},
 
 	/**
