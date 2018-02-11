@@ -1226,14 +1226,7 @@ let n = {
 	 */
 	changeScrobblingState( enabled )
 	{
-		document.getElementById( 'preference-scrobbling-position' ).disabled = !enabled;
-
-		let buttons = document.getElementById( 'preference-performance' ).querySelectorAll( '.scrobble-action' );
-
-		for ( let i = 0; i < buttons.length; i++ )
-		{
-			buttons[ i ].disabled = !enabled;
-		}
+		document.getElementById( 'lastfm-preferences' ).disabled = !enabled;
 	},
 
 	/**

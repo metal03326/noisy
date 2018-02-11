@@ -252,9 +252,9 @@
                                 <span id="preference-performance-powersaver"></span>
                                 <i id="preference-powersaver-help" class="help" data-icon="H"></i>
                             </label>
-                            <div>
+                            <label>
                                 <span id="preference-performance-powersaver-threshold"></span>
-                                <label class="select">
+                                <span class="select">
                                     <select id="power-saver-state" onchange="n.onPowerSaverStateChange(this);">
                                         <option>5</option>
                                         <option>10</option>
@@ -264,9 +264,9 @@
                                         <option>75</option>
                                         <option>100</option>
                                     </select>
-                                </label>
+                                </span>
                                 %
-                            </div>
+                            </label>
                             <div id="preference-performance-notes"></div>
                             <label>
                                 <input id="preference-enable-animations" type="checkbox"/>
@@ -284,20 +284,22 @@
                                 <input id="preference-enable-scrobbling" type="checkbox"/>
                                 <span id="preference-performance-scrobbling"></span>
                             </label>
-                            <div>
-                                <span id="preference-performance-scrobbling-position"></span>
-                                50%
-                                <input type="range" id="preference-scrobbling-position" min="50" max="100"/>
-                                100%
-                            </div>
-                            <div>
-                                <span id="preference-performance-scrobbling-queued-tracks"></span>
-                                <span id="preference-performance-scrobbling-tracks-to-scrobble"></span>
-                                <button class="button-submit scrobble-action"
-                                        onclick="n.lastfm.queue.process();"></button>
-                                <button class="button-clear scrobble-action"
-                                        onclick="n.lastfm.queue.reset();"></button>
-                            </div>
+                            <fieldset id="lastfm-preferences">
+                                <label>
+                                    <span id="preference-performance-scrobbling-position"></span>
+                                    50%
+                                    <input type="range" id="preference-scrobbling-position" min="50" max="100"/>
+                                    100%
+                                </label>
+                                <div>
+                                    <span id="preference-performance-scrobbling-queued-tracks"></span>
+                                    <span id="preference-performance-scrobbling-tracks-to-scrobble"></span>
+                                    <button class="button-submit scrobble-action"
+                                            onclick="n.lastfm.queue.process();"></button>
+                                    <button class="button-clear scrobble-action"
+                                            onclick="n.lastfm.queue.reset();"></button>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
                 </div>

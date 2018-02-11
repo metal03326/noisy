@@ -1172,9 +1172,15 @@ h6
 	opacity    : 0;
 }
 
-#preference-performance-scrobbling-position,
-#preference-performance-scrobbling-queued-tracks,
-#preference-performance-powersaver-threshold
+#lastfm-preferences
+{
+	border  : 0;
+	margin  : 0;
+	padding : 0;
+}
+
+#preference-performance-powersaver-threshold,
+#lastfm-preferences
 {
 	margin-left : 25px;
 }
@@ -1398,12 +1404,12 @@ h6
 
 .flex-ellipsis
 {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	overflow      : hidden;
+	text-overflow : ellipsis;
+	white-space   : nowrap;
 
 	/* This seems to make browsers not to expand the title more that screens width */
-	width: 0;
+	width         : 0;
 }
 
 [hidden]
