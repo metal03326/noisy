@@ -1379,6 +1379,12 @@ let n = {
 					accessToken
 				};
 
+				//todo: This code is specific to last.fm, while this else-if could be used by other clouds with same
+				// URL structure. For not that is not the case and it's unknown if it ever will be, but it's a good
+				// practice to move this code out of here, to a better place.
+				// Automatically enable last.fm scrobbling when user authenticates.
+				n.changeScrobblingState( true );
+
 				return true;
 			}
 
