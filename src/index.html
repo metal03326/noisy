@@ -35,7 +35,12 @@
     <meta name="msapplication-TileColor" content="#2b5797"/>
     <meta name="msapplication-TileImage" content="./img/mstile-144x144.png"/>
     <style id="theme"></style>
-    <style id="animations"></style>
+    <script>
+		window.spinKeyframes = '@keyframes spin{0{transform:rotate(0)}100%{transform:rotate(360deg)}}';
+
+		// Spinning animation is always on before the app loads because we need the initial loading spinner to work
+		document.write( `<style id="animations">${spinKeyframes}</style>` );
+    </script>
     <style id="blur"></style>
 </head>
 <body class="flex-column">
@@ -206,43 +211,43 @@
                         <div id="preference-keyboard" hidden>
                             <table id="keyboard-shortcuts">
                                 <thead>
-                                    <tr>
-                                        <th id="preference-keyboard-shortcut"></th>
-                                        <th id="preference-keyboard-action"></th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th id="preference-keyboard-shortcut"></th>
+                                    <th id="preference-keyboard-action"></th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>
-                                            <input id="keyboard-shortcut" type="text" data-keys="" required
-                                                   class="required-item"/>
-                                            <div class="exists-text"></div>
-                                        </td>
-                                        <td>
-                                            <label class="select">
-                                                <select id="actions">
-                                                    <option value="play"></option>
-                                                    <option value="pause"></option>
-                                                    <option value="stop"></option>
-                                                    <option value="playPause"></option>
-                                                    <option value="next"></option>
-                                                    <option value="nextRandom"></option>
-                                                    <option value="prev"></option>
-                                                    <option value="showSearch"></option>
-                                                    <option value="addToQueue"></option>
-                                                    <option value="removeFromQueue"></option>
-                                                    <option value="volumeUp"></option>
-                                                    <option value="volumeDown"></option>
-                                                    <option value="toggleMute"></option>
-                                                    <option value="removeFromPlaylist"></option>
-                                                </select>
-                                            </label>
-                                        </td>
-                                        <td>
-                                            <button id="shortcut-add" class="button-add"></button>
-                                        </td>
-                                    </tr>
+                                <tr>
+                                    <td>
+                                        <input id="keyboard-shortcut" type="text" data-keys="" required
+                                               class="required-item"/>
+                                        <div class="exists-text"></div>
+                                    </td>
+                                    <td>
+                                        <label class="select">
+                                            <select id="actions">
+                                                <option value="play"></option>
+                                                <option value="pause"></option>
+                                                <option value="stop"></option>
+                                                <option value="playPause"></option>
+                                                <option value="next"></option>
+                                                <option value="nextRandom"></option>
+                                                <option value="prev"></option>
+                                                <option value="showSearch"></option>
+                                                <option value="addToQueue"></option>
+                                                <option value="removeFromQueue"></option>
+                                                <option value="volumeUp"></option>
+                                                <option value="volumeDown"></option>
+                                                <option value="toggleMute"></option>
+                                                <option value="removeFromPlaylist"></option>
+                                            </select>
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <button id="shortcut-add" class="button-add"></button>
+                                    </td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -298,8 +303,10 @@
                                     100%
                                 </label>
                                 <div class="form-row">
-                                    <span id="preference-performance-scrobbling-queued-tracks" class="form-label"></span>
-                                    <span id="preference-performance-scrobbling-tracks-to-scrobble" class="form-label"></span>
+                                    <span id="preference-performance-scrobbling-queued-tracks"
+                                          class="form-label"></span>
+                                    <span id="preference-performance-scrobbling-tracks-to-scrobble"
+                                          class="form-label"></span>
                                     <button class="button-submit scrobble-action"
                                             onclick="n.lastfm.queue.process();"></button>
                                     <button class="button-clear scrobble-action"

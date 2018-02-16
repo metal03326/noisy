@@ -2222,9 +2222,7 @@ let n = {
 				'#header,#playlists-wrapper,#footer,#add-window-files'                                            : 'filter'
 			};
 
-			rules = [
-				'@keyframes spin{ 0% { transform : rotate(0deg);}100% { transform : rotate(360deg);}}'
-			];
+			rules = [ spinKeyframes ];
 
 			Object.keys( transitions ).forEach( selector =>
 			{
