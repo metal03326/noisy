@@ -685,7 +685,8 @@ class Cloud {
 	 */
 	get isAuthenticated()
 	{
-		return !!this.accessToken;
+		// Since Promise is truthy value, but we are not yet authenticated (last.fm), we need to return false
+		return !!this.accessToken && this.accessToken.constructor !== Promise;
 	}
 
 	/**

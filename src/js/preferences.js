@@ -52,15 +52,9 @@ let pref = {
 		activePlaylistId             : null,
 		muted                        : false,
 		playbackOrder                : 0,
-		dropbox                      : {
-			accessToken: null
-		},
-		googledrive                  : {
-			accessToken: null
-		},
-		lastfm                       : {
-			accessToken: null
-		}
+		dropbox                      : { accessToken: null },
+		googledrive                  : { accessToken: null },
+		lastfm                       : { accessToken: null }
 	},
 
 	save()
@@ -316,7 +310,9 @@ let pref = {
 
 	set accessToken( object )
 	{
-		let shouldSave = this.settings[ object.cloud ].accessToken !== object.accessToken;
+		// Some clouds, like last.fm, have to fetch accessToken with an additional call. This is why we have
+		// accessToken as Promise - once it resolves, we'll get the real token.
+		let shouldSave = this.settings[ object.cloud ].accessToken !== object.accessToken && object.accessToken.constructor !== Promise;
 
 		this.settings[ object.cloud ].accessToken = object.accessToken;
 

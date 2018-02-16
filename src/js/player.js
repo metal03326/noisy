@@ -1239,19 +1239,20 @@ let n = {
 	},
 
 	/**
-	 * Check if the user is connected to a cloud service
+	 * Check for token in the URL and if the user is connected to a cloud service
 	 */
 	checkConnections()
 	{
-		let toCheck = [
+		const toCheck = [
 			'dropbox',
 			'googledrive',
 			'lastfm'
 		];
 
-		toCheck.forEach( cloudName =>
+		const _checkConnection = ( cloudName, resolve ) =>
 		{
 			const cloud = n[ cloudName ];
+
 			if ( cloud.isAuthenticated )
 			{
 				// Some tokens expire so we need to check if they are still valid, as isAuthenticated shows only if we
@@ -1273,6 +1274,8 @@ let n = {
 					{
 						icon.removeAttribute( 'title' );
 					}
+
+					resolve();
 				} ).catch( _ =>
 				{
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = n.lang.console.no;
@@ -1291,7 +1294,14 @@ let n = {
 					{
 						icon.title = n.lang.other[ 'not-connected' ];
 					}
+
+					resolve();
 				} );
+			}
+			// If isAuthenticated is false, we could be dealing with a Promise and we need to wait for it to finish.
+			else if ( cloud.accessToken && cloud.accessToken.constructor === Promise )
+			{
+				cloud.accessToken.then( _ => _checkConnection( cloudName, resolve ) ).catch( _ => _checkConnection( cloudName, resolve ) );
 			}
 			else
 			{
@@ -1313,8 +1323,72 @@ let n = {
 				}
 
 				document.getElementById( `connected-${cloudName}` ).innerHTML = n.lang.console.no;
+
+				resolve();
 			}
+		};
+
+		const { hash, search } = location;
+		let split              = [];
+
+		if ( hash && '#' !== hash )
+		{
+			split = hash.split( '#' ).pop().split( '&' );
+		}
+		else if ( search && '?' !== search )
+		{
+			split = search.split( '?' ).pop().split( '&' );
+		}
+
+		split.some( part =>
+		{
+			// Dropbox and Google Drive are returning directly the access token
+			if ( part.startsWith( 'access_token=' ) )
+			{
+				let accessToken = part.split( '=' ).pop();
+
+				n[ n.pref.tokenCloud ].accessToken = accessToken;
+
+				n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
+
+				return true;
+			}
+			// Last.fm returns the token as "token" param and requires a special session token to be generated
+			else if ( part.startsWith( 'token=' ) )
+			{
+				const token       = part.split( '=' ).pop();
+				const accessToken = n[ n.pref.tokenCloud ].getAccessToken( token ).then( response =>
+				{
+					n[ n.pref.tokenCloud ].userName    = response.session.name;
+					n[ n.pref.tokenCloud ].accessToken = response.session.key;
+
+					n.pref.userName    = {
+						cloud   : n.pref.tokenCloud,
+						userName: response.session.name
+					};
+					n.pref.accessToken = {
+						cloud      : n.pref.tokenCloud,
+						accessToken: response.session.key
+					};
+				} ).catch( _ => n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name ) );
+
+				n[ n.pref.tokenCloud ].accessToken = accessToken;
+
+				n.pref.accessToken = {
+					cloud: n.pref.tokenCloud,
+					accessToken
+				};
+
+				return true;
+			}
+
+			return false;
 		} );
+
+		// Make sure our URL is clean
+		history.replaceState( {}, '', '/' );
+
+		return new Promise( resolve => Promise.all( toCheck.map( cloudName => new Promise( resolve => _checkConnection( cloudName, resolve ) ) ) ).then( resolve ) );
 	},
 
 	/**
@@ -1953,7 +2027,7 @@ let n = {
 		return Promise.all( [
 			n.translate(),
 			n.applyTheme()
-		] ).then( _ =>
+		] ).then( n.checkConnections ).then( _ =>
 		{
 			n.initBatteryWatcher().then( _ => n.applyPowerSaveMode() );
 
@@ -1964,84 +2038,10 @@ let n = {
 
 			n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
 
-			const hash              = location.hash;
-			const search            = location.search;
-			let split               = [];
-			const accessTokenString = 'access_token=';
-			const codeString        = 'code=';
-			const tokenString       = 'token=';
-			const equalString       = '=';
-			const clickEvent        = 'click';
-			const mouseDownEvent    = 'mousedown';
-			const keyDownEvent      = 'keydown';
-			const dblClickEvent     = 'dblclick';
-
-			if ( hash && '#' !== hash )
-			{
-				split = hash.split( '#' ).pop().split( '&' );
-			}
-			else if ( search && '?' !== search )
-			{
-				split = search.split( '?' ).pop().split( '&' );
-			}
-
-			for ( let i = 0; i < split.length; i++ )
-			{
-				let part = split[ i ];
-
-				// Dropbox and Google Drive are returning directly the access token
-				if ( part.startsWith( accessTokenString ) )
-				{
-					let accessToken = part.split( equalString ).pop();
-
-					n[ n.pref.tokenCloud ].accessToken = accessToken;
-
-					n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
-
-					break;
-				}
-				// Last.fm returns the token as "token" param and requires a special session token to be generated
-				else if ( part.startsWith( tokenString ) )
-				{
-					let token = part.split( equalString ).pop();
-
-					n[ n.pref.tokenCloud ].getAccessToken( token ).then( response =>
-					{
-						n[ n.pref.tokenCloud ].userName    = response.session.name;
-						n[ n.pref.tokenCloud ].accessToken = response.session.key;
-
-						n.pref.userName    = {
-							cloud   : n.pref.tokenCloud,
-							userName: response.session.name
-						};
-						n.pref.accessToken = {
-							cloud      : n.pref.tokenCloud,
-							accessToken: response.session.key
-						};
-					} ).catch( _ => n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name ) );
-
-					break;
-				}
-				// Box is returning code with which we should request the access token
-				else if ( part.startsWith( codeString ) )
-				{
-					n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
-
-					break;
-				}
-			}
-
-			// Make sure our URL is clean
-			let pathname = '/';
-
-			history.pushState( { clear: 'hash' }, 'without refresh', pathname );
-			history.pushState( { clear: 'search' }, 'without refresh', pathname );
-
-			// Check to which cloud services the user is connected to
-			//if( 'localhost' != location.host && '127.0.0.1' != location.host )
-			{
-				n.checkConnections();
-			}
+			const clickEvent     = 'click';
+			const mouseDownEvent = 'mousedown';
+			const keyDownEvent   = 'keydown';
+			const dblClickEvent  = 'dblclick';
 
 			// Load all available playlists
 			n.loadAndRenderPlaylists();
