@@ -13,7 +13,7 @@
     <meta property="og:image" content="https://www.noisyplayer.com/open_praph.png">
     <script type="text/javascript">
 		var timerStart = Date.now();
-		var version    = 20180101;
+		var version    = 20180218;
 
 		document.write( '<link rel="stylesheet" href="css/style.css?ver=' + version + '"/>' );
     </script>
@@ -625,7 +625,7 @@
 		'js/preferences.js',
 		'js/player.js',
 		'js/main.js'
-	].forEach( script => document.write( '<scr' + 'ipt type="text/javascript" src="' + script + '?ver=' + version + '"></scr' + 'ipt>' ) );
+	].forEach( script => document.write( '<script src="' + script + '?ver=' + version + '"><\/script>' ) );
 </script>
 </body>
 </html>

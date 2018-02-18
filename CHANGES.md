@@ -2,7 +2,7 @@
 All notable changes to this project will be documented in this file.
 Versionning of This project adheres to [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) with omitted hyphens (YYYYMMDD).
 
-## dev:
+## 20180218:
 - Added support for tag reading of Opus files
 - Improved MP3/OGG/M4A tag reading
 - Fixed and improved last.fm scrobbling
