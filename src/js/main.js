@@ -10,14 +10,14 @@
 /**
  * Time formatting needed for the duration of the items in the playlists.
  */
-String.prototype.toHHMMSS = function()
+String.prototype.toHHMMSS = function ()
 {
 	let time    = parseInt( this, 10 ),
 	    hours   = `0${Math.floor( time / 3600 )}`.substr( -2 ),
-	    minutes = `0${Math.floor( ( time - ( hours * 3600 ) ) / 60 )}`.substr( -2 ),
+	    minutes = `0${Math.floor( (time - (hours * 3600)) / 60 )}`.substr( -2 ),
 	    arr     = [
 		    minutes,
-		    `0${time - ( hours * 3600 ) - ( minutes * 60 )}`.substr( -2 )
+		    `0${time - (hours * 3600) - (minutes * 60)}`.substr( -2 )
 	    ];
 
 	// Add the hours into the array if we have them
@@ -137,99 +137,85 @@ let keyCodes = {
 
 /**
  * Scroll item into the user's viewport if not already there.
- * @param {HTMLElement} el Required. Element which we need to scroll into view.
+ * @param {HTMLElement} el Element which we need to scroll into view.
  */
-//TODO: This function is not working as expected. Fix.
 function scrollIntoViewIfOutOfView( el )
 {
-	let topOfPage    = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-	let heightOfPage = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-	let elY          = 0;
+	// We always assume current element is direct child of the scroll container to which is visible calculations will
+	// be done.
+	const parent     = el.parentNode;
+	const elRect     = el.getBoundingClientRect();
+	const parentRect = parent.getBoundingClientRect();
 
-	for ( let p = el; p && p.tagName !== 'BODY'; p = p.offsetParent )
+	// This condition both shows if our element sticks out ot the top of the parent and if we need to align to top when
+	// scrolling
+	const alignToTop = elRect.top < parentRect.top;
+
+	if ( alignToTop || elRect.bottom > parentRect.bottom )
 	{
-		elY += p.offsetTop;
-	}
-	if ( ( topOfPage + heightOfPage ) < ( elY + el.offsetHeight ) )
-	{
-		el.scrollIntoView( false );
-	}
-	else if ( elY < topOfPage )
-	{
-		el.scrollIntoView( true );
+		el.scrollIntoView( alignToTop );
 	}
 }
 
 /**
- * Onload event handler.
+ * Onload event handler. Initialize Noisy.
  */
-window.onload = _ =>
+window.onload = _ => n.init().then( _ =>
 {
-	// Initialize Noisy
-	n.init().then( _ =>
-	{
-		// Remove the splash screen
-		let splash = document.getElementById( 'splash' );
+	// Remove the splash screen
+	let splash = document.getElementById( 'splash' );
 
-		// Timeouts are needed because we want to hide initial animations of the player
-		setTimeout( () =>
-		{
-			splash.classList.add( 'visibility-hidden' );
-
-			setTimeout( () =>
-			{
-				splash.parentNode.removeChild( splash );
-			}, 300 );
-		}, 300 );
-	} ).catch( _ =>
+	// Timeouts are needed because we want to hide initial animations of the player
+	setTimeout( _ =>
 	{
-		document.querySelector( '#splash [hidden]' ).hidden = false;
-	} );
-};
+		splash.classList.add( 'visibility-hidden' );
+
+		setTimeout( _ => splash.remove(), 300 );
+	}, 300 );
+} ).catch( _ => document.querySelector( '#splash [hidden]' ).hidden = false );
 
 /**
  * Asyncronious loop.
  * @param {Number} iterations Required. How many iterations this loop will have.
- * @param {Function} fn Reguired. Function containing loop's body. Called each iteration.
- * @param {Function} callback Reguired. Function called when all iterations of the loop have finished.
+ * @param {Function} fn Function containing loop's body. Called each iteration.
  * @returns {Object} The loop object.
  */
-function asyncLoop( iterations, fn, callback )
+function asyncLoop( iterations, fn )
 {
-	let idx  = -1;
-	let done = false;
-	let loop = {
-		get index()
-		{
-			return idx;
-		},
-		break()
-		{
-			idx = iterations;
-			loop.next();
-		},
-		next()
-		{
-			if ( done )
+	return new Promise( resolve =>
+	{
+		let idx  = -1;
+		let done = false;
+		let loop = {
+			get index()
 			{
-				return;
-			}
-
-			if ( idx < iterations )
+				return idx;
+			},
+			break()
 			{
-				idx++;
-				fn( loop );
-
-			}
-			else
+				idx = iterations;
+				loop.next();
+			},
+			next()
 			{
-				done = true;
-				callback();
+				if ( done )
+				{
+					return;
+				}
+
+				if ( idx < iterations )
+				{
+					idx++;
+					fn( loop );
+				}
+				else
+				{
+					done = true;
+					resolve();
+				}
 			}
-		}
-	};
+		};
 
-	loop.next();
-
-	return loop;
+		loop.next();
+	} );
 }

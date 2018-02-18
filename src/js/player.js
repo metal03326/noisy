@@ -6,27 +6,6 @@
  */
 
 'use strict';
-/* HIGH PRIORITY */
-//TODO: Check Teddy for a problem with now playing of Five Finger Death Punch - Wrong Side of Heaven. It says invalid
-// signiture supplied
-//TODO: Implement Drag and Drop Directories under Chrome
-
-/* NORMAL PRIORITY */
-//TODO: Make a page with things to be dropped and when (approximately)
-//TODO: Fix double tag read under Firefox
-//TODO: Go around the code and find usages for n.log/warn/error.
-//TODO: Implement WAI-ARIA.
-//TODO: Add WebVTT - Web Video Text Tracks to the intro video
-//TODO: Introduce n.pref.batch() to make changes to n.pref.settings object at once before saving. This should save a
-// few CPU cycles when two or more things needs to be saved; TODO: Add localStorage compression alogorithm (disabled by
-// default, since we save playlists too often)
-//todo: Get current browser/os language and try using it as a language of Noisy - just the way it was before the rework.
-
-/* LOW PRIORITY */
-//TODO: Finish tests.
-
-/* After everything else */
-//TODO: Add easter egg somewhere on the about page.
 
 // Noisy singleton
 let n = {
@@ -129,8 +108,6 @@ let n = {
 	movingItem: null,
 
 	// Height of the grabbed playlist item. All items should be with the same size
-	//TODO: Items with very long names may brake into a couple of lines, which will break this. Fix that all lines are
-	//actually on one line and use ellipsis for long lines
 	//TODO: Remove this property by introducing CSS Custom Properties and reading the height of the row from it
 	movingItemHeight: -1,
 
@@ -430,13 +407,6 @@ let n = {
 		// Translate FAQ window
 		document.getElementById( 'faq-content' ).innerHTML = Object.keys( faq ).map( question => `<details><summary>${question}</summary><p>${faq[ question ]}</p></details>` ).join( '' );
 
-		// Add not supported text to all options which are not supported by the current browser
-		let notSupported = document.querySelectorAll( '.not-supported' );
-		for ( let i = 0; i < notSupported.length; i++ )
-		{
-			notSupported[ i ].innerHTML += n.lang.other[ 'not-supported' ];
-		}
-
 		let notConnecteds = document.getElementById( 'add-window-cloud-chooser' ).querySelectorAll( '[data-cloud]:not([data-cloud*="local"])' );
 		for ( let i = 0; i < notConnecteds.length; i++ )
 		{
@@ -538,18 +508,17 @@ let n = {
 				if ( selected.dataset.folder === 'true' )
 				{
 					// Setup counter of how many files are added. As this is an object, passing it as a param will
-					// actually pass a reference, meaning all modifications to it will be available in the callback
-					// closure
+					// actually pass a reference, meaning all modifications to it will be available in the Promise then
 					let count = {
 						added: 0
 					};
 
-					// Start the recursive looping through the folder tree and call the callback when the tree has been
-					// walked
-					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId, () =>
+					// Start the recursive looping through the folder tree
+					n.addFolder( selected.dataset.path, selected.dataset.cloud, count, playlistId ).then( _ =>
 					{
 						// Print success message in the status bar containing number of items added
-						//todo: Join footer-finished and the counter into 1 template literal
+						//todo: This doesn't seems to be dynamically translatable - if user switches language it won't
+						// be translated properly
 						n.setFooter( `<span id="footer-finished">${n.lang.footer[ 'footer-finished' ]} ${count.added}</span>` );
 
 						// Save playlist as new items are added
@@ -566,7 +535,7 @@ let n = {
 					loop.next();
 				}
 			}
-		}, () =>
+		} ).then( _ =>
 		{
 			// After everything is finished save the playlist
 			n.savePlaylist( document.getElementById( n.activePlaylistId ) );
@@ -588,19 +557,18 @@ let n = {
 	 * @param {String} cloud Required. Cloud name from which we currently read items
 	 * @param {Object} count Required. Object instance created at the beginning of the file/folder add process
 	 * @param {String} playlistId Required. The id of the playlist to which the files should be added
-	 * @param {Function} [callback] Optional. Function to call after all items in this folder were processed
 	 */
 	//TODO: Check if cloud is Google Drive and print different message to the status bar, as the id of the folder
 	// doesn't bring any valuable information to him
 	//TODO: Maybe make the count object not required
-	addFolder( folder, cloud, count, playlistId, callback = new Function() )
+	addFolder( folder, cloud, count, playlistId )
 	{
 		// Show the new folder to the user
 		//todo: Join adding-files-from and added-items into 1 template literal
 		n.setFooter( `<span id="footer-progress">${n.lang.footer[ 'adding-files-from' ]} ${folder} ${n.lang.footer[ 'added-items' ]} ${count.added}</span>` );
 
 		// Request folder contents
-		n[ cloud ].getFolderContents( folder, ( files, folders ) =>
+		return n[ cloud ].getFolderContents( folder, true ).then( ( { files, folders } ) =>
 		{
 			let toAdd = [];
 
@@ -619,7 +587,7 @@ let n = {
 			if ( folders.length )
 			{
 				// Asyncronius loop as we are waiting for server response
-				asyncLoop( folders.length - 1, loop =>
+				return new Promise( resolve => asyncLoop( folders.length - 1, loop =>
 				{
 					// Stop if flag raised
 					if ( n.cancelAction )
@@ -629,15 +597,12 @@ let n = {
 					// Otherwise call ourselfs again
 					else
 					{
-						n.addFolder( folders[ loop.index ].path, cloud, count, playlistId, loop.next );
+						n.addFolder( folders[ loop.index ].path, cloud, count, playlistId ).then( loop.next );
 					}
-				}, callback );
+				} ).then( resolve ) );
 			}
-			// Call the callback in the end
-			else
-			{
-				callback();
-			}
+
+			return Promise.resolve();
 		} );
 	},
 
@@ -741,7 +706,7 @@ let n = {
 		}
 		else
 		{
-			return fetch( `/js/themes/${theme}.json` ).then( response => response.json() ).then( json =>
+			return fetch( `/js/themes/${theme}.json?ver=${version}` ).then( response => response.json() ).then( json =>
 			{
 				// Style tag string to be appended in the end
 				let styles = Object.keys( json ).map( selector =>
@@ -932,16 +897,15 @@ let n = {
 		}, false );
 
 		// Ask for permissions if the user has checked that he wants notifications
-		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', () =>
-		{
-			n.notify( null, this.checked );
-		} );
+		document.getElementById( 'preference-enable-notifications' ).addEventListener( 'change', e => n.notify( null, e.currentTarget.checked ) );
 
 		// Save on playback order change
-		document.getElementById( 'playback-order' ).addEventListener( 'change', () =>
+		document.getElementById( 'playback-order' ).addEventListener( 'change', e =>
 		{
-			n.audio.loop         = !( 2 - this.selectedIndex );
-			n.pref.playbackOrder = this.selectedIndex;
+			const target = e.currentTarget;
+
+			n.audio.loop         = !(2 - target.selectedIndex);
+			n.pref.playbackOrder = target.selectedIndex;
 		} );
 
 		// Attach event listeners to the tabs
@@ -953,19 +917,17 @@ let n = {
 		const mouseDownEvent = 'mousedown';
 		const keyDownEvent   = 'keydown';
 		const changeEvent    = 'change';
-		const keyUpEvent     = 'keyup';
 
 		for ( let i = 0; i < tabs.length; i++ )
 		{
 			tabs[ i ].addEventListener( clickEvent, n.onTabClick );
 			tabs[ i ].addEventListener( mouseDownEvent, n.onTabDown );
-			tabs[ i ].addEventListener( keyDownEvent, n.onTabKeyDown );
 		}
 
 		// Attach event handlers to the events for changing the checkboxes for playback order in the preferences
 		for ( let i = 0; i < checkboxes.length; i++ )
 		{
-			checkboxes[ i ].addEventListener( changeEvent, n.onCheckboxChange );
+			checkboxes[ i ].addEventListener( changeEvent, n.onCursorCheckboxChange );
 		}
 
 		// Stop bubbling to all input fields as keyboard shortcuts may prevent user from typing in them
@@ -975,19 +937,20 @@ let n = {
 		}
 
 		// Set data-keys property for the input in which the user adds new keyboard shortcuts
-		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, function ( e )
+		document.getElementById( 'keyboard-shortcut' ).addEventListener( keyDownEvent, e =>
 		{
-			let keys = n.getKeys( e );
+			const target = e.currentTarget;
+			const keys   = n.getKeys( e );
 
-			this.value = keys.keys.join( ' + ' );
+			target.value = keys.keys.join( ' + ' );
 
-			this.dataset.keys = keys.keyProperty.join( '+' );
+			target.dataset.keys = keys.keyProperty.join( '+' );
 
 			e.preventDefault();
 		} );
 
 		// Adds new keyboard shortcut to the table
-		document.getElementById( 'shortcut-add' ).addEventListener( 'click', () =>
+		document.getElementById( 'shortcut-add' ).addEventListener( 'click', _ =>
 		{
 			// Continue only if keyboard shortcut entered
 			let input = document.getElementById( 'keyboard-shortcut' );
@@ -1038,10 +1001,7 @@ let n = {
 		// Save preferences when user changes an input inside the preferences window
 		inputs = document.getElementById( 'preferences-container' ).querySelectorAll( 'input:not(#keyboard-shortcut)' );
 
-		let _onChange = event =>
-		{
-			n.pref.input = event.target;
-		};
+		let _onChange = event => n.pref.input = event.currentTarget;
 
 		for ( let i = 0; i < inputs.length; i++ )
 		{
@@ -1057,46 +1017,23 @@ let n = {
 		/* Start: Window state events */
 
 		// Change window state when save playlist name entered
-		document.getElementById( 'save-playlist-window-filename' ).addEventListener( keyUpEvent, e =>
-		{
-			let val = this.value.trim();
-
-			if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
-			{
-				n.applyWindowState( 'save' );
-			}
-			else if ( !val )
-			{
-				n.applyWindowState( 'semi' );
-			}
-		} );
+		document.getElementById( 'save-playlist-window-filename' ).addEventListener( 'input', n.onSaveNameInput );
 
 		// Change window state when save preferences name entered
-		document.getElementById( 'save-preferences-window-filename' ).addEventListener( keyUpEvent, e =>
-		{
-			let val = this.value.trim();
-
-			if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
-			{
-				n.applyWindowState( 'save' );
-			}
-			else if ( !val )
-			{
-				n.applyWindowState( 'semi' );
-			}
-		} );
+		document.getElementById( 'save-preferences-window-filename' ).addEventListener( 'input', n.onSaveNameInput );
 
 		/* End: Window state events */
 
 		// Reset styles of cloud choosing icons in add/save window and select service depending on what the user clicked
-		let _onIconClick = function ()
+		let _onIconClick = e =>
 		{
-			let cloud = n[ this.dataset.cloud ];
+			const cloudName = e.currentTarget.dataset.cloud;
+			const cloud     = n[ cloudName ];
 
 			if ( cloud.isAuthenticated )
 			{
 				document.getElementById( 'loading-folder-contents' ).classList.remove( 'visibility-hidden' );
-				n.selectService( this.dataset.cloud );
+				n.selectService( cloudName );
 			}
 			else
 			{
@@ -1112,122 +1049,77 @@ let n = {
 		// Listen for key presses on playlists to control the selected item/playlist
 		let _onPlaylistDown = e =>
 		{
-			let keyCode = e.keyCode;
-			let tab;
-			let tabs;
-			let toSelect;
-			let keys    = n.getKeys( e );
-			let item    = document.getElementById( 'keyboard-shortcuts' ).querySelector( `tr[data-keys="${keys.keyProperty.join( '+' )}"]` );
+			const keyCode = e.keyCode;
+			const keys    = n.getKeys( e );
+			const item    = document.getElementById( 'keyboard-shortcuts' ).querySelector( `tr[data-keys="${keys.keyProperty.join( '+' )}"]` );
 
 			// Check if we have key combination with Down happening and do nothing if we have
 			if ( !item )
 			{
-				switch ( keyCode )
+				// Left and Right
+				if ( keyCode === 37 || keyCode === 39 )
 				{
-					// Left
-					case 37:
-						// Get selected tab
-						tab = document.querySelector( `div[data-for="${n.activePlaylistId}"]` ) || document.getElementById( 'playlists-tabs' ).querySelector( 'div[data-for]' );
+					let toSelect;
 
-						// If we have one
-						if ( tab )
-						{
-							// Get previous tab
-							toSelect = tab.previousElementSibling;
+					// Get all tabs
+					const tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'div[data-for]' );
 
-							// Get last tab if no previous (we've reached the beginning)
-							if ( !toSelect )
-							{
-								// Don't get exatly the last element, because it's the Add playlist button
-								toSelect = tab.parentNode.lastElementChild.previousElementSibling;
-							}
+					// Get selected tab
+					let tab = document.querySelector( `div[data-for="${n.activePlaylistId}"]` );
 
-							// Select it
-							n.changePlaylist( toSelect );
+					const idx = Array.prototype.indexOf.call( tabs, tab );
 
-							// Focus is needed so next time our keydown is working
-							toSelect.focus();
-						}
+					if ( tab )
+					{
+						// Get previous or next tab
+						toSelect = tabs[ idx + (keyCode === 37 ? -1 : 1) ];
 
-						e.preventDefault();
-						break;
-					// Right
-					case 39:
-						// Get selected tab
-						tab = document.querySelector( `div[data-for="${n.activePlaylistId}"]` );
-
-						// Get last tab if no active tab found
-						if ( !tab )
-						{
-							tabs = document.getElementById( 'playlists-tabs' ).querySelectorAll( 'div[data-for]' );
-							tab  = tabs.item( tabs.length - 1 );
-						}
-
-						// If we have one
-						if ( tab )
-						{
-							// Get next tab
-							toSelect = tab.nextElementSibling;
-
-							// Get first tab if no next (we've reached the end)
-							if ( 'add-playlist' === toSelect.id )
-							{
-								toSelect = tab.parentNode.firstElementChild;
-							}
-
-							// Select it
-							n.changePlaylist( toSelect );
-
-							// Focus is needed so next time our keydown is working
-							toSelect.focus();
-						}
-
-						e.preventDefault();
-						break;
-					// Up
-					case 38:
-						// Get previous playlist item
-						toSelect = n.currentlySelectedItem.previousElementSibling;
-
-						// Get last playlist item if no previous (we've reached the beginning)
+						// Get last/first tab if no previous/next (we've reached the beginning/end)
 						if ( !toSelect )
 						{
-							toSelect = document.getElementById( n.activePlaylistId ).lastElementChild;
+							toSelect = tabs[ keyCode === 37 ? tabs.length - 1 : 0 ];
 						}
+					}
+					// If we have one
+					else
+					{
+						toSelect = tabs[ 0 ];
+					}
 
-						// Deselect items
-						n._deselectItems();
+					// If there are not tabs created, we won't have anything to select
+					if ( toSelect )
+					{
+						// Select it
+						n.changePlaylist( toSelect );
 
-						// Select chosen item
-						n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
+						// Focus is needed so next time our keydown is working
+						document.getElementById( 'playlists-wrapper' ).focus();
+					}
 
-						// Scroll the item into the view
-						toSelect.scrollIntoView();
+					e.preventDefault();
+				}
+				// Up and Down
+				else if ( keyCode === 38 || keyCode === 40 )
+				{
+					// Get previous playlist item
+					let toSelect = n.currentlySelectedItem[ `${keyCode === 38 ? 'previous' : 'next'}ElementSibling` ];
 
-						e.preventDefault();
-						break;
-					// Down
-					case 40:
-						// Get previous playlist item
-						toSelect = n.currentlySelectedItem.nextElementSibling;
+					// Get last playlist item if no previous (we've reached the beginning)
+					if ( !toSelect )
+					{
+						toSelect = document.getElementById( n.activePlaylistId )[ `${keyCode === 38 ? 'last' : 'first'}ElementChild` ];
+					}
 
-						// Get first playlist item if no next (we've reached the end)
-						if ( !toSelect )
-						{
-							toSelect = document.getElementById( n.activePlaylistId ).firstElementChild;
-						}
+					// Deselect items
+					n._deselectItems();
 
-						// Deselect items
-						n._deselectItems();
+					// Select chosen item
+					n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
 
-						// Select chosen item
-						n._selectItems.call( toSelect, {}, n.activePlaylistId, '.playlist-item', 'selected' );
+					// Scroll the item into the view
+					scrollIntoViewIfOutOfView( toSelect );
 
-						// Scroll the item into the view
-						toSelect.scrollIntoView( false );
-
-						e.preventDefault();
-						break;
+					e.preventDefault();
 				}
 			}
 		};
@@ -1235,31 +1127,19 @@ let n = {
 		document.getElementById( 'playlists-wrapper' ).addEventListener( 'keydown', _onPlaylistDown );
 
 		// We need to remember user's choice for showing or not the whats new screen
-		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, function ()
-		{
-			n.pref.showWhatsNew = this.checked;
-		} );
+		document.getElementById( 'show-on-startup-checkbox' ).addEventListener( changeEvent, e => n.pref.showWhatsNew = e.currentTarget.checked );
 
 		// We need to make animation setting work immediately
-		document.getElementById( 'preference-enable-animations' ).addEventListener( changeEvent, this.initAnimations );
+		document.getElementById( 'preference-enable-animations' ).addEventListener( changeEvent, n.initAnimations );
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
-		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, () =>
-		{
-			n.changeScrobblingState( this.checked );
-		} );
+		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, e => n.changeScrobblingState( e.currentTarget.checked ) );
 
 		// We need to enable/diable threshold dropdown depending on the state of the checkbox
-		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, () =>
-		{
-			n.changePowerSaverState( this.checked );
-		} );
+		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, e => n.changePowerSaverState( e.currentTarget.checked ) );
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
-		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, () =>
-		{
-			n.changeCounterState( this.checked );
-		} );
+		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, e => n.changeCounterState( e.currentTarget.checked ) );
 	},
 
 	/**
@@ -1267,24 +1147,15 @@ let n = {
 	 */
 	stopRenames()
 	{
-		// Get all playlist being renamed (shouldn't be more than one, but to be sure we take all of them)
-		let renamings               = document.querySelectorAll( '[contenteditable="true"]' );
-		const contentEditableString = 'contenteditable';
-		const clickEvent            = 'click';
+		const title = document.querySelector( '[contenteditable="true"]' );
 
-		// Iterate all and remove contentaeditable attribute, remove class and event listener for name check
-		for ( let i = 0; i < renamings.length; i++ )
-		{
-			let renaming = renamings[ i ];
-
-			renaming.removeAttribute( contentEditableString );
-			document.body.removeEventListener( clickEvent, n.playlistNameCheck );
-		}
+		title.removeAttribute( 'contenteditable' );
+		title.removeEventListener( 'keydown', n.onRenameKeyDown );
 	},
 
 	changeCounterState( state )
 	{
-		let counter = document.getElementById( 'footer-counter' );
+		const counter = document.getElementById( 'footer-counter' );
 
 		counter.innerHTML = '';
 
@@ -1355,14 +1226,7 @@ let n = {
 	 */
 	changeScrobblingState( enabled )
 	{
-		document.getElementById( 'preference-scrobbling-position' ).disabled = !enabled;
-
-		let buttons = document.getElementById( 'preference-performance' ).querySelectorAll( '.scrobble-action' );
-
-		for ( let i = 0; i < buttons.length; i++ )
-		{
-			buttons[ i ].disabled = !enabled;
-		}
+		document.getElementById( 'lastfm-preferences' ).disabled = !enabled;
 	},
 
 	/**
@@ -1375,25 +1239,27 @@ let n = {
 	},
 
 	/**
-	 * Check if the user is connected to a cloud service
+	 * Check for token in the URL and if the user is connected to a cloud service
 	 */
 	checkConnections()
 	{
-		let toCheck = [
+		const toCheck = [
 			'dropbox',
 			'googledrive',
 			'lastfm'
 		];
 
-		toCheck.forEach( cloud =>
+		const _checkConnection = ( cloudName, resolve ) =>
 		{
-			if ( n[ cloud ].isAuthenticated )
+			const cloud = n[ cloudName ];
+
+			if ( cloud.isAuthenticated )
 			{
 				// Some tokens expire so we need to check if they are still valid, as isAuthenticated shows only if we
 				// have token
 				//TODO: Maybe integrate checkToken method call inside isAuthenticated getter and return
 				// true only if token is good
-				n[ cloud ].checkToken( cloud =>
+				cloud.checkToken().then( _ =>
 				{
 					let as = ` <span class="as">${n.lang.console.as}</span>${cloud.display_name}`;
 
@@ -1401,8 +1267,16 @@ let n = {
 
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = as;
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` ).removeAttribute( 'title' );
-				}, cloud =>
+					const icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` );
+
+					// last.fm doesn't have icon in Add window
+					if ( icon )
+					{
+						icon.removeAttribute( 'title' );
+					}
+
+					resolve();
+				} ).catch( _ =>
 				{
 					document.getElementById( `connected-${cloud.codeName}` ).innerHTML = n.lang.console.no;
 
@@ -1413,13 +1287,26 @@ let n = {
 						accessToken: null
 					};
 
-					document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` ).title = n.lang.other[ 'not-connected' ];
+					const icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud.codeName}"]` );
+
+					// last.fm doesn't have icon in Add window
+					if ( icon )
+					{
+						icon.title = n.lang.other[ 'not-connected' ];
+					}
+
+					resolve();
 				} );
+			}
+			// If isAuthenticated is false, we could be dealing with a Promise and we need to wait for it to finish.
+			else if ( cloud.accessToken && cloud.accessToken.constructor === Promise )
+			{
+				cloud.accessToken.then( _ => _checkConnection( cloudName, resolve ) ).catch( _ => _checkConnection( cloudName, resolve ) );
 			}
 			else
 			{
 				// Visually disable the icon in file chooser for that cloud
-				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloud}"]` );
+				let icon = document.getElementById( 'add-window-cloud-chooser' ).querySelector( `[data-cloud="${cloudName}"]` );
 
 				if ( icon )
 				{
@@ -1427,7 +1314,7 @@ let n = {
 				}
 				// Special case for Last.fm - we don't have an icon to disable, but we do have a checkbox in the
 				// preferences that needs disabling
-				else if ( 'lastfm' === cloud )
+				else if ( 'lastfm' === cloudName )
 				{
 					let checkbox     = document.getElementById( 'preference-enable-scrobbling' );
 					checkbox.checked = false;
@@ -1435,9 +1322,79 @@ let n = {
 					checkbox.disabled = true;
 				}
 
-				document.getElementById( `connected-${cloud}` ).innerHTML = n.lang.console.no;
+				document.getElementById( `connected-${cloudName}` ).innerHTML = n.lang.console.no;
+
+				resolve();
 			}
+		};
+
+		const { hash, search } = location;
+		let split              = [];
+
+		if ( hash && '#' !== hash )
+		{
+			split = hash.split( '#' ).pop().split( '&' );
+		}
+		else if ( search && '?' !== search )
+		{
+			split = search.split( '?' ).pop().split( '&' );
+		}
+
+		split.some( part =>
+		{
+			// Dropbox and Google Drive are returning directly the access token
+			if ( part.startsWith( 'access_token=' ) )
+			{
+				let accessToken = part.split( '=' ).pop();
+
+				n[ n.pref.tokenCloud ].accessToken = accessToken;
+
+				n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
+
+				return true;
+			}
+			// Last.fm returns the token as "token" param and requires a special session token to be generated
+			else if ( part.startsWith( 'token=' ) )
+			{
+				const token       = part.split( '=' ).pop();
+				const accessToken = n[ n.pref.tokenCloud ].getAccessToken( token ).then( response =>
+				{
+					n[ n.pref.tokenCloud ].userName    = response.session.name;
+					n[ n.pref.tokenCloud ].accessToken = response.session.key;
+
+					n.pref.userName    = {
+						cloud   : n.pref.tokenCloud,
+						userName: response.session.name
+					};
+					n.pref.accessToken = {
+						cloud      : n.pref.tokenCloud,
+						accessToken: response.session.key
+					};
+				} ).catch( _ => n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name ) );
+
+				n[ n.pref.tokenCloud ].accessToken = accessToken;
+
+				n.pref.accessToken = {
+					cloud: n.pref.tokenCloud,
+					accessToken
+				};
+
+				//todo: This code is specific to last.fm, while this else-if could be used by other clouds with same
+				// URL structure. For not that is not the case and it's unknown if it ever will be, but it's a good
+				// practice to move this code out of here, to a better place.
+				// Automatically enable last.fm scrobbling when user authenticates.
+				n.changeScrobblingState( true );
+
+				return true;
+			}
+
+			return false;
 		} );
+
+		// Make sure our URL is clean
+		history.replaceState( {}, '', '/' );
+
+		return new Promise( resolve => Promise.all( toCheck.map( cloudName => new Promise( resolve => _checkConnection( cloudName, resolve ) ) ) ).then( resolve ) );
 	},
 
 	/**
@@ -1468,11 +1425,11 @@ let n = {
 		}
 		else if ( 4194304 <= length )
 		{
-			n.warn( 'quota-limit-nearing', `${( ( length / 1024 ) / 1024 ).toFixed( 2 )} MB` );
+			n.warn( 'quota-limit-nearing', `${((length / 1024) / 1024).toFixed( 2 )} MB` );
 		}
 		else
 		{
-			n.log( 'quota-used', `${( ( length / 1024 ) / 1024 ).toFixed( 2 )} MB` );
+			n.log( 'quota-used', `${((length / 1024) / 1024).toFixed( 2 )} MB` );
 		}
 	},
 
@@ -1516,28 +1473,6 @@ let n = {
 	closeAll()
 	{
 		n.closeWindow();
-		n.closeFileFolderWindow();
-	},
-
-	/**
-	 * Resets file window to default state
-	 */
-	closeFileFolderWindow()
-	{
-		let source = document.getElementById( 'add-window-files' );
-
-		// Remove cloud contents
-		source.innerHTML = '';
-
-		// Show cloud selection
-		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
-
-		delete source.dataset.path;
-		delete source.dataset.cloud;
-		delete source.dataset.filter;
-
-		// Hide loading indicator, in case user clicked X before loading finished
-		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
 	/**
@@ -1585,21 +1520,12 @@ let n = {
 			{
 				n.closePreferences();
 			}
-			// Empty find window
-			else if ( 'find-window' === id )
-			{
-				document.getElementById( 'find-item' ).value = '';
-				n.initSearch( '' );
-			}
 
 			// Timeout is needed for the CSS transition to finish before hiding the window
-			setTimeout( () =>
-			{
-				window.removeAttribute( 'id' );
-			}, 300 );
+			setTimeout( _ => window.removeAttribute( 'id' ), 300 );
 
 			// Remove other classes from the window
-			//todo: Do we actually change this class somewhere?
+			//todo: Do we actually change this class somewhere? .exists???
 			window.className = 'window';
 
 			n.clearWindow();
@@ -1639,27 +1565,25 @@ let n = {
 		name = name.trim();
 
 		// Create the tab
-		let tab = document.createElement( 'div' );
+		const tab = document.createElement( 'div' );
 
 		tab.dataset.for  = id;
 		tab.dataset.name = name;
 		tab.className    = 'playlists-tabs-li flex';
 		tab.tabIndex     = 0;
-		tab.innerHTML    = `<span>${name}</span> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
+		tab.innerHTML    = `<div class="playlist-name">${name}</div> <div class="playlist-edit"><span data-icon="!"></span></div> <div class="playlist-remove">&times;</div>`;
 
-		let triggers = tab.querySelectorAll( 'div' );
-
-		triggers[ 0 ].addEventListener( 'click', n.renamePlaylist );
-		triggers[ 1 ].addEventListener( 'click', n.deletePlaylist );
+		tab.querySelector( '.playlist-name' ).addEventListener( 'dblclick', n.renamePlaylist );
+		tab.querySelector( '.playlist-edit' ).addEventListener( 'click', n.renamePlaylist );
+		tab.querySelector( '.playlist-remove' ).addEventListener( 'click', n.deletePlaylist );
 
 		document.getElementById( 'playlists-tabs' ).insertBefore( tab, document.getElementById( 'add-playlist' ) );
 
 		tab.addEventListener( 'click', n.onTabClick );
 		tab.addEventListener( 'mousedown', n.onTabDown );
-		tab.addEventListener( 'keydown', n.onTabKeyDown );
 
 		// Create the playlist
-		let playlist = document.createElement( 'article' );
+		const playlist = document.createElement( 'article' );
 
 		playlist.hidden       = true;
 		playlist.id           = id;
@@ -1667,7 +1591,7 @@ let n = {
 		playlist.className    = 'playlist scroll-y';
 		playlist.setAttribute( 'onscroll', 'n.saveActivePlaylistIdDelayed()' );
 
-		document.getElementById( 'playlist-hints' ).insertAdjacentElement( 'beforebegin', playlist );
+		document.getElementById( 'playlists' ).appendChild( playlist );
 
 		// Save the playlist if needed
 		if ( save )
@@ -1711,7 +1635,7 @@ let n = {
 		for ( let i = 0; i < len; i++ )
 		{
 			let selected = toDelete[ i ];
-			selected.parentNode.removeChild( selected );
+			selected.remove();
 		}
 
 		// Save playlist if selected items(s) found
@@ -1723,64 +1647,34 @@ let n = {
 
 	/**
 	 * Deletes playlist.
-	 *
-	 * @this {HTMLElement} Element should be the X button inside the tab.
 	 */
-	deletePlaylist( tab )
+	deletePlaylist( e )
 	{
-		tab = tab.tagName ? tab : this.parentNode;
-
-		let toActivate = tab.previousElementSibling || tab.nextElementSibling;
-		let playlist   = document.getElementById( tab.dataset.for );
+		const tab        = e.currentTarget.closest( '[data-for]' );
+		const toActivate = tab.previousElementSibling || tab.nextElementSibling;
 
 		// If we have closed last tab and we don't have next tab to activate, we need to show to the user the hints
 		// screen
-		if ( document.getElementById( 'add-playlist' ) === toActivate )
-		{
-			toActivate                                         = null;
-			document.getElementById( 'playlist-hints' ).hidden = false;
-		}
-
-		// Should continue only if both tab and playlist elements are found
-		if ( tab && playlist )
-		{
-			// Remove event listeners
-			let triggers = tab.querySelectorAll( 'a' );
-
-			triggers[ 0 ].removeEventListener( 'click', n.renamePlaylist, false );
-			triggers[ 1 ].removeEventListener( 'click', n.deletePlaylist, false );
-			tab.removeEventListener( 'click', n.onTabClick, false );
-			tab.removeEventListener( 'mousedown', n.onTabDown, false );
-			tab.removeEventListener( 'keydown', n.onTabKeyDown, false );
-
-			// Remove DOM elements
-			tab.parentNode.removeChild( tab );
-			playlist = playlist.parentNode;
-			playlist.parentNode.removeChild( playlist );
-
-			// Save change
-			n.savePlaylists();
-
-			// Remove tab view if only one tab
-			n.oneTabCheck();
-		}
-		// Otherwise throw an error
-		else
-		{
-			//TODO: Add n.error() here
-			console.error( 'deletePlaylist: tab or playlist not found' );
-		}
-
-		// Activate tab after deletion, if there are remaining tabs
-		if ( toActivate )
-		{
-			n.changePlaylist( toActivate );
-		}
-		// Otherwise save in the preferences that we shouldn't search to playlist to focus next time Noisy loads
-		else
+		if ( toActivate.id === 'add-playlist' )
 		{
 			n.pref.activePlaylistId = null;
 		}
+		else
+		{
+			n.changePlaylist( toActivate );
+		}
+
+		// Remove tab
+		tab.remove();
+
+		// Remove playlist itself
+		document.getElementById( tab.dataset.for ).remove();
+
+		// Save change
+		n.savePlaylists();
+
+		// Remove tab view if only one tab
+		n.oneTabCheck();
 	},
 
 	/**
@@ -1814,29 +1708,22 @@ let n = {
 	/**
 	 * Removes all files listed on the file dialog.
 	 */
-	//TODO: Maybe combine this with closeFileFolderWindow()?
 	emptyAddWindow()
 	{
-		let items            = document.querySelectorAll( '.add-item' );
-		const mouseDownEvent = 'mousedown';
-		const dblClickEvent  = 'dblclick';
-
-		for ( let i = 0; i < items.length; i++ )
-		{
-			let item = items[ i ];
-			item.removeEventListener( mouseDownEvent, n.onAddItemDown );
-			item.removeEventListener( dblClickEvent, n.onAddItemDblClick );
-		}
-
+		// Remove cloud contents
 		document.getElementById( 'add-window-files' ).innerHTML = '';
+	},
+
+	emptyFindWindow()
+	{
+		n.initSearch( document.getElementById( 'find-item' ).value = n.lastSearchTerm = '' );
 	},
 
 	/**
 	 * Adds an error line to the console.
 	 *
-	 * @param {String} section Required. Contains property name in the
-	 * language object for the action we are logging.
-	 * @param {String} data Required. Text to be printed in the console.
+	 * @param {String} section Contains property name in the language object for the action we are logging.
+	 * @param {String} [data] Text to be printed in the console.
 	 */
 	error( section, data = '' )
 	{
@@ -1858,7 +1745,7 @@ let n = {
 		const elementToCreate = 'section';
 		const tabIndexString  = 'tabindex';
 		const cloudString     = 'dropbox';
-		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title"></div>';
+		const initialHTML     = '<div class="flex playback-options"><div class="flex-item-full"><div class="item-queue"></div><div class="item-add-to-queue" data-icon="Q"></div><div class="item-remove-from-queue" data-icon="P"></div></div><div class="playback-status"></div></div><div class="item-title flex-ellipsis"></div>';
 		const dblClickEvent   = 'dblclick';
 		const mouseDownEvent  = 'mousedown';
 
@@ -1918,23 +1805,12 @@ let n = {
 	 */
 	find( e )
 	{
-		let results;
-		let selected;
-		let idx;
-		let mousedownEvent = document.createEvent( 'MouseEvent' );
-		let mouseupEvent   = document.createEvent( 'MouseEvent' );
-		let val;
-
-		// We need mouse events because we need to trigger mousedown/mouseup events on playlist items, so they get
-		// highlighted
-		//TODO: Find something smarter
-		mousedownEvent.initMouseEvent( 'mousedown', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
-		mouseupEvent.initMouseEvent( 'mouseup', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null );
+		const keyCode = e.keyCode;
 
 		// Enter pressed
-		if ( 13 === e.keyCode )
+		if ( 13 === keyCode )
 		{
-			val = document.getElementById( 'find-item' ).value.toLowerCase().trim();
+			const val = e.currentTarget.value.toLowerCase().trim();
 
 			// If user pressed Enter again, without changing the search term, we need to initiate play on the selected
 			// item
@@ -1948,70 +1824,61 @@ let n = {
 				n.initSearch( n.lastSearchTerm = val );
 
 				// Select first result
-				results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
+				const item = document.getElementById( 'find-window-results' ).querySelector( '.playlist-item' );
 
-				if ( results.length )
+				if ( item )
 				{
-					// Select first item in results window
-					results[ 0 ].dispatchEvent( mousedownEvent );
-					results[ 0 ].dispatchEvent( mouseupEvent );
+					// Select first item in results window and in playlist
+					n.onRowDown( { target: item, currentTarget: item } );
 				}
 			}
 		}
-		// Up key pressed
-		else if ( 38 === e.keyCode )
+		// Up or Down key pressed
+		else if ( 38 === keyCode || 40 === keyCode )
 		{
-			results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
+			let results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
 			if ( results.length )
 			{
 				// Get selected item
-				selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
+				const selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
 
 				// Find it's index in the parent's children
-				idx = Array.prototype.indexOf.call( results, selected );
+				const idx = Array.prototype.indexOf.call( results, selected );
 
-				// Check if we are the first item and select the last one if true
-				if ( 0 > idx - 1 )
+				let item;
+
+				if ( 38 === keyCode )
 				{
-					results[ results.length - 1 ].dispatchEvent( mousedownEvent );
-					results[ results.length - 1 ].dispatchEvent( mouseupEvent );
+					// Check if we are the first item and select the last one if true
+					if ( 0 > idx - 1 )
+					{
+						item = results[ results.length - 1 ];
+					}
+					else
+					{
+						item = results[ idx - 1 ];
+					}
 				}
 				else
 				{
-					results[ idx - 1 ].dispatchEvent( mousedownEvent );
-					results[ idx - 1 ].dispatchEvent( mouseupEvent );
+					// Check if we are the last item and select the first one if true
+					if ( results.length <= idx + 1 )
+					{
+						item = results[ 0 ];
+					}
+					else
+					{
+						item = results[ idx + 1 ];
+					}
 				}
-			}
-		}
-		// Down key pressed
-		else if ( 40 === e.keyCode )
-		{
-			results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
 
-			if ( results.length )
-			{
-				// Get selected item
-				selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
-
-				// Find it's index in the parent's children
-				idx = Array.prototype.indexOf.call( results, selected );
-
-				// Check if we are the last item and select the first one if true
-				if ( results.length <= idx + 1 )
-				{
-					results[ 0 ].dispatchEvent( mousedownEvent );
-					results[ 0 ].dispatchEvent( mouseupEvent );
-				}
-				else
-				{
-					results[ idx + 1 ].dispatchEvent( mousedownEvent );
-					results[ idx + 1 ].dispatchEvent( mouseupEvent );
-				}
+				// Select first item in results window and in playlist
+				n.onRowDown( { target: item, currentTarget: item } );
 			}
 		}
 		// Esc key pressed
-		else if ( 27 === e.keyCode )
+		else if ( 27 === keyCode )
 		{
 			n.closeAll();
 		}
@@ -2115,42 +1982,25 @@ let n = {
 	/**
 	 * Gets all the pressed keyboard keys.
 	 *
-	 * @param {Event} e Required. Keyboard event from which keyCodes will be read.
+	 * @param {Event} e Keyboard event from which keyCodes will be read.
 	 *
 	 * @return {Object} Object containing both keyCodes and names of the pressed keys.
 	 */
 	getKeys( e )
 	{
 		// Contains keyCode items
-		let keyProperty = [];
+		let keyProperty    = [];
 		// Contains human readable key names
-		let keys        = [];
+		let keys           = [];
+		const keyCode      = e.keyCode;
+		const special      = { 16: e.shiftKey, 17: e.ctrlKey, 18: e.altKey, 91: e.metaKey };
+		const specialCodes = Object.keys( special );
 
-		if ( e.altKey )
-		{
-			keys.push( keyCodes[ 18 ] );
-			keyProperty.push( 18 );
-		}
-		if ( e.ctrlKey )
-		{
-			keys.push( keyCodes[ 17 ] );
-			keyProperty.push( 17 );
-		}
-		if ( e.shiftKey )
-		{
-			keys.push( keyCodes[ 16 ] );
-			keyProperty.push( 17 );
-		}
-		if ( e.metaKey )
-		{
-			keys.push( keyCodes[ 91 ] );
-			keyProperty.push( 91 );
-		}
-		if ( 16 !== e.keyCode && 17 !== e.keyCode && 18 !== e.keyCode && 91 !== e.keyCode )
-		{
-			keys.push( keyCodes[ e.keyCode ] );
-			keyProperty.push( e.keyCode );
-		}
+		// Add every special key pressed
+		specialCodes.forEach( code => special[ code ] && keys.push( keyCodes[ code ] ) && keyProperty.push( code ) );
+
+		// Add non-special key
+		!specialCodes.includes( keyCode ) && keys.push( keyCodes[ keyCode ] ) && keyProperty.push( keyCode );
 
 		return { keys, keyProperty };
 	},
@@ -2183,13 +2033,9 @@ let n = {
 		return Promise.all( [
 			n.translate(),
 			n.applyTheme()
-		] ).then( _ =>
+		] ).then( n.checkConnections ).then( _ =>
 		{
-			n.initBatteryWatcher( () =>
-			{
-				n.markNotSupportedPreferences();
-				n.applyPowerSaveMode();
-			} );
+			n.initBatteryWatcher().then( _ => n.applyPowerSaveMode() );
 
 			n.initAudio();
 
@@ -2198,90 +2044,10 @@ let n = {
 
 			n.changeScrobblingState( n.pref.settings.checkboxes[ 'preference-enable-scrobbling' ] );
 
-			//TODO: currently we are saving preferences twice - can we optimize smartly?
-			const hash              = location.hash;
-			const search            = location.search;
-			let split               = [];
-			const accessTokenString = 'access_token=';
-			const codeString        = 'code=';
-			const tokenString       = 'token=';
-			const equalString       = '=';
-			const clickEvent        = 'click';
-			const mouseDownEvent    = 'mousedown';
-			const keyDownEvent      = 'keydown';
-			const dblClickEvent     = 'dblclick';
-
-			if ( hash && '#' !== hash )
-			{
-				split = hash.split( '#' ).pop().split( '&' );
-			}
-			else if ( search && '?' !== search )
-			{
-				split = search.split( '?' ).pop().split( '&' );
-			}
-
-			for ( let i = 0; i < split.length; i++ )
-			{
-				let part = split[ i ];
-
-				// Dropbox and Google Drive are returning directly the access token
-				if ( part.startsWith( accessTokenString ) )
-				{
-					let accessToken = part.split( equalString ).pop();
-
-					n[ n.pref.tokenCloud ].accessToken = accessToken;
-
-					n.pref.accessToken = { cloud: n.pref.tokenCloud, accessToken };
-
-					break;
-				}
-				// Last.fm returns the token as "token" param and requires a special session token to be generated
-				else if ( part.startsWith( tokenString ) )
-				{
-					let token = part.split( equalString ).pop();
-
-					n[ n.pref.tokenCloud ].getAccessToken( token, xhr =>
-					{
-						let response = JSON.parse( xhr.responseText );
-
-						n[ n.pref.tokenCloud ].userName    = response.session.name;
-						n[ n.pref.tokenCloud ].accessToken = response.session.key;
-
-						n.pref.userName    = {
-							cloud   : n.pref.tokenCloud,
-							userName: response.session.name
-						};
-						n.pref.accessToken = {
-							cloud      : n.pref.tokenCloud,
-							accessToken: response.session.key
-						};
-					}, () =>
-					{
-						n.error( 'error-getting-access-token', n[ n.pref.tokenCloud ].name );
-					} );
-
-					break;
-				}
-				// Box is returning code with which we should request the access token
-				else if ( part.startsWith( codeString ) )
-				{
-					n[ n.pref.tokenCloud ].getAccessToken( part.split( equalString ).pop() );
-
-					break;
-				}
-			}
-
-			// Make sure our URL is clean
-			let pathname = '/';
-
-			history.pushState( { clear: 'hash' }, 'without refresh', pathname );
-			history.pushState( { clear: 'search' }, 'without refresh', pathname );
-
-			// Check to which cloud services the user is connected to
-			//if( 'localhost' != location.host && '127.0.0.1' != location.host )
-			{
-				n.checkConnections();
-			}
+			const clickEvent     = 'click';
+			const mouseDownEvent = 'mousedown';
+			const keyDownEvent   = 'keydown';
+			const dblClickEvent  = 'dblclick';
 
 			// Load all available playlists
 			n.loadAndRenderPlaylists();
@@ -2299,10 +2065,7 @@ let n = {
 					let scrollTop = n.pref.scrollTop;
 
 					// Let the rendering engine catchup
-					setTimeout( () =>
-					{
-						playlist.scrollTop = scrollTop;
-					}, 0 );
+					setTimeout( _ => playlist.scrollTop = scrollTop );
 
 					n.changePlaylist( document.querySelector( `div[data-for="${n.pref.activePlaylistId}"]` ) );
 				}
@@ -2322,11 +2085,6 @@ let n = {
 			{
 				// Stop bubbling otherwise the window (if any) opened will be immediately closed
 				e.stopPropagation();
-
-				// Close all previous file browsing windows. Need in case user have entered in file browser (lets say
-				// Save playlist) and tries to open another one (lets say Load playlist). We need to re-initialize the
-				// add files window in original state
-				n.closeFileFolderWindow();
 
 				// Execute needed method
 				n[ this.dataset.menulistener ].call( this );
@@ -2401,7 +2159,7 @@ let n = {
 			} );
 
 			// Double click on footer should bring the currently active item into the view
-			document.getElementById( 'footer' ).addEventListener( dblClickEvent, () =>
+			document.getElementById( 'footer' ).addEventListener( dblClickEvent, _ =>
 			{
 				let activeItem = n.activeItem;
 				let parentItem;
@@ -2423,56 +2181,8 @@ let n = {
 				}
 			} );
 
-			// We need to stop the bubbling so if the user is renaming the playlist it won't get saved while moving the
-			// caret to a new location with the mouse
-			document.getElementById( 'playlists-tabs' ).addEventListener( clickEvent, e =>
-			{
-				n.closeAll();
-				n.stopBubbling.call( this, e );
-			} );
-
-			// Double click on the tabs means either rename of playlist (if playlist tab was double clicked) or create
-			// new playlist, so need to listen for dblclick
-			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, function ( e )
-			{
-				if ( this === e.target )
-				{
-					n.newPlaylist();
-				}
-				else
-				{
-					n.renamePlaylist( e.target );
-				}
-			} );
-
-			// Need to listen for Enter and Esc keys when renaming
-			document.getElementById( 'playlists-tabs' ).addEventListener( keyDownEvent, e =>
-			{
-				let keyCode  = e.keyCode;
-				let renaming = document.querySelector( `div[data-for="${n.activePlaylistId}"] [contenteditable="true"]` );
-
-				// Shouldn't do anything if we are not renaming
-				if ( !renaming )
-				{
-					return;
-				}
-
-				if ( 13 === keyCode )
-				{
-					e.preventDefault();
-					n.playlistNameCheck();
-				}
-				else if ( 27 === keyCode )
-				{
-					e.preventDefault();
-
-					let name = e.target;
-
-					name.innerHTML = name.parentNode.dataset.name;
-
-					n.stopRenames();
-				}
-			} );
+			// Support for create playlist when double clicking on empty space next to tabs
+			document.getElementById( 'playlists-tabs' ).addEventListener( dblClickEvent, e => e.currentTarget === e.target && n.newPlaylist() );
 
 			if ( n.pref.showWhatsNew )
 			{
@@ -2512,9 +2222,7 @@ let n = {
 				'#header,#playlists-wrapper,#footer,#add-window-files'                                            : 'filter'
 			};
 
-			rules = [
-				'@keyframes spin{ 0% { transform : rotate(0deg);}100% { transform : rotate(360deg);}}'
-			];
+			rules = [ spinKeyframes ];
 
 			Object.keys( transitions ).forEach( selector =>
 			{
@@ -2624,10 +2332,7 @@ let n = {
 		} );
 
 		// Change state of the item to paused when the player is paused
-		n.audio.addEventListener( 'pause', () =>
-		{
-			n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] );
-		} );
+		n.audio.addEventListener( 'pause', _ => n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] ) );
 
 		// Play next item when current finnishes
 		n.audio.addEventListener( 'ended', function ()
@@ -2657,40 +2362,24 @@ let n = {
 
 	/**
 	 * Watches battery levels and enters power saving mode if user chose so when battery level is low
-	 *
-	 * @param {Function} callback Required. Callback introduced to mark the power save option in Preferences as active
 	 */
-	initBatteryWatcher( callback )
+	initBatteryWatcher()
 	{
-		function attachEvents()
-		{
-			n.battery.addEventListener( 'chargingchange', n.updateBatteryStatus );
-			n.battery.addEventListener( 'levelchange', n.updateBatteryStatus );
-
-			// Delay initial set, to wait for the proper Noisy initialization
-			setTimeout( n.updateBatteryStatus, 1000 );
-
-			callback();
-		}
-
 		// Check for newer specification of Battery API
 		if ( navigator.getBattery )
 		{
-			navigator.getBattery().then( battery =>
+			return navigator.getBattery().then( battery =>
 			{
 				n.battery = battery;
-				attachEvents();
+				n.battery.addEventListener( 'chargingchange', n.updateBatteryStatus );
+				n.battery.addEventListener( 'levelchange', n.updateBatteryStatus );
+
+				// Delay initial set, to wait for the proper Noisy initialization
+				setTimeout( n.updateBatteryStatus, 1000 );
 			} );
 		}
-		// Otherwise use the old one
-		else
-		{
-			n.battery = navigator.battery || navigator.mozBattery || navigator.webkitBattery;
-			if ( n.battery )
-			{
-				attachEvents();
-			}
-		}
+
+		return Promise.reject( new Error( 'No Battery API support' ) );
 	},
 
 	/**
@@ -2698,82 +2387,49 @@ let n = {
 	 */
 	initSearch( val )
 	{
-		let results          = document.getElementById( 'find-window-results' );
-		const mouseDownEvent = 'mousedown';
-		const dblClickEvent  = 'dblclick';
-		const _cleanup       = () =>
-		{
-			let oldResults = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
+		const results = document.getElementById( 'find-window-results' );
 
-			// Remove listeners from old results
-			for ( let i = 0; i < oldResults.length; i++ )
-			{
-				oldResults[ i ].removeEventListener( mouseDownEvent, n.onRowDown, false );
-				oldResults[ i ].removeEventListener( dblClickEvent, n.onRowDblClick, false );
-			}
-
-			// Clear old results
-			results.innerHTML = '';
-		};
+		results.innerHTML = '';
 
 		if ( val )
 		{
-			let items = document.getElementById( 'playlists' ).querySelectorAll( 'div:not([hidden]) section[data-url]' );
+			const items = document.getElementById( 'playlists' ).querySelectorAll( 'article:not([hidden]) section[data-url]' );
 
 			// We'll search by all words, so we split them
-			let terms = val.split( ' ' );
-
-			// Remove old search results
-			_cleanup();
+			const terms = val.split( ' ' );
 
 			// Loop through all playlist items
-			for ( let i = 0; i < items.length; i++ )
+			main: for ( let i = 0; i < items.length; i++ )
 			{
-				let item  = items[ i ];
-				let url   = item.dataset.url.toLowerCase();
+				const item  = items[ i ];
+				const url   = item.dataset.url.toLowerCase();
 				// By default we have a match
-				let match = true;
-				let term;
-				let title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
+				const title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
 
 				// Loop through all search terms (words)
 				for ( let j = 0; j < terms.length; j++ )
 				{
-					term = terms[ j ];
+					const term = terms[ j ];
 
 					// If this term is not found in current item, mark item as not suitable and move on
 					if ( !url.includes( term ) && !title.includes( term ) )
 					{
-						match = false;
-						break;
+						continue main;
 					}
 				}
 
-				// Clone found item, if any, and append the cloning to the results
-				if ( match )
-				{
-					let cloning  = item.cloneNode( true );
-					let duration = cloning.children[ 2 ];
+				const cloning = item.cloneNode( true );
 
-					// Remove queue and duration elements from the cloning
-					cloning.removeChild( cloning.children[ 0 ] );
+				// Remove queue and duration elements from the cloning
+				cloning.querySelector( '.playback-options' ).remove();
+				cloning.querySelector( '.item-duration' ).remove();
 
-					if ( duration )
-					{
-						cloning.removeChild( duration );
-					}
+				results.appendChild( cloning );
 
-					results.appendChild( cloning );
-
-					// Add event listeners for the cloning
-					cloning.addEventListener( mouseDownEvent, n.onRowDown );
-					cloning.addEventListener( dblClickEvent, n.onRowDblClick );
-				}
+				// Add event listeners for the cloning
+				cloning.addEventListener( 'mousedown', n.onRowDown );
+				cloning.addEventListener( 'dblclick', n.onRowDblClick );
 			}
-		}
-		else
-		{
-			_cleanup();
 		}
 	},
 
@@ -2796,27 +2452,22 @@ let n = {
 		// Continue only if there are playlists saved
 		if ( playlists )
 		{
-			const errorString = 'error-loading-playlist';
-			const emptyString = '';
-
 			// Iterate through all the saved playlists
-			for ( let i = 0; i < playlists.length; i++ )
+			playlists.forEach( playlist =>
 			{
-				// Shorthand for current playlist
-				let playlist = playlists[ i ];
-
-				if ( !playlist || !playlist.id || !playlist.name || !playlist.items )
+				if ( playlist.id && playlist.name && playlist.items )
 				{
-					n.error( errorString, playlist ? ( playlist.id || playlist.name || emptyString ) : emptyString );
-					return;
+					// Create tab and playlist DOM elements
+					n.createPlaylist( playlist.name, playlist.id, false );
+
+					// Fill the playlist with the saved data
+					n.fillPlaylist( playlist.id, playlist.items, false );
 				}
-
-				// Create tab and playlist DOM elements
-				n.createPlaylist( playlist.name, playlist.id, false );
-
-				// Fill the playlist with the saved data
-				n.fillPlaylist( playlist.id, playlist.items, false );
-			}
+				else
+				{
+					n.error( 'error-loading-playlist', playlist.name || playlist.id );
+				}
+			} );
 		}
 	},
 
@@ -2829,7 +2480,7 @@ let n = {
 		// Cannot continue if id, name and items properties are not available or the playlist param is not passed
 		if ( !playlist || !playlist.id || !playlist.name || !playlist.items )
 		{
-			n.error( 'error-loading-playlist', playlist ? ( playlist.id || playlist.name || '' ) : '' );
+			n.error( 'error-loading-playlist', playlist ? (playlist.id || playlist.name || '') : '' );
 			return;
 		}
 
@@ -2838,7 +2489,7 @@ let n = {
 		if ( tab )
 		{
 			// Delete playlist because it'll be recreated again.
-			n.deletePlaylist( tab );
+			n.deletePlaylist( { currentTarget: tab } );
 		}
 
 		n.createPlaylist( playlist.name, playlist.id );
@@ -2882,7 +2533,24 @@ let n = {
 		{
 			for ( let i = 0; i < selected.length; i++ )
 			{
-				n[ cloud ].loadPlaylist( selected[ i ] );
+				n[ cloud ].loadNoisyFile( selected[ i ] ).then( response =>
+				{
+					if ( 'playlist' === response.type )
+					{
+						n.loadPlaylist( response );
+
+						let tab = document.querySelector( `li[data-for="${response.id}"]` );
+
+						if ( tab )
+						{
+							n.changePlaylist( tab );
+						}
+					}
+					else
+					{
+						throw new Error( 'Not a valid playlist' );
+					}
+				} );
 			}
 		}
 
@@ -2901,10 +2569,19 @@ let n = {
 
 		if ( selected.length && cloud )
 		{
-			n[ cloud ].loadPreferences( selected[ 0 ] );
+			n[ cloud ].loadNoisyFile( selected[ 0 ] ).then( response =>
+			{
+				if ( 'preferences' === response.type )
+				{
+					delete response.type;
+					n.pref.import( response );
+				}
+				else
+				{
+					throw new Error( 'Not a valid preferences file' );
+				}
+			} );
 		}
-
-		n.closeFileFolderWindow();
 	},
 
 	/**
@@ -2941,24 +2618,6 @@ let n = {
 	},
 
 	/**
-	 * Some features are known not to work on some browsers, so we have to mark them as not supported and disable them
-	 */
-	markNotSupportedPreferences()
-	{
-		if ( !n.battery )
-		{
-			document.getElementById( 'preference-enable-powersaver' ).disabled = true;
-			document.getElementById( 'preference-performance-powersaver' ).classList.add( 'not-supported' );
-		}
-
-		if ( 'undefined' === typeof Notification )
-		{
-			document.getElementById( 'preference-enable-notifications' ).disabled = true;
-			document.getElementById( 'preference-performance-notifications' ).classList.add( 'not-supported' );
-		}
-	},
-
-	/**
 	 * Moves the item being dragged before/after it's previous/next sibling
 	 * @param {String} position Should it be before or after the sibling. This is directly passed as forst param to
 	 *     insertAdjacentElement()
@@ -2982,7 +2641,7 @@ let n = {
 
 		if ( tab )
 		{
-			n.renamePlaylist( tab.querySelector( 'span' ) );
+			n.renamePlaylist( { currentTarget: tab.querySelector( '.playlist-name' ) } );
 		}
 	},
 
@@ -3031,7 +2690,7 @@ let n = {
 		}
 
 		// Play next song depending on user's selection if any
-		if ( document.getElementById( 'preference-playback-follows-cursor' ).checked && selected && 4 !== idx )
+		if ( n.pref.playbackFollowsCursorEnabled && selected && 4 !== idx )
 		{
 			next = selected;
 		}
@@ -3072,7 +2731,7 @@ let n = {
 				// Random mode
 				case 3:
 					let items = n.getAllItems();
-					next      = items[ Math.floor( ( Math.random() * items.length ) ) ];
+					next      = items[ Math.floor( (Math.random() * items.length) ) ];
 					break;
 			}
 		}
@@ -3131,9 +2790,9 @@ let n = {
 
 	/**
 	 * Pop a desktop notification to the user with the item being played.
-	 * @param {HTMLElement} [item] Optional. Item from which we need to get the information shown in the notification.
+	 * @param {HTMLElement} [item] Item from which we need to get the information shown in the notification.
 	 *     If not supplied the active item will be chosen.
-	 * @param {Boolean} [request] Optional. If true only a permission request will be sent to the user.
+	 * @param {Boolean} [request] If true only a permission request will be sent to the user.
 	 */
 	notify( item = n.activeItem, request )
 	{
@@ -3141,8 +2800,9 @@ let n = {
 		if ( !n.powerSaveMode )
 		{
 			// Request desktop notification permission if not already and user wants to
-			if ( request && 'undefined' !== typeof Notification && Notification.permission !== 'granted' )
+			if ( request && Notification.permission !== 'granted' )
 			{
+				//todo: Convert this to Promise based version once Edge and Safari implement it
 				Notification.requestPermission( status =>
 				{
 					if ( Notification.permission !== status )
@@ -3325,13 +2985,13 @@ let n = {
 	onDeleteKeyboardShortcut( button )
 	{
 		// Get the row on which the delete button was clicked
-		let row = button.parentNode.parentNode;
+		let row = button.closest( 'tr' );
 
 		// Get row index
-		let idx = Array.prototype.indexOf.call( row.parentNode.children, row );
+		let idx = Array.prototype.indexOf.call( row.closest( 'tbody' ).children, row );
 
 		// Remove the row
-		row.parentNode.removeChild( row );
+		row.remove();
 
 		// Save preferences
 		n.pref.deleteKey = idx;
@@ -3384,20 +3044,21 @@ let n = {
 	},
 
 	/**
-	 * Handler for change event on all checkboxes in the preferences window.
+	 * Handler for change event on checkboxes for cursor behaviour.
 	 */
-	onCheckboxChange()
+	onCursorCheckboxChange()
 	{
-		let checked = this.checked;
-
 		// If one of the two checkboxes is checked, un-check the other
-		if ( 'preference-cursor-follows-playback' === this.id && checked )
+		if ( this.checked )
 		{
-			document.getElementById( 'preference-playback-follows-cursor' ).checked = false;
-		}
-		else if ( 'preference-playback-follows-cursor' === this.id && checked )
-		{
-			document.getElementById( 'preference-cursor-follows-playback' ).checked = false;
+			// ids of the two checkboxes
+			let ids = [ 'preference-cursor-follows-playback', 'preference-playback-follows-cursor' ];
+
+			// Remove the id of the checked checkbox
+			ids.splice( ids.indexOf( this.id ), 1 );
+
+			// The remaining id is the id of the checkbox needed to be unchecked
+			document.getElementById( ids[ 0 ] ).checked = false;
 		}
 	},
 
@@ -3490,22 +3151,38 @@ let n = {
 		n.updateBatteryStatus();
 	},
 
+	onRenameKeyDown( e )
+	{
+		const keyCode = e.keyCode;
+
+		// We should stop bubbling while renaming in order to prevent Noisy's keyboard shortcuts from kicking in.
+		e.stopPropagation();
+
+		if ( 13 === keyCode )
+		{
+			e.preventDefault();
+			n.playlistNameCheck();
+		}
+		else if ( 27 === keyCode )
+		{
+			e.preventDefault();
+
+			const title = e.currentTarget;
+
+			title.innerHTML = title.closest( '[data-for]' ).dataset.name;
+
+			n.stopRenames();
+		}
+	},
+
 	/**
 	 * On item double click event handler. Plays the clicked item.
-	 * @this {HTMLElement} Item clicked.
 	 */
 	onRowDblClick()
 	{
 		n.setItemState();
 
-		if ( 'find-window-results' === this.parentNode.id )
-		{
-			n.play();
-		}
-		else
-		{
-			n.play( this );
-		}
+		n.play();
 	},
 
 	/**
@@ -3539,7 +3216,7 @@ let n = {
 			return n.removeFromQueue( row );
 		}
 
-		requestAnimationFrame( () =>
+		requestAnimationFrame( _ =>
 		{
 			// Deselect previous items if not in a multi-select mode
 			if ( !e.ctrlKey && !e.shiftKey )
@@ -3548,10 +3225,10 @@ let n = {
 			}
 
 			// Select clicked item depending on the keyboard keys pressed
-			n._selectItems.call( this, e, n.activePlaylistId, '.playlist-item', 'selected' );
+			n._selectItems.call( row, e, n.activePlaylistId, '.playlist-item', 'selected' );
 
 			// Manage search results, if window is opened
-			if ( 'find-window-results' === this.parentNode.id )
+			if ( document.getElementById( 'find-window-results' ).contains( row ) )
 			{
 				let toSelect        = document.querySelectorAll( '.window .selected' );
 				const selectedClass = 'selected';
@@ -3568,16 +3245,17 @@ let n = {
 					document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${toSelect[ i ].dataset.url}"]` ).classList.add( selectedClass );
 				}
 
-				let el = document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${this.dataset.url}"]` );
+				let el = document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${row.dataset.url}"]` );
 
 				el.classList.add( selectedClass );
 
 				scrollIntoViewIfOutOfView( el );
+				scrollIntoViewIfOutOfView( row );
 			}
 		} );
 
 		n.movingItem       = e.currentTarget;
-		n.movingItemHeight = this.offsetHeight;
+		n.movingItemHeight = row.offsetHeight;
 		n.movingStart      = e.clientY;
 
 		document.body.addEventListener( 'mousemove', n.onRowMove );
@@ -3652,6 +3330,24 @@ let n = {
 	},
 
 	/**
+	 * Fired on key up when user types in the filename box in save playlist/preferences dialog.
+	 * @param {Event} e
+	 */
+	onSaveNameInput( e )
+	{
+		let val = e.currentTarget.value.trim();
+
+		if ( !e.altKey && !e.altGraphKey && !e.ctrlKey && !e.shiftKey && val )
+		{
+			n.applyWindowState( 'save' );
+		}
+		else if ( !val )
+		{
+			n.applyWindowState( 'semi' );
+		}
+	},
+
+	/**
 	 * Event handler called on change of theme dropdown. Used for changing themes.
 	 * @param {HTMLElement} select Required. HTML select element from which theme name will be taken.
 	 */
@@ -3663,21 +3359,24 @@ let n = {
 
 	/**
 	 * On tab click event handler. Switches tabs.
-	 * @this {HTMLElement} Tab clicked.
 	 */
-	onTabClick()
+	onTabClick( e )
 	{
-		requestAnimationFrame( () =>
+		const target = e.currentTarget;
+
+		// Stop click event propagation because if it reaches body it'll accept renaming - user might just be moving
+		// the caret to correct the text.
+		e.stopPropagation();
+
+		// Select playlist
+		if ( 'add-playlist' === target.id )
 		{
-			if ( 'add-playlist' === this.id )
-			{
-				n.newPlaylist();
-			}
-			else
-			{
-				n.changePlaylist( this );
-			}
-		} );
+			n.newPlaylist();
+		}
+		else
+		{
+			n.changePlaylist( target );
+		}
 	},
 
 	/**
@@ -3691,24 +3390,6 @@ let n = {
 
 		document.body.addEventListener( 'mousemove', n.onTabMove );
 		document.body.addEventListener( 'mouseup', n.onTabUp );
-	},
-
-	/**
-	 * Stop bubbling of all keys except Enter and Esc when renaming.
-	 * @param {Event} e Required.
-	 */
-	onTabKeyDown( e )
-	{
-		let keyCode = e.keyCode;
-
-		if (
-			e.target.contentEditable &&
-			13 !== keyCode &&
-			27 !== keyCode
-		)
-		{
-			n.stopBubbling( e );
-		}
 	},
 
 	/**
@@ -3808,7 +3489,7 @@ let n = {
 		}
 
 		// Select item if cursor follows playback
-		if ( document.getElementById( 'preference-cursor-follows-playback' ).checked )
+		if ( n.pref.cursorFollowsPlaybackEnabled )
 		{
 			n._deselectItems();
 			n._selectItems.call( item, {}, n.activePlaylistId, '.playlist-item', 'selected' );
@@ -3843,36 +3524,24 @@ let n = {
 	 */
 	playlistNameCheck()
 	{
-		let title  = document.querySelector( `div[data-for="${n.activePlaylistId}"] span` );
-		let name   = title.innerHTML.trim();
-		let rename = title.contentEditable;
-
-		// Remove event listener, as next time rename is issued, this event listener will be attached again
-		document.body.removeEventListener( 'click', n.playlistNameCheck );
+		const title = document.querySelector( `div[data-for="${n.activePlaylistId}"] .playlist-name` );
+		const name  = title.innerHTML.trim();
 
 		if ( name )
 		{
 			// Are we renaming an existing playlist?
-			if ( rename )
+			if ( title.contentEditable )
 			{
 				document.querySelector( `#playlists-tabs [data-for="${n.activePlaylistId}"]` ).dataset.name = name;
 				n.savePlaylist( document.getElementById( n.activePlaylistId ) );
-				n.stopRenames();
-
-				// Need to save preferences, as new id is generated and after refresh, there won't be an element with
-				// the old id to focus it. Do it with delay, as we might have already pending delay, which will happen
-				// after this and erase the proper activeId from the settings.
-				n.saveActivePlaylistIdDelayed();
 			}
 			// or we are creating a new one
 			else
 			{
-				if ( n.createPlaylist( name, n.activePlaylistId, true ) )
-				{
-					// Close window only if everything went well
-					n.stopRenames();
-				}
+				n.createPlaylist( name, n.activePlaylistId, true );
 			}
+
+			n.stopRenames();
 		}
 	},
 
@@ -3912,7 +3581,7 @@ let n = {
 	{
 		return new Promise( resolve =>
 		{
-			const worker = new Worker( '/js/tagReader.js' );
+			const worker = new Worker( '/js/tagReader.js?ver=' + version );
 			worker.postMessage( { buffer, extension } );
 			worker.onmessage = event => resolve( event.data );
 		} );
@@ -4027,20 +3696,24 @@ let n = {
 	/**
 	 * Rename playlist dialog window.
 	 */
-	renamePlaylist( title )
+	renamePlaylist( e )
 	{
-		title = title.tagName ? title : this.previousElementSibling;
+		const tab = e.currentTarget.closest( '[data-for]' );
+		// n.renamePlaylist can be called either when double clicking on .playlist-name or when clicking on
+		// .playlist-edit. In both cases we need to work with .playlist-name
+		const title = tab.querySelector( '.playlist-name' );
 
 		title.setAttribute( 'contenteditable', 'true' );
 
-		document.body.addEventListener( 'click', n.playlistNameCheck );
+		document.body.addEventListener( 'click', n.playlistNameCheck, { once: true } );
+
+		// Need to listen for Enter and Esc keys when renaming
+		title.addEventListener( 'keydown', n.onRenameKeyDown );
 
 		title.focus();
 
-		n.changePlaylist( title.parentNode );
+		n.changePlaylist( tab );
 
-		//TODO: Check if Firefox is happy with this selectAll - as of Feb. 2014 they still have problems with selecting
-		// all the contents of a contenteditable element
 		document.execCommand( 'selectAll', false, null );
 	},
 
@@ -4079,7 +3752,7 @@ let n = {
 		for ( let i = 0; i < rows.length; i++ )
 		{
 			let row = rows[ i ];
-			row.parentNode.removeChild( row );
+			row.remove();
 		}
 
 		// Find appending place
@@ -4119,6 +3792,26 @@ let n = {
 
 		// Append the fragment to the DOM
 		insertBefore.parentNode.insertBefore( df, insertBefore );
+	},
+
+	/**
+	 * Sets add-window in it's initial state.
+	 */
+	resetAddWindow()
+	{
+		n.emptyAddWindow();
+
+		const source = document.getElementById( 'add-window-files' );
+
+		// Show cloud selection
+		document.getElementById( 'add-window-cloud-chooser' ).hidden = false;
+
+		delete source.dataset.path;
+		delete source.dataset.cloud;
+		delete source.dataset.filter;
+
+		// Hide loading indicator, in case user clicked X before loading finished
+		document.getElementById( 'loading-folder-contents' ).classList.add( 'visibility-hidden' );
 	},
 
 	/**
@@ -4175,7 +3868,7 @@ let n = {
 	{
 		let id   = playlist.id;
 		let tab  = document.querySelector( `#playlists-tabs [data-for="${id}"]` );
-		let name = tab.querySelector( 'span' ).textContent;
+		let name = tab.querySelector( '.playlist-name' ).textContent;
 
 		// Object that will represent the playlist
 		let obj = { id, name, items: n.makePlaylistItems( id ) };
@@ -4217,23 +3910,11 @@ let n = {
 	 */
 	savePlaylists()
 	{
-		let toSave    = [];
-		let playlists = document.querySelectorAll( '.playlists-tabs-li' );
-		const id      = 'add-playlist';
-
-		// Iterate through all playlists and make objects for each of them
-		for ( let i = 0; i < playlists.length; i++ )
-		{
-			let playlist = playlists[ i ];
-
-			if ( id !== playlist.id )
-			{
-				toSave.push( n.savePlaylist( document.getElementById( playlists[ i ].dataset.for ), true ) );
-			}
-		}
-
 		// Save to localStorage as JSON string
-		localStorage.setItem( 'playlists', JSON.stringify( toSave ) );
+		localStorage.setItem( 'playlists', JSON.stringify(
+			Array.from( document.getElementById( 'playlists' ).querySelectorAll( 'article.playlist' ) )
+				.map( playlist => n.savePlaylist( playlist, true ) )
+		) );
 	},
 
 	/**
@@ -4250,7 +3931,7 @@ let n = {
 		{
 			n.setFooter( n.lang.footer[ 'please-wait' ] );
 
-			n[ cloud ].savePlaylist( `${val}.plst.nsy`, path );
+			n[ cloud ].saveNoisyFile( `${val}.plst.nsy`, path );
 		}
 
 		n.closeAll();
@@ -4263,10 +3944,7 @@ let n = {
 	saveActivePlaylistIdDelayed()
 	{
 		clearTimeout( n.saveTimeout );
-		n.saveTimeout = setTimeout( () =>
-		{
-			n.pref.activePlaylistId = n.activePlaylistId;
-		}, 1000 );
+		n.saveTimeout = setTimeout( _ => n.pref.activePlaylistId = n.activePlaylistId, 1000 );
 	},
 
 	/**
@@ -4283,7 +3961,7 @@ let n = {
 		{
 			n.setFooter( n.lang.footer[ 'please-wait' ] );
 
-			n[ cloud ].savePreferences( `${val}.pref.nsy`, path );
+			n[ cloud ].saveNoisyFile( `${val}.pref.nsy`, path );
 		}
 
 		n.closeAll();
@@ -4533,10 +4211,7 @@ let n = {
 		n.window( 'find-window' );
 
 		// Focus input element after CSS3 animation is over
-		setTimeout( () =>
-		{
-			document.getElementById( 'find-item' ).focus();
-		}, 300 );
+		setTimeout( _ => document.getElementById( 'find-item' ).focus(), 300 );
 	},
 
 	/**
@@ -4623,7 +4298,7 @@ let n = {
 		}
 		else
 		{
-			return fetch( `/js/i18n/${lang}.json` ).then( response => response.json() ).then( json =>
+			return fetch( `/js/i18n/${lang}.json?ver=${version}` ).then( response => response.json() ).then( json =>
 			{
 				// Cache the parsed theme if user wants to re-apply it
 				n.langs[ lang ] = json;
@@ -4798,7 +4473,7 @@ let n = {
 			}
 
 			// Using animation frames to lower CPU usage when Noisy is not in focus
-			requestAnimationFrame( () =>
+			requestAnimationFrame( _ =>
 			{
 				n.setProgress( document.getElementById( 'progress' ), progress );
 
@@ -4845,7 +4520,7 @@ let n = {
 	 */
 	updateScrobbleCounter()
 	{
-		document.getElementById( 'preference-performance-scrobbling-tracks-to-scrobble' ).innerText = `${Object.keys( n.lastfm.queue.q ).length}/50`;
+		document.getElementById( 'preference-performance-scrobbling-tracks-to-scrobble' ).innerText = `${n.lastfm.queue.q.size}/${n.lastfm.queue.maxSize}`;
 	},
 
 	/**
@@ -4928,11 +4603,15 @@ let n = {
 				break;
 			// All other classes are ids and should replace old id
 			default:
-				n.emptyAddWindow();
+				[ 'add-window', 'save-playlist-window', 'load-playlist-window', 'save-preferences-window', 'load-preferences-window' ].includes( cls ) && n.resetAddWindow();
+
+				// Empty find window only when we are about to open it
+				cls === 'find-window' && n.emptyFindWindow();
+
 				window.id = cls;
 
 				// Add blur
-				window.parentNode.classList.add( 'window-opened' );
+				document.getElementById( 'window-backdrop' ).classList.add( 'window-opened' );
 		}
 	}
 };

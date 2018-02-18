@@ -32,6 +32,7 @@
     "background": "#3E86CF"
   },
   "#find-window-results": {
+    "color": "#fff",
     "background": "#355D85"
   },
   "#window-title": {

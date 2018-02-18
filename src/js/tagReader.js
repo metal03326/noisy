@@ -157,7 +157,6 @@ self.onmessage = function ( event )
 					}
 				}
 			}
-			//TODO: Try reading APEv2 if no ID3v2
 			break;
 		// Ogg container is used for Opus codec and some .ogg files can be Ogg Opus instead of Ogg Vorbis
 		case 'opus':

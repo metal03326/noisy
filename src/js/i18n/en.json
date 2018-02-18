@@ -88,6 +88,7 @@
 		"Made a lot changes that should speedup Noisy noticeably",
 		"Added tag reading for Opus files",
 		"Improved MP3/OGG/M4A tag reading",
+		"Improved last.fm by a margin",
 		"Dropped old browser support, like Internet Explorer",
 		"Lots of stability improvements and bugfixes",
 		"We are now on <a href=\"//github.com/metal03326/noisy\">GitHub</a>"
@@ -171,7 +172,8 @@
 		"manifest-downloading"      : "Downloading update...",
 		"manifest-noupdate"         : "Noisy is up to date",
 		"manifest-checking"         : "Checking for updates...",
-		"manifest-cached"           : "Noisy downloaded"
+		"manifest-cached"           : "Noisy downloaded",
+		"lastfm-queue-overflow"     : "Warning! Your last.fm queue is full. Removing first item from it: "
 	},
 	"footer"      : {
 		"footer-finished"     : "Adding files finished. Added items:",
@@ -184,7 +186,6 @@
 	"other"       : {
 		"new-playlist"      : "New Playlist",
 		"notification-title": "Noisy is playing",
-		"not-supported"     : " (not supported on this browser)",
 		"not-connected"     : "Not connected. Click to connect"
 	},
 	"help"        : {

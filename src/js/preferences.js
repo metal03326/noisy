@@ -12,7 +12,8 @@ let pref = {
 
 	// Default settings
 	settings: {
-		values                     : {
+		//todo: Join values and checkboxes and use Object.values() with typeof to figure out if it's a checkbox or not
+		values                       : {
 			'power-saver-state'                   : '15',
 			'preference-user-language'            : 'en',
 			'preference-theme'                    : 'default',
@@ -22,7 +23,7 @@ let pref = {
 			'preference-window-title-format'      : '%artist% - %title%',
 			'preference-playlist-format'          : '%artist% - %title%'
 		},
-		checkboxes                 : {
+		checkboxes                   : {
 			'preference-enable-notifications'   : false,
 			'preference-enable-counter'         : true,
 			'preference-enable-animations'      : true,
@@ -32,8 +33,8 @@ let pref = {
 			'preference-playback-follows-cursor': false,
 			'preference-cursor-follows-playback': false
 		},
-		[`showWhatsNew-${version}`]: true,
-		keys                       : [
+		[ `showWhatsNew-${version}` ]: true,
+		keys                         : [
 			{ key: '17+81', action: 'addToQueue' },
 			{ key: '81', action: 'addToQueue' },
 			{ key: '74', action: 'showSearch' },
@@ -47,19 +48,13 @@ let pref = {
 			{ key: '77', action: 'toggleMute' },
 			{ key: '46', action: 'removeFromPlaylist' }
 		],
-		volume                     : 1,
-		activePlaylistId           : null,
-		muted                      : false,
-		playbackOrder              : 0,
-		dropbox                    : {
-			accessToken: null
-		},
-		googledrive                : {
-			accessToken: null
-		},
-		lastfm                     : {
-			accessToken: null
-		}
+		volume                       : 1,
+		activePlaylistId             : null,
+		muted                        : false,
+		playbackOrder                : 0,
+		dropbox                      : { accessToken: null },
+		googledrive                  : { accessToken: null },
+		lastfm                       : { accessToken: null }
 	},
 
 	save()
@@ -176,7 +171,7 @@ let pref = {
 		if ( playbackOrder )
 		{
 			playbackOrder.selectedIndex = this.settings.playbackOrder || 0;
-			n.audio.loop                = !( 2 - playbackOrder.selectedIndex );
+			n.audio.loop                = !(2 - playbackOrder.selectedIndex);
 		}
 		else
 		{
@@ -200,15 +195,6 @@ let pref = {
 		if ( !this.counter )
 		{
 			document.getElementById( 'footer-counter' ).hidden = true;
-		}
-
-		// Un-check Power Saver checkbox if it's not supported by the browser
-		let powerSaver = document.getElementById( 'preference-enable-powersaver' );
-
-		if ( powerSaver.checked && document.getElementById( 'preference-performance-powersaver' ).classList.contains( 'not-supported' ) )
-		{
-			powerSaver.checked = false;
-			n.changePowerSaverState( false );
 		}
 	},
 
@@ -236,7 +222,8 @@ let pref = {
 
 	set deleteKey( idx )
 	{
-		this.settings.keys.splice( this.settings.keys.length - idx, 1 );
+		this.settings.keys.splice( idx, 1 );
+
 		this.save();
 	},
 
@@ -323,7 +310,9 @@ let pref = {
 
 	set accessToken( object )
 	{
-		let shouldSave = this.settings[ object.cloud ].accessToken !== object.accessToken;
+		// Some clouds, like last.fm, have to fetch accessToken with an additional call. This is why we have
+		// accessToken as Promise - once it resolves, we'll get the real token.
+		let shouldSave = this.settings[ object.cloud ].accessToken !== object.accessToken && object.accessToken.constructor !== Promise;
 
 		this.settings[ object.cloud ].accessToken = object.accessToken;
 
@@ -454,6 +443,16 @@ let pref = {
 	get powerSaverEnabled()
 	{
 		return this.settings.checkboxes[ 'preference-enable-powersaver' ];
+	},
+
+	get cursorFollowsPlaybackEnabled()
+	{
+		return this.settings.checkboxes[ 'preference-cursor-follows-playback' ];
+	},
+
+	get playbackFollowsCursorEnabled()
+	{
+		return this.settings.checkboxes[ 'preference-playback-follows-cursor' ];
 	}
 };
 

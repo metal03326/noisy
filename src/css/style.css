@@ -231,7 +231,6 @@ button
 .one-tab #playlists-tabs,
 .one-tab [data-icon="#"]:last-child,
 body:not(.one-tab) [data-icon="#"]:not(:last-child),
-article + #playlist-hints,
 #find-window-results div[data-icon],
 .playlists-tabs-li:not(.active) .playlist-edit,
 .playlists-tabs-li:not(.active) .playlist-remove,
@@ -267,7 +266,9 @@ article + #playlist-hints,
 .window:not(#save-preferences-window) #save-preferences-window-title,
 .window:not(#save-preferences-window) #save-preferences-window-buttons,
 .window:not(#load-preferences-window) #load-preferences-window-title,
-.window:not(#load-preferences-window) #load-preferences-window-buttons
+.window:not(#load-preferences-window) #load-preferences-window-buttons,
+#playlists:empty,
+#playlists:not(:empty) + #playlist-hints
 {
 	display : none;
 }
@@ -343,11 +344,16 @@ article + #playlist-hints,
 	align-items : center;
 }
 
+#find-window-results .playlist-item
+{
+	padding : 0 10px;
+}
+
 #footer
 {
 	height      : 26px;
 	padding     : 0 5px;
-	line-height : 26px;
+	line-height : 24px;
 }
 
 #footer-counter
@@ -923,7 +929,6 @@ h6
 #footer-text
 {
 	margin-left : 2px;
-	height      : 100%;
 	padding     : 0 5px;
 }
 
@@ -1167,16 +1172,22 @@ h6
 	opacity    : 0;
 }
 
-#preference-performance-scrobbling-position,
-#preference-performance-scrobbling-queued-tracks,
-#preference-performance-powersaver-threshold
+#lastfm-preferences
 {
-	margin-left : 25px;
+	border  : 0;
+	margin  : 5px 0 0 0;
+	padding : 0;
+}
+
+#preference-performance-powersaver-threshold,
+#lastfm-preferences
+{
+	margin-left : 30px;
 }
 
 .scrobble-action
 {
-	margin-left : 2px;
+	margin-left : 4px;
 }
 
 #battery-level-menu-handle
@@ -1386,6 +1397,37 @@ h6
 	flex : 1 1 auto;
 }
 
+.flex-no-shrink
+{
+	flex-shrink : 0;
+}
+
+.flex-ellipsis
+{
+	overflow      : hidden;
+	text-overflow : ellipsis;
+	white-space   : nowrap;
+
+	/* This seems to make browsers not to expand the title more that screens width */
+	width         : 0;
+}
+
+.form-row
+{
+	display     : flex;
+	align-items : center;
+}
+
+.form-control
+{
+	margin: 0 10px;
+}
+
+.form-label
+{
+	margin-right: 3px;
+}
+
 [hidden]
 {
 	display : none !important;
@@ -1443,4 +1485,9 @@ i
 #whats-new-content i
 {
 	margin : 0 10px 5px;
+}
+
+#playlists-wrapper
+{
+	outline : none;
 }

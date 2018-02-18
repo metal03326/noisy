@@ -35,6 +35,7 @@
     "color": "#fffd00"
   },
   "#find-window-results": {
+    "color": "#fffd00",
     "background": "#000"
   },
   "#window-title": {

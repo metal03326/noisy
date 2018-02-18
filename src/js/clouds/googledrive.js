@@ -32,33 +32,30 @@ let googledrive = new Cloud( {
 	usesIds: true
 
 	/*youTubeSearch( q )
-	 {
-	 let container       = document.getElementById( 'youtube-search-window-content' );
-	 container.innerHTML = '';
-	 this.ajaxRequest( 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=' + encodeURIComponent( q ), xhr =>
-	 {
-	 document.getElementById( 'youtube-search-window-title' ).innerHTML = n.lang.window[ 'youtube-search-window-title' ] + ' ' + q;
+	{
+		let container       = document.getElementById( 'youtube-search-window-content' );
+		container.innerHTML = '';
+		this.fetch( 'https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=10&q=' + encodeURIComponent( q ) ).then( response =>
+		{
+			document.getElementById( 'youtube-search-window-title' ).innerHTML = n.lang.window[ 'youtube-search-window-title' ] + ' ' + q;
 
-	 let response = JSON.parse( arguments[ 0 ].response );
-	 let row;
-	 let item;
+			let row;
+			let item;
 
-	 response.items.forEach( item =>
-	 {
-	 row           = document.createElement( 'div' );
-	 row.className = 'youtube-item cf';
-	 row.innerHTML = '<span class="youtube-item-image-wrapper" data-id="'.concat( item.id.videoId, '"><img src="', item.snippet.thumbnails.default.url, '" alt="', item.snippet.title, '"/></span><span class="youtube-item-name">', item.snippet.title, '</span><br /><span class="youtube-item-by"><span class="by"></span> ', item.snippet.channelTitle, '</span><br /><span class="youtube-item-description">', item.snippet.description, '</span><br /><a href="https://www.youtube.com/watch?v=', item.id.videoId, '" class="youtube-item-url">https://www.youtube.com/watch?v=', item.id.videoId, '</a><span class="youtube-share-container"><button onclick="n.shareYouTubeLink(this)" class="youtube-item-share-icon"><i data-icon="F"></i></button><button onclick="n.shareYouTubeLink(this)" class="youtube-item-share-icon"><i data-icon="G"></i></button></span>' );
-	 container.appendChild( row );
-	 row.children[ 0 ].addEventListener( 'click', () =>
-	 {
-	 this.classList.add( 'youtube-embeded' );
-	 this.innerHTML = '<iframe width="120" height="90" src="//www.youtube.com/embed/' + this.dataset.id + '?autoplay=1" frameborder="0" allowfullscreen></iframe>';
-	 } );
-	 } );
-	 }, () =>
-	 {
-	 } );
-	 }*/
+			response.items.forEach( item =>
+			{
+				row           = document.createElement( 'div' );
+				row.className = 'youtube-item cf';
+				row.innerHTML = '<span class="youtube-item-image-wrapper" data-id="'.concat( item.id.videoId, '"><img src="', item.snippet.thumbnails.default.url, '" alt="', item.snippet.title, '"/></span><span class="youtube-item-name">', item.snippet.title, '</span><br /><span class="youtube-item-by"><span class="by"></span> ', item.snippet.channelTitle, '</span><br /><span class="youtube-item-description">', item.snippet.description, '</span><br /><a href="https://www.youtube.com/watch?v=', item.id.videoId, '" class="youtube-item-url">https://www.youtube.com/watch?v=', item.id.videoId, '</a><span class="youtube-share-container"><button onclick="n.shareYouTubeLink(this)" class="youtube-item-share-icon"><i data-icon="F"></i></button><button onclick="n.shareYouTubeLink(this)" class="youtube-item-share-icon"><i data-icon="G"></i></button></span>' );
+				container.appendChild( row );
+				row.children[ 0 ].addEventListener( 'click', _ =>
+				{
+					this.classList.add( 'youtube-embeded' );
+					this.innerHTML = '<iframe width="120" height="90" src="//www.youtube.com/embed/' + this.dataset.id + '?autoplay=1" frameborder="0" allowfullscreen></iframe>';
+				} );
+			} );
+		} );
+	}*/
 } );
 
 /*let res = {

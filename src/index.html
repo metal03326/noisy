@@ -13,11 +13,12 @@
     <meta property="og:image" content="https://www.noisyplayer.com/open_praph.png">
     <script type="text/javascript">
 		var timerStart = Date.now();
-		var version    = 20180101;
+		var version    = 20180218;
+
+		document.write( '<link rel="stylesheet" href="css/style.css?ver=' + version + '"/>' );
     </script>
     <meta charset="utf-8"/>
     <meta name=viewport content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="css/style.css"/>
     <link rel="apple-touch-icon" sizes="57x57" href="./img/apple-touch-icon-57x57.png"/>
     <link rel="apple-touch-icon" sizes="114x114" href="./img/apple-touch-icon-114x114.png"/>
     <link rel="apple-touch-icon" sizes="72x72" href="./img/apple-touch-icon-72x72.png"/>
@@ -34,7 +35,12 @@
     <meta name="msapplication-TileColor" content="#2b5797"/>
     <meta name="msapplication-TileImage" content="./img/mstile-144x144.png"/>
     <style id="theme"></style>
-    <style id="animations"></style>
+    <script>
+		window.spinKeyframes = '@keyframes spin{0{transform:rotate(0)}100%{transform:rotate(360deg)}}';
+
+		// Spinning animation is always on before the app loads because we need the initial loading spinner to work
+		document.write( `<style id="animations">${spinKeyframes}</style>` );
+    </script>
     <style id="blur"></style>
 </head>
 <body class="flex-column">
@@ -204,11 +210,14 @@
                         </div>
                         <div id="preference-keyboard" hidden>
                             <table id="keyboard-shortcuts">
+                                <thead>
                                 <tr>
                                     <th id="preference-keyboard-shortcut"></th>
                                     <th id="preference-keyboard-action"></th>
                                     <th></th>
                                 </tr>
+                                </thead>
+                                <tbody>
                                 <tr>
                                     <td>
                                         <input id="keyboard-shortcut" type="text" data-keys="" required
@@ -239,6 +248,7 @@
                                         <button id="shortcut-add" class="button-add"></button>
                                     </td>
                                 </tr>
+                                </tbody>
                             </table>
                         </div>
                         <div id="preference-performance" class="flex-column" hidden>
@@ -247,9 +257,9 @@
                                 <span id="preference-performance-powersaver"></span>
                                 <i id="preference-powersaver-help" class="help" data-icon="H"></i>
                             </label>
-                            <div>
+                            <label class="form-row">
                                 <span id="preference-performance-powersaver-threshold"></span>
-                                <label class="select">
+                                <span class="select form-control">
                                     <select id="power-saver-state" onchange="n.onPowerSaverStateChange(this);">
                                         <option>5</option>
                                         <option>10</option>
@@ -259,9 +269,9 @@
                                         <option>75</option>
                                         <option>100</option>
                                     </select>
-                                </label>
+                                </span>
                                 %
-                            </div>
+                            </label>
                             <div id="preference-performance-notes"></div>
                             <label>
                                 <input id="preference-enable-animations" type="checkbox"/>
@@ -279,20 +289,30 @@
                                 <input id="preference-enable-scrobbling" type="checkbox"/>
                                 <span id="preference-performance-scrobbling"></span>
                             </label>
-                            <div>
-                                <span id="preference-performance-scrobbling-position"></span>
-                                50%
-                                <input type="range" id="preference-scrobbling-position" min="50" max="100"/>
-                                100%
-                            </div>
-                            <div>
-                                <span id="preference-performance-scrobbling-queued-tracks"></span>
-                                <span id="preference-performance-scrobbling-tracks-to-scrobble"></span>
-                                <button class="button-submit scrobble-action"
-                                        onclick="n.lastfm.queue.process();"></button>
-                                <button class="button-clear scrobble-action"
-                                        onclick="n.lastfm.queue.reset();"></button>
-                            </div>
+                            <fieldset id="lastfm-preferences">
+                                <label class="form-row">
+                                    <span id="preference-performance-scrobbling-position" class="form-label"></span>
+                                    50%
+                                    <input
+                                            id="preference-scrobbling-position"
+                                            class="form-control"
+                                            type="range"
+                                            min="50"
+                                            max="100"
+                                    />
+                                    100%
+                                </label>
+                                <div class="form-row">
+                                    <span id="preference-performance-scrobbling-queued-tracks"
+                                          class="form-label"></span>
+                                    <span id="preference-performance-scrobbling-tracks-to-scrobble"
+                                          class="form-label"></span>
+                                    <button class="button-submit scrobble-action"
+                                            onclick="n.lastfm.queue.process();"></button>
+                                    <button class="button-clear scrobble-action"
+                                            onclick="n.lastfm.queue.reset();"></button>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
                 </div>
@@ -309,7 +329,6 @@
                     <img class="favicon" alt="Noisy logo" src="./img/apple-touch-icon-120x120.png"/>
                     <div>
                         <h5>Noisy</h5>
-                        <!--todo: Fetch changes and display them to the user in-app-->
                         <a href="https://github.com/metal03326/noisy/blob/master/CHANGES.md" target="_blank">
                             <h6 id="version">
                                 <script type="text/javascript">
@@ -375,8 +394,7 @@
                 </div>
             </div>
             <div id="find-window-content" class="flex-column">
-                <!--todo: Convert this to form, so Enter key works out of the box-->
-                <div class="flex">
+                <div class="flex flex-no-shrink">
                     <input id="find-item" type="text" class="border-box"/>
                     <button id="init-search" onclick="n.initSearch();" data-icon="#"></button>
                 </div>
@@ -501,7 +519,7 @@
         </div>
     </div>
 </div>
-<header id="header" class="flex">
+<header id="header" class="flex flex-no-shrink">
     <div id="header-left" tabindex="0">
         <div id="battery-level-menu-handle">
             <div id="battery-cap"></div>
@@ -563,48 +581,51 @@
         </div>
     </div>
 </header>
-<div id="playlists-wrapper" class="flex flex-item-full">
-    <div id="playlists" class="flex flex-item-full">
-        <div id="playlist-hints" class="flex-item-full flex-column playlist scroll-y">
-            <div class="flex">
-                <div id="main-menu-hint-icon" data-icon="@"></div>
-                <div class="flex flex-item-full">
-                    <div>
+<div id="playlists-wrapper" class="flex flex-item-full" tabindex="-1">
+    <div id="playlists" class="flex flex-item-full"></div>
+    <div id="playlist-hints" class="flex-item-full flex-column playlist scroll-y">
+        <div class="flex">
+            <div id="main-menu-hint-icon" data-icon="@"></div>
+            <div class="flex flex-item-full">
+                <div>
                                 <span id="add-playlist-hint-icon" class="rotate90">
                                     <span data-icon="?"></span>
                                 </span>
-                        <span id="add-playlist-hint-text"></span>
-                    </div>
-                    <div class="flex-item-full"></div>
-                    <div>
-                        <span id="search-playlist-hint-text"></span>
-                        <span id="search-playlist-hint-icon" class="rotate270">
+                    <span id="add-playlist-hint-text"></span>
+                </div>
+                <div class="flex-item-full"></div>
+                <div>
+                    <span id="search-playlist-hint-text"></span>
+                    <span id="search-playlist-hint-icon" class="rotate270">
                                     <span data-icon="7"></span>
                                 </span>
-                    </div>
                 </div>
             </div>
-            <div class="flex-item-full">
-                <span id="main-menu-hint-text"></span>
-            </div>
+        </div>
+        <div class="flex-item-full">
+            <span id="main-menu-hint-text"></span>
         </div>
     </div>
 </div>
-<footer id="footer" class="flex">
+<footer id="footer" class="flex flex-no-shrink">
     <div class="flex flex-item-full">
-        <div id="footer-text" class="flex-item-full"></div>
+        <div id="footer-text" class="flex-item-full flex-ellipsis"></div>
         <button onclick="n.setFooter(null,true);" id="cancel-action" data-icon="*" hidden class="link"></button>
     </div>
     <div id="footer-counter"></div>
 </footer>
-<script src="js/libs/md5.js"></script>
-<script src="js/urlmanager.js"></script>
-<script src="js/cloud.js"></script>
-<script src="js/clouds/dropbox.js"></script>
-<script src="js/clouds/googledrive.js"></script>
-<script src="js/clouds/lastfm.js"></script>
-<script src="js/preferences.js"></script>
-<script src="js/player.js"></script>
-<script src="js/main.js"></script>
+<script>
+	[
+		'js/libs/md5.js',
+		'js/urlmanager.js',
+		'js/cloud.js',
+		'js/clouds/dropbox.js',
+		'js/clouds/googledrive.js',
+		'js/clouds/lastfm.js',
+		'js/preferences.js',
+		'js/player.js',
+		'js/main.js'
+	].forEach( script => document.write( '<script src="' + script + '?ver=' + version + '"><\/script>' ) );
+</script>
 </body>
 </html>

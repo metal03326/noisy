@@ -7,13 +7,15 @@
   "license": "GPLv3",
   "scripts": {
     "start": "serve -p 80 -u -s -n ./src/",
+    "docs": "serve -p 80 -u -s -n ./docs/",
     "build": "node ./build/builder.js"
   },
   "devDependencies": {
     "clean-css": "^4.0.12",
     "fs-extra": "^3.0.1",
     "html-minifier": "^3.4.3",
+    "jsonminify": "^0.4.1",
     "serve": "^5.1.5",
-    "uglify-js": "^2.8.22"
+    "uglify-es": "^3.3.9"
   }
 }
