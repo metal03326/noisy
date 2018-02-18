@@ -10,12 +10,4 @@
   <loc>https://www.noisyplayer.com/</loc>
   <changefreq>weekly</changefreq>
 </url>
-<url>
-  <loc>https://www.noisyplayer.com/CHANGES.txt</loc>
-  <changefreq>weekly</changefreq>
-</url>
-<url>
-  <loc>https://www.noisyplayer.com/dev/</loc>
-  <changefreq>daily</changefreq>
-</url>
 </urlset>
