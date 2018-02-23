@@ -541,11 +541,21 @@
     </div>
     <div class="flex-column flex-item-full">
         <div class="flex">
-            <div id="trigger-stop" data-menulistener="stop" data-icon="v"></div>
-            <div id="trigger-play" data-menulistener="playPause" data-icon="x"></div>
+            <div
+                    id="trigger-play"
+                    data-menulistener="playPause"
+                    data-icon="x"
+                    data-alternate-icon="v"
+                    data-alternate-action="stop"
+            ></div>
             <div id="trigger-prev" data-menulistener="prev" data-icon="C"></div>
-            <div id="trigger-next" data-menulistener="next" data-icon="B"></div>
-            <div id="trigger-next-random" data-menulistener="nextRandom" data-icon="s"></div>
+            <div
+                    id="trigger-next"
+                    data-menulistener="next"
+                    data-icon="B"
+                    data-alternate-icon="s"
+                    data-alternate-action="nextRandom"
+            ></div>
             <div id="nav-volume" class="flex">
                 <div id="trigger-mute" data-menulistener="toggleMute" data-icon="0"></div>
                 <div id="volume">
