@@ -9,7 +9,8 @@
 
 // Noisy singleton
 let n = {
-	// Pointer to the active audio element
+	// Timeout for switching Play/Next buttons to Stop/Next Random
+	actionTimeout: null,
 
 	// HTML Audio element which will play files
 	audio: document.createElement( 'audio' ),
@@ -428,12 +429,7 @@ let n = {
 			document.getElementById( 'playlists' ).querySelector( 'div[data-icon="x"]' ) ||
 			document.getElementById( 'playlists' ).querySelector( 'div[data-icon="w"]' );
 
-		if ( item )
-		{
-			item = item.parentNode.parentNode;
-		}
-
-		return item;
+		return item && item.closest( '.playlist-item' );
 	},
 
 	/**
@@ -1140,6 +1136,32 @@ let n = {
 
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
 		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, e => n.changeCounterState( e.currentTarget.checked ) );
+
+		const alternateButtons = document.querySelectorAll( '[data-alternate-action]' );
+
+		for ( let i = 0; i < alternateButtons.length; i++ )
+		{
+			alternateButtons[ i ].addEventListener( 'mousedown', e =>
+			{
+				const target = e.currentTarget;
+
+				clearTimeout( n.actionTimeout );
+				n.actionTimeout = setTimeout( _ => n.toggleAlternate( target, true ), 1000 );
+
+				// Make sure even if user releases mouse button while cursor is away from the Play button, to fix button
+				// state
+				document.body.addEventListener( 'mouseup', e =>
+				{
+					clearTimeout( n.actionTimeout );
+
+					// If user released the mouse while not on the button we need to switch back to the previous action
+					if ( target !== e.target )
+					{
+						n.toggleAlternate( target );
+					}
+				}, { once: true } );
+			} );
+		}
 	},
 
 	/**
@@ -2079,7 +2101,7 @@ let n = {
 			n.attachEvents();
 
 			// Attach menu events
-			let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
+			let menuItems    = document.querySelectorAll( '[data-menulistener]' );
 			let prefTabs     = document.querySelectorAll( '.preferences-item' );
 			let _onItemClick = function ( e )
 			{
@@ -2161,19 +2183,16 @@ let n = {
 			// Double click on footer should bring the currently active item into the view
 			document.getElementById( 'footer' ).addEventListener( dblClickEvent, _ =>
 			{
-				let activeItem = n.activeItem;
-				let parentItem;
-				let id;
+				const activeItem = n.activeItem;
 
 				if ( activeItem )
 				{
-					parentItem = activeItem.parentNode;
-					id         = parentItem.id;
+					const playlistId = activeItem.closest( '.playlist' ).id;
 
 					// Focus the tab in which the active item is
-					if ( id !== n.activePlaylistId )
+					if ( playlistId !== n.activePlaylistId )
 					{
-						n.changePlaylist( document.querySelector( `div[data-for="${id}"]` ) );
+						n.changePlaylist( document.querySelector( `div[data-for="${playlistId}"]` ) );
 					}
 
 					// Scroll item into view
@@ -2289,6 +2308,9 @@ let n = {
 			let item;
 			let bold       = document.getElementById( 'playlists' ).querySelector( '.bold' );
 
+			// Switch Play/Pause button to show Pause
+			document.getElementById( 'trigger-play' ).dataset.icon = 'c';
+
 			// Remove bold from previous element, if available
 			if ( bold )
 			{
@@ -2332,11 +2354,20 @@ let n = {
 		} );
 
 		// Change state of the item to paused when the player is paused
-		n.audio.addEventListener( 'pause', _ => n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] ) );
+		n.audio.addEventListener( 'pause', _ =>
+		{
+			// Switch Play/Pause button to show Play
+			document.getElementById( 'trigger-play' ).dataset.icon = 'x';
+
+			n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] );
+		} );
 
 		// Play next item when current finnishes
 		n.audio.addEventListener( 'ended', function ()
 		{
+			// Switch Play/Pause button to show Play
+			document.getElementById( 'trigger-play' ).dataset.icon = 'x';
+
 			let item = document.getElementById( this.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( this.dataset.item, 10 ) ];
 			let next = n.next( 'next', true );
 
@@ -2786,6 +2817,8 @@ let n = {
 
 		// Return the playback order to the previous setting
 		order.selectedIndex = idx;
+
+		n.toggleAlternate( document.getElementById( 'trigger-next' ) );
 	},
 
 	/**
@@ -3469,12 +3502,6 @@ let n = {
 	 */
 	play( item = {} )
 	{
-		// Check if we are paused and only un-pause so
-		if ( n.activeItem && n.audio.paused )
-		{
-			return n.playPause();
-		}
-
 		// Check if HTMLElement is passed and use selected if not. Play
 		// button's click event points here, so item can be event object.
 		if ( !item.tagName )
@@ -3559,6 +3586,11 @@ let n = {
 		else if ( n.activeItem )
 		{
 			n.audio.pause();
+		}
+		// If no active item, we need to play the selected/first item in the playlist
+		else
+		{
+			n.play();
 		}
 	},
 
@@ -4227,6 +4259,13 @@ let n = {
 	 */
 	stop()
 	{
+		// this === n if used with keyboard shortcut
+		// When using keyboard shortcuts to stop the playback we do not have to fix button
+		if ( this.dataset && this.dataset.originalAction )
+		{
+			n.toggleAlternate( this );
+		}
+
 		if ( n.activeItem )
 		{
 			let idx        = parseInt( n.audio.dataset.item, 10 );
@@ -4262,6 +4301,9 @@ let n = {
 
 			// Clear counter
 			document.getElementById( 'footer-counter' ).innerHTML = '';
+
+			// Fix Play button to be Play
+			document.getElementById( 'trigger-play' ).dataset.icon = 'x';
 		}
 	},
 
@@ -4272,6 +4314,40 @@ let n = {
 	stopBubbling( e )
 	{
 		e.stopPropagation();
+	},
+
+	/**
+	 * Switch alternate action and icon of a button.
+	 * @param {HTMLElement} button
+	 * @param {Boolean} [alternate] Set menulistener and icon to alternate versions if true.
+	 */
+	toggleAlternate( button, alternate )
+	{
+		const dataset = button.dataset;
+		let icon;
+		let menulistener;
+
+		if ( alternate )
+		{
+			// Save reference to be used for restoring the action and icon after alternate action finishes.
+			dataset.originalIcon   = dataset.icon;
+			dataset.originalAction = dataset.menulistener;
+
+			// Show alternate action
+			icon         = dataset.alternateIcon;
+			menulistener = dataset.alternateAction;
+		}
+		else
+		{
+			icon         = dataset.originalIcon;
+			menulistener = dataset.originalAction;
+
+			delete dataset.originalIcon;
+			delete dataset.originalAction;
+		}
+
+		dataset.icon         = icon;
+		dataset.menulistener = menulistener;
 	},
 
 	/**
