@@ -84,14 +84,7 @@
 		"What is the 5MB quota?"                : "Web technologies have limitations to prevent bad people doing bad things on user's PC. Such limitation is the quota for how much data you can store on user's device. By limiting each site to 5MB the user is assured that his hard drive won't be overflowed with information from any particular site. Noisy uses this quota to save your playlists and preferences so next time you come to have them instantly loaded. Typically, in 5MB Noisy should be able to save playlists with a total items count of around 13000-14000 before running out of space. Noisy warns the user both when quota gets above 4MB and when it reaches the limit."
 	},
 	"whatsnew"    : [
-		"Updated the UI a bit",
-		"Made a lot changes that should speedup Noisy noticeably",
-		"Added tag reading for Opus files",
-		"Improved MP3/OGG/M4A tag reading",
-		"Improved last.fm by a margin",
-		"Dropped old browser support, like Internet Explorer",
-		"Lots of stability improvements and bugfixes",
-		"We are now on <a href=\"//github.com/metal03326/noisy\">GitHub</a>"
+		"Restructuring of action buttons (Play, Pause, etc.)"
 	],
 	"placeholders": {
 		"find-item"                    : "Enter name to search",

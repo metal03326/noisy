@@ -428,12 +428,7 @@ let n = {
 			document.getElementById( 'playlists' ).querySelector( 'div[data-icon="x"]' ) ||
 			document.getElementById( 'playlists' ).querySelector( 'div[data-icon="w"]' );
 
-		if ( item )
-		{
-			item = item.parentNode.parentNode;
-		}
-
-		return item;
+		return item && item.closest( '.playlist-item' );
 	},
 
 	/**
@@ -2079,7 +2074,7 @@ let n = {
 			n.attachEvents();
 
 			// Attach menu events
-			let menuItems    = document.querySelectorAll( 'div[data-menulistener]' );
+			let menuItems    = document.querySelectorAll( '[data-menulistener]' );
 			let prefTabs     = document.querySelectorAll( '.preferences-item' );
 			let _onItemClick = function ( e )
 			{
@@ -2161,19 +2156,16 @@ let n = {
 			// Double click on footer should bring the currently active item into the view
 			document.getElementById( 'footer' ).addEventListener( dblClickEvent, _ =>
 			{
-				let activeItem = n.activeItem;
-				let parentItem;
-				let id;
+				const activeItem = n.activeItem;
 
 				if ( activeItem )
 				{
-					parentItem = activeItem.parentNode;
-					id         = parentItem.id;
+					const playlistId = activeItem.closest( '.playlist' ).id;
 
 					// Focus the tab in which the active item is
-					if ( id !== n.activePlaylistId )
+					if ( playlistId !== n.activePlaylistId )
 					{
-						n.changePlaylist( document.querySelector( `div[data-for="${id}"]` ) );
+						n.changePlaylist( document.querySelector( `div[data-for="${playlistId}"]` ) );
 					}
 
 					// Scroll item into view
@@ -2289,6 +2281,9 @@ let n = {
 			let item;
 			let bold       = document.getElementById( 'playlists' ).querySelector( '.bold' );
 
+			// Switch Play/Pause button to show Pause
+			document.getElementById( 'trigger-play' ).dataset.icon = 'c';
+
 			// Remove bold from previous element, if available
 			if ( bold )
 			{
@@ -2332,11 +2327,20 @@ let n = {
 		} );
 
 		// Change state of the item to paused when the player is paused
-		n.audio.addEventListener( 'pause', _ => n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] ) );
+		n.audio.addEventListener( 'pause', _ =>
+		{
+			// Switch Play/Pause button to show Play
+			document.getElementById( 'trigger-play' ).dataset.icon = 'x';
+
+			n.setItemState( 'c', false, document.getElementById( n.audio.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( n.audio.dataset.item, 10 ) ] );
+		} );
 
 		// Play next item when current finnishes
 		n.audio.addEventListener( 'ended', function ()
 		{
+			// Switch Play/Pause button to show Play
+			document.getElementById( 'trigger-play' ).dataset.icon = 'x';
+
 			let item = document.getElementById( this.dataset.playlist ).querySelectorAll( '.playlist-item' )[ parseInt( this.dataset.item, 10 ) ];
 			let next = n.next( 'next', true );
 
@@ -3469,12 +3473,6 @@ let n = {
 	 */
 	play( item = {} )
 	{
-		// Check if we are paused and only un-pause so
-		if ( n.activeItem && n.audio.paused )
-		{
-			return n.playPause();
-		}
-
 		// Check if HTMLElement is passed and use selected if not. Play
 		// button's click event points here, so item can be event object.
 		if ( !item.tagName )
@@ -3559,6 +3557,11 @@ let n = {
 		else if ( n.activeItem )
 		{
 			n.audio.pause();
+		}
+		// If no active item, we need to play the selected/first item in the playlist
+		else
+		{
+			n.play();
 		}
 	},
 
