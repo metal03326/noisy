@@ -10,13 +10,7 @@
     "background": "#f18282"
   },
   ".playlist": {
-    "background": "#ffbebe"
-  },
-  ".playlist-item:nth-of-type(odd)": {
-    "background": "#f18282"
-  },
-  ".playlist-item:nth-of-type(even)": {
-    "background": "#f56e6e"
+    "background-image": "repeating-linear-gradient(to bottom,#f18282,#f18282 32px,#f56e6e 32px,#f56e6e 64px)"
   },
   ".playlist-item.selected": {
     "background": "#ec3c3c"
@@ -34,10 +28,6 @@
   ":root .preferences-item.active": {
     "background": "#f55252",
     "color": "#fff"
-  },
-  "#find-window-results": {
-    "color": "#fff",
-    "background": "#fcdcdc"
   },
   "#window-title": {
     "background": "#c53232"
@@ -81,7 +71,7 @@
     "background": "#f55252"
   },
   "#connected-table tr td:first-child": {
-    "color": "#CC1A1A"
+    "color": "#cc1a1a"
   },
   "button,.button": {
     "background": "#f7d4d4"
@@ -100,5 +90,11 @@
   },
   "a,.link": {
     "color": "#144cc2"
+  },
+  "#find:focus": {
+    "color": "#bd3636"
+  },
+  "#find:focus ~ .empty-find-icon,#find:focus ~ .find-icon": {
+    "color" : "#bd3636"
   }
 }

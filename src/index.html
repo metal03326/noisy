@@ -76,7 +76,6 @@
         <div id="window-title" class="flex">
             <span id="preferences-window-title" class="window-title-span"></span>
             <span id="about-window-title" class="window-title-span"></span>
-            <span id="find-window-title" class="window-title-span"></span>
             <span id="connect-window-title" class="window-title-span"></span>
             <span id="add-window-title" class="window-title-span"></span>
             <span id="save-playlist-window-title" class="window-title-span"></span>
@@ -393,13 +392,6 @@
                     <div id="faq-content"></div>
                 </div>
             </div>
-            <div id="find-window-content" class="flex-column">
-                <div class="flex flex-no-shrink">
-                    <input id="find-item" type="text" class="border-box"/>
-                    <button id="init-search" onclick="n.initSearch();" data-icon="#"></button>
-                </div>
-                <article id="find-window-results" class="flex-item-full playlist scroll-y"></article>
-            </div>
             <div id="connect-window-content">
                 <div id="currently-connected-to"></div>
                 <table id="connected-table">
@@ -466,7 +458,7 @@
             <div id="youtube-search-window-content"></div>
         </div>
         <div id="window-buttons">
-            <div id="preferences-window-buttons" class="flex">
+            <div id="preferences-window-buttons" class="flex flex-between">
                 <div class="relative">
                     <span class="hide-when-asking">
                         <button
@@ -481,7 +473,6 @@
                                 class="button-no"></button>
                     </div>
                 </div>
-                <div class="flex-item-full"></div>
                 <div>
                     <button onclick="n.showSavePreferences();" id="button-export-preferences"></button>
                     <button onclick="n.showLoadPreferences();" id="button-import-preferences"></button>
@@ -508,13 +499,11 @@
             <div id="load-preferences-window-buttons" class="flex">
                 <button onclick="n.loadPreferencesFromCloud();" class="button-load" disabled></button>
             </div>
-            <div id="whats-new-window-buttons" class="flex">
-                <div class="flex-item-full">
-                    <label>
-                        <input type="checkbox" id="show-on-startup-checkbox" checked="checked"/>
-                        <span id="show-on-startup"></span>
-                    </label>
-                </div>
+            <div id="whats-new-window-buttons">
+                <label>
+                    <input type="checkbox" id="show-on-startup-checkbox" checked="checked"/>
+                    <span id="show-on-startup"></span>
+                </label>
             </div>
         </div>
     </div>
@@ -540,7 +529,7 @@
         </div>
     </div>
     <div class="flex-column flex-item-full">
-        <div class="flex">
+        <div class="flex flex-align">
             <div id="trigger-prev" data-menulistener="prev" data-icon="C"></div>
             <div
                     id="trigger-play"
@@ -556,7 +545,7 @@
                     data-alternate-icon="s"
                     data-alternate-action="nextRandom"
             ></div>
-            <div id="nav-volume" class="flex">
+            <div id="nav-volume" class="flex flex-align">
                 <div id="trigger-mute" data-menulistener="toggleMute" data-icon="0"></div>
                 <div id="volume">
                     <div id="volume-progress"></div>
@@ -577,8 +566,12 @@
                     <option id="playback-order-stop-after-current"></option>
                 </select>
             </label>
-            <div data-menulistener="showSearch" data-icon="#"></div>
             <div id="color-bulb" data-menulistener="showPreferences" data-icon="$"></div>
+            <div class="flex">
+                <input id="find" type="text" required/>
+                <div data-icon="#" class="find-icon"></div>
+                <button class="empty-find-icon" onclick="n.emptyFind()">&times;</button>
+            </div>
         </div>
         <div class="flex">
             <div id="playlists-tabs" class="flex flex-item-full">
@@ -586,7 +579,6 @@
                     <i data-icon="="></i>
                 </div>
             </div>
-            <div data-menulistener="showSearch" data-icon="#"></div>
         </div>
     </div>
 </header>
@@ -595,14 +587,13 @@
     <div id="playlist-hints" class="flex-item-full flex-column playlist scroll-y">
         <div class="flex">
             <div id="main-menu-hint-icon" data-icon="@"></div>
-            <div class="flex flex-item-full">
+            <div class="flex flex-between flex-item-full">
                 <div>
                     <span id="add-playlist-hint-icon" class="rotate90">
                         <span data-icon="?"></span>
                     </span>
                     <span id="add-playlist-hint-text"></span>
                 </div>
-                <div class="flex-item-full"></div>
                 <div>
                     <span id="search-playlist-hint-text"></span>
                     <span id="search-playlist-hint-icon" class="rotate270">

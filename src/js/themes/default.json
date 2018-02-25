@@ -26,7 +26,7 @@
   ".select select": {
     "background": "#f8f8f8"
   },
-  ".select.top-bar select": {
+  ".top-bar select": {
     "background": "#666"
   },
   ":root .preferences-item.active": {
@@ -39,17 +39,11 @@
   ".playlists-tabs-li.active": {
     "background": "#4f4f4f"
   },
-  ".playlist-item:nth-of-type(odd)": {
-    "background": "#2e2e2e"
-  },
-  ".playlist-item:nth-of-type(even)": {
-    "background": "#343434"
-  },
   ".playlist-item.selected": {
     "background": "#525252"
   },
   ".playlist": {
-    "background": "#313131"
+    "background-image": "repeating-linear-gradient(to bottom,#2e2e2e,#2e2e2e 32px,#343434 32px,#343434 64px)"
   },
   ".window": {
     "border-color": "#757575"
@@ -63,10 +57,6 @@
   },
   "button,.button": {
     "background": "#eee"
-  },
-  "#find-window-results": {
-    "color": "#fff",
-    "background": "#2e2e2e"
   },
   "#window-title": {
     "background": "#757575"
@@ -113,5 +103,11 @@
   },
   "#connected-table tr td:first-child": {
     "color": "#333"
+  },
+  "#find:focus": {
+    "color": "#2e2e2e"
+  },
+  "#find:focus ~ .empty-find-icon,#find:focus ~ .find-icon": {
+    "color" : "#2e2e2e"
   }
 }
