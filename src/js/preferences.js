@@ -170,8 +170,9 @@ let pref = {
 
 		if ( playbackOrder )
 		{
-			playbackOrder.selectedIndex = this.settings.playbackOrder || 0;
-			n.audio.loop                = !(2 - playbackOrder.selectedIndex);
+			const idx                   = this.settings.playbackOrder || 0;
+			playbackOrder.selectedIndex = idx;
+			n.audio.loop                = !(2 - idx);
 		}
 		else
 		{

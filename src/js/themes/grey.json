@@ -7,83 +7,70 @@
     "color": "#313138"
   },
   ".playlists-tabs-li": {
-    "background": "#C9C9C9"
+    "background": "#c9c9c9"
   },
   ".playlists-tabs-li.active": {
     "background": "#fff"
   },
   ".playlist": {
-    "background": "#C7C6C6"
-  },
-  ".playlist-item:nth-of-type(odd)": {
-    "background": "#C9C9C9"
-  },
-  ".playlist-item:nth-of-type(even)": {
-    "background": "#D5D5D5"
+    "background-image": "repeating-linear-gradient(to bottom,#c9c9c9,#c9c9c9 32px,#d5d5d5 32px,#d5d5d5 64px)"
   },
   ".playlist-item.selected": {
-    "background": "#EBD9B4",
+    "background": "#ebd9b4",
     "color": "#000"
   },
   ".window": {
-    "border-color": "#ADADAD"
+    "border-color": "#adadad"
   },
   "#preferences-tabs": {
-    "border-color": "#B9B9B9",
-    "background": "#C7C7C7"
+    "border-color": "#b9b9b9",
+    "background": "#c7c7c7"
   },
   ":root .preferences-item.active": {
-    "background": "#E7E7E7",
+    "background": "#e7e7e7",
     "color": "#313138"
   },
-  "#find-window-results": {
-    "color": "#313138",
-    "background": "#C9C9C9"
-  },
   "#window-title": {
-    "background": "#ADADAD"
+    "background": "#adadad"
   },
   "#window-buttons": {
-    "border-color": "#B9B9B9",
-    "background": "#E2E2E2"
+    "border-color": "#b9b9b9",
+    "background": "#e2e2e2"
   },
   "#volume,#progress": {
-    "background": "#C9C9C9"
+    "background": "#c9c9c9"
   },
   ".add-item.active": {
     "color": "#313138"
   },
   ".add-item.active span": {
-    "color": "#9B9B9B"
+    "color": "#9b9b9b"
   },
   "h6": {
-    "color": "#FDF8F8"
+    "color": "#fdf8f8"
   },
   "#console-title": {
-    "background": "#E2E2E2",
-    "border-top-color": "#B9B9B9"
+    "background": "#e2e2e2",
+    "border-top-color": "#b9b9b9"
   },
   "#add-playlist": {
-    "background": "#E7E7E7",
+    "background": "#e7e7e7",
     "border-color": "#949494"
   },
   "#window-content": {
-    "background": "#CECECE"
+    "background": "#cecece"
   },
-  ".select.top-bar select": {
-    "background": "#E7E7E7"
+  ".top-bar select": {
+    "background": "#e7e7e7"
   },
   "button,.button": {
-    "background": "#FAFAFA"
+    "background": "#fafafa"
   },
   "#keyboard-shortcuts button:not(#shortcut-add)": {
     "color": "#747474"
   },
   "#translation-contributors": {
-    "background": "#E2E2E2"
-  },
-  "#init-search": {
-    "background": "#E7E7E7"
+    "background": "#e2e2e2"
   },
   ".selected .item-queue:not(:empty)": {
     "color": "#fff"

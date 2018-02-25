@@ -34,10 +34,6 @@
   "#preference-general-help,#preference-language-help,.help-icon": {
     "color": "#fffd00"
   },
-  "#find-window-results": {
-    "color": "#fffd00",
-    "background": "#000"
-  },
   "#window-title": {
     "background": "#00f"
   },
@@ -80,7 +76,7 @@
   ".select select": {
     "background": "#fff"
   },
-  ".select.top-bar select": {
+  ".top-bar select": {
     "background": "#fffd00"
   },
   "#connected-table tr td:first-child": {
@@ -104,5 +100,11 @@
   },
   ".favicon": {
     "background": "#fff"
+  },
+  "#find:focus": {
+    "color": "#000"
+  },
+  "#find:focus ~ .empty-find-icon,#find:focus ~ .find-icon": {
+    "color" : "#000"
   }
 }

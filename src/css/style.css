@@ -229,9 +229,6 @@ button
 .playlist-item.selected .item-queue:empty ~ .item-remove-from-queue,
 .playlist-item.selected .item-queue:not(:empty) ~ .item-add-to-queue,
 .one-tab #playlists-tabs,
-.one-tab [data-icon="#"]:last-child,
-body:not(.one-tab) [data-icon="#"]:not(:last-child),
-#find-window-results div[data-icon],
 .playlists-tabs-li:not(.active) .playlist-edit,
 .playlists-tabs-li:not(.active) .playlist-remove,
 #battery-level-menu-handle:not([title]) #battery-cap,
@@ -244,8 +241,6 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child),
 .window:not(#about-window) #about-window-title,
 .window:not(#about-window) #about-window-content,
 .window:not(#about-window) #about-window-buttons,
-.window:not(#find-window) #find-window-title,
-.window:not(#find-window) #find-window-content,
 .window:not(#connect-window) #connect-window-title,
 .window:not(#connect-window) #connect-window-content,
 .window:not(#connect-window) #connect-window-buttons,
@@ -303,8 +298,58 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child),
 
 #color-bulb
 {
-	padding   : 3px 7px;
+	padding   : 0 7px;
 	font-size : 22px;
+}
+
+#find
+{
+	width               : 190px;
+	padding             : 5px 24px 5px 5px;
+	transition          : all .2s linear;
+	transition-property : width, color, background-color;
+}
+
+#find:invalid:not(:focus)
+{
+	width : 0;
+}
+
+#find:invalid ~ .empty-find-icon,
+#find:not(:invalid) ~ .find-icon
+{
+	display : none;
+}
+
+#find:not(:focus)
+{
+	background : transparent;
+	color      : currentColor;
+}
+
+.find-icon,
+.empty-find-icon
+{
+	position : absolute;
+	right    : 2px;
+}
+
+.find-icon
+{
+	font-size      : 22px;
+	pointer-events : none;
+	margin-top     : 2px;
+}
+
+.empty-find-icon
+{
+	/* The following rules overwrite rules for button, as .empty-find-icon is a button */
+	background   : transparent;
+	padding      : 0;
+	color        : currentColor;
+	font-size    : 24px;
+	line-height  : 1;
+	margin-right : 5px;
 }
 
 #playlists-tabs
@@ -322,7 +367,10 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child),
 
 .playlist
 {
-	flex : 1 1 auto;
+	flex                  : 1 1 auto;
+
+	/* Make zebra playlist strips stick with scrollbar */
+	background-attachment : local;
 }
 
 .one-tab #header-left
@@ -342,11 +390,6 @@ body:not(.one-tab) [data-icon="#"]:not(:last-child),
 	white-space : nowrap;
 	font-size   : 16px;
 	align-items : center;
-}
-
-#find-window-results .playlist-item
-{
-	padding : 0 10px;
 }
 
 #footer
@@ -463,13 +506,6 @@ label[for|="preference"],
 	height : 230px;
 }
 
-#find-item
-{
-	width      : 100%;
-	height     : 21px;
-	margin-top : 3px;
-}
-
 button,
 .button
 {
@@ -484,19 +520,6 @@ button,
 	background : transparent;
 	border     : 0;
 	padding    : 0;
-}
-
-#init-search
-{
-	width      : 58px;
-	height     : 21px;
-	margin-top : 3px;
-	font-size  : 15px;
-}
-
-#find-window-results
-{
-	overflow-y : auto;
 }
 
 #window-title
@@ -522,7 +545,6 @@ button,
 }
 
 #about-window #window-content,
-#find-window #window-content,
 #local-window #window-content,
 #youtube-search-window #window-content
 {
@@ -628,13 +650,17 @@ button,
 #volume,
 #progress
 {
-	margin : 2px 2px 0 0;
+	margin-right : 2px;
 }
 
 .select
 {
-	position   : relative;
-	display    : inline-block;
+	position : relative;
+	display  : inline-block;
+}
+
+.select:not(.top-bar)
+{
 	margin-top : 2px;
 }
 
@@ -707,14 +733,14 @@ summary
 	outline     : none;
 }
 
-input:required:invalid,
-input:focus:invalid
+#keyboard-shortcut:required:invalid,
+#keyboard-shortcut:focus:invalid
 {
 	background : #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAeVJREFUeNqkU01oE1EQ/mazSTdRmqSxLVSJVKU9RYoHD8WfHr16kh5EFA8eSy6hXrwUPBSKZ6E9V1CU4tGf0DZWDEQrGkhprRDbCvlpavan3ezu+LLSUnADLZnHwHvzmJlvvpkhZkY7IqFNaTuAfPhhP/8Uo87SGSaDsP27hgYM/lUpy6lHdqsAtM+BPfvqKp3ufYKwcgmWCug6oKmrrG3PoaqngWjdd/922hOBs5C/jJA6x7AiUt8VYVUAVQXXShfIqCYRMZO8/N1N+B8H1sOUwivpSUSVCJ2MAjtVwBAIdv+AQkHQqbOgc+fBvorjyQENDcch16/BtkQdAlC4E6jrYHGgGU18Io3gmhzJuwub6/fQJYNi/YBpCifhbDaAPXFvCBVxXbvfbNGFeN8DkjogWAd8DljV3KRutcEAeHMN/HXZ4p9bhncJHCyhNx52R0Kv/XNuQvYBnM+CP7xddXL5KaJw0TMAF8qjnMvegeK/SLHubhpKDKIrJDlvXoMX3y9xcSMZyBQ+tpyk5hzsa2Ns7LGdfWdbL6fZvHn92d7dgROH/730YBLtiZmEdGPkFnhX4kxmjVe2xgPfCtrRd6GHRtEh9zsL8xVe+pwSzj+OtwvletZZ/wLeKD71L+ZeHHWZ/gowABkp7AwwnEjFAAAAAElFTkSuQmCC) no-repeat right top;
 	box-shadow : none;
 }
 
-input:required:valid
+#keyboard-shortcut:required:valid
 {
 	background : #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAepJREFUeNrEk79PFEEUx9/uDDd7v/AAQQnEQokmJCRGwc7/QeM/YGVxsZJQYI/EhCChICYmUJigNBSGzobQaI5SaYRw6imne0d2D/bYmZ3dGd+YQKEHYiyc5GUyb3Y+77vfeWNpreFfhvXfAWAAJtbKi7dff1rWK9vPHx3mThP2Iaipk5EzTg8Qmru38H7izmkFHAF4WH1R52654PR0Oamzj2dKxYt/Bbg1OPZuY3d9aU82VGem/5LtnJscLxWzfzRxaWNqWJP0XUadIbSzu5DuvUJpzq7sfYBKsP1GJeLB+PWpt8cCXm4+2+zLXx4guKiLXWA2Nc5ChOuacMEPv20FkT+dIawyenVi5VcAbcigWzXLeNiDRCdwId0LFm5IUMBIBgrp8wOEsFlfeCGm23/zoBZWn9a4C314A1nCoM1OAVccuGyCkPs/P+pIdVIOkG9pIh6YlyqCrwhRKD3GygK9PUBImIQQxRi4b2O+JcCLg8+e8NZiLVEygwCrWpYF0jQJziYU/ho2TUuCPTn8hHcQNuZy1/94sAMOzQHDeqaij7Cd8Dt8CatGhX3iWxgtFW/m29pnUjR7TSQcRCIAVW1FSr6KAVYdi+5Pj8yunviYHq7f72po3Y9dbi7CxzDO1+duzCXH9cEPAQYAhJELY/AqBtwAAAAASUVORK5CYII=) no-repeat right top;
 }
@@ -853,13 +879,14 @@ h6
 
 #playlist-hints
 {
-	padding-left : 18px;
+	padding-left     : 18px;
+	background-image : none;
 }
 
 #search-playlist-hint-icon
 {
 	display      : inline-block;
-	margin-right : 15px;
+	margin-right : 5px;
 }
 
 #the-menu
@@ -885,11 +912,6 @@ h6
 {
 	padding   : 0 7px;
 	font-size : 27px;
-}
-
-[data-menulistener="showSearch"]
-{
-	font-size : 22px;
 }
 
 .menu-ul-li
@@ -938,7 +960,7 @@ h6
 	padding    : 5px;
 }
 
-#window-buttons > div
+#window-buttons > div:not(.flex-between)
 {
 	padding         : 4px;
 	justify-content : flex-end;
@@ -959,11 +981,6 @@ h6
 #connected-table tr td:last-child
 {
 	width : 100%;
-}
-
-.border-box
-{
-	box-sizing : border-box;
 }
 
 .add-item
@@ -1381,15 +1398,12 @@ h6
 .flex,
 .flex-column
 {
-	display : -ms-flexbox;
-	display : -webkit-flex;
 	display : flex;
 }
 
 .flex-column
 {
-	-ms-flex-direction : column;
-	flex-direction     : column;
+	flex-direction : column;
 }
 
 .flex-item-full
@@ -1412,6 +1426,16 @@ h6
 	width         : 0;
 }
 
+.flex-align
+{
+	align-items : center;
+}
+
+.flex-between
+{
+	justify-content : space-between;
+}
+
 .form-row
 {
 	display     : flex;
@@ -1420,12 +1444,12 @@ h6
 
 .form-control
 {
-	margin: 0 10px;
+	margin : 0 10px;
 }
 
 .form-label
 {
-	margin-right: 3px;
+	margin-right : 3px;
 }
 
 [hidden]

@@ -30,6 +30,9 @@ let n = {
 	// Detected formats that the browser is able to play in Audio tag
 	formats: [],
 
+	// Delay find when user is typing
+	findTimeout: null,
+
 	// Google Drive communication goes through here. See googledrive.js file for more info.
 	googledrive,
 
@@ -38,10 +41,6 @@ let n = {
 
 	// Last.fm communication goes through here. See lastfm.js file for more info.
 	lastfm,
-
-	// Save last search term, as we need to check for it next time the user presses Enter and initiate play instead of
-	// search if terms match
-	lastSearchTerm: '',
 
 	// Fake cloud object for local playback
 	local: {
@@ -217,21 +216,6 @@ let n = {
 				for ( let i = 0; i < selectedItems.length; i++ )
 				{
 					selectedItems[ i ].classList.remove( 'selected' );
-				}
-
-				// Search for the selected and focused items inside of the find window if not found in the playlist
-				if ( !~idx || !~idx2 )
-				{
-					let window = document.getElementById( 'find-window-results' );
-
-					if ( window )
-					{
-						items = window.querySelectorAll( itemClass );
-						// Get the index of the focused item
-						idx   = Array.prototype.indexOf.call( items, selectionStart );
-						// Get the index of the clicked item
-						idx2  = Array.prototype.indexOf.call( items, this );
-					}
 				}
 
 				// Continue only if both selected and focused items found
@@ -899,9 +883,10 @@ let n = {
 		document.getElementById( 'playback-order' ).addEventListener( 'change', e =>
 		{
 			const target = e.currentTarget;
+			const idx    = target.selectedIndex;
 
-			n.audio.loop         = !(2 - target.selectedIndex);
-			n.pref.playbackOrder = target.selectedIndex;
+			n.audio.loop         = !(2 - idx);
+			n.pref.playbackOrder = idx;
 		} );
 
 		// Attach event listeners to the tabs
@@ -1003,9 +988,6 @@ let n = {
 		{
 			inputs[ i ].onchange = _onChange;
 		}
-
-		// Make Find window work
-		document.getElementById( 'find-item' ).addEventListener( keyDownEvent, n.find );
 
 		// Make X button on windows work
 		document.getElementById( 'window-close' ).addEventListener( clickEvent, n.closeAll );
@@ -1162,6 +1144,36 @@ let n = {
 				}, { once: true } );
 			} );
 		}
+
+		// Init searching when user changes the value in any way (typing, pasting)
+		document.getElementById( 'find' ).addEventListener( 'input', e =>
+		{
+			const val = e.currentTarget.value.toLowerCase().trim();
+
+			clearTimeout( n.findTimeout );
+
+			// Search for term
+			n.findTimeout = setTimeout( _ =>
+			{
+				n.initSearch( val );
+
+				// Select first result
+				const item = document.getElementById( n.activePlaylistId ).querySelector( '.playlist-item:not([hidden])' );
+
+				if ( item )
+				{
+					// Select first item in results window and in playlist
+					n.onRowDown( { target: item, currentTarget: item } );
+
+					// In the case where user has scrolled the list and then continued to type in the filter, we need to
+					// scroll the selected (first) item back into the view
+					scrollIntoViewIfOutOfView( item );
+				}
+			}, 500 );
+		} );
+
+		// Handle Enter, Esc, Up and Down keys
+		document.getElementById( 'find' ).addEventListener( keyDownEvent, n.onFindKeyDown );
 	},
 
 	/**
@@ -1633,7 +1645,7 @@ let n = {
 	 */
 	get currentlySelectedItem()
 	{
-		return n.currentlySelectedItems[ 0 ] || document.getElementById( n.activePlaylistId ).children[ 0 ];
+		return n.currentlySelectedItems[ 0 ] || document.getElementById( n.activePlaylistId ).querySelectorAll( '.playlist-item:not([hidden])' )[ 0 ];
 	},
 
 	/**
@@ -1736,9 +1748,33 @@ let n = {
 		document.getElementById( 'add-window-files' ).innerHTML = '';
 	},
 
-	emptyFindWindow()
+	/**
+	 * Empty term in find and focus it back
+	 */
+	emptyFind()
 	{
-		n.initSearch( document.getElementById( 'find-item' ).value = n.lastSearchTerm = '' );
+		// Handle edge case where user ultra-fast presses escape after typing, which will clear the fields, but
+		// it'll still execute search
+		clearTimeout( n.findTimeout );
+
+		const find = document.getElementById( 'find' );
+
+		// Empty filter
+		find.value = '';
+
+		// Focus is back in case user clicked X with mouse
+		find.focus();
+
+		// Restore all hidden items
+		n.initSearch( '' );
+
+		const selected = n.currentlySelectedItem;
+
+		// Check if there was a selection, scroll to it
+		if ( selected )
+		{
+			scrollIntoViewIfOutOfView( selected );
+		}
 	},
 
 	/**
@@ -1816,93 +1852,6 @@ let n = {
 		if ( save )
 		{
 			n.savePlaylist( document.getElementById( id ) );
-		}
-	},
-
-	/**
-	 * Searches for items.
-	 *
-	 * @param {Event} e Required. Event for the input element in which
-	 * the search term is entered. Searching is done only when Enter key is pressed.
-	 */
-	find( e )
-	{
-		const keyCode = e.keyCode;
-
-		// Enter pressed
-		if ( 13 === keyCode )
-		{
-			const val = e.currentTarget.value.toLowerCase().trim();
-
-			// If user pressed Enter again, without changing the search term, we need to initiate play on the selected
-			// item
-			if ( n.lastSearchTerm === val )
-			{
-				n.play();
-			}
-			else
-			{
-				// Search for term
-				n.initSearch( n.lastSearchTerm = val );
-
-				// Select first result
-				const item = document.getElementById( 'find-window-results' ).querySelector( '.playlist-item' );
-
-				if ( item )
-				{
-					// Select first item in results window and in playlist
-					n.onRowDown( { target: item, currentTarget: item } );
-				}
-			}
-		}
-		// Up or Down key pressed
-		else if ( 38 === keyCode || 40 === keyCode )
-		{
-			let results = document.getElementById( 'find-window-results' ).querySelectorAll( '.playlist-item' );
-
-			if ( results.length )
-			{
-				// Get selected item
-				const selected = document.getElementById( 'find-window-results' ).querySelector( '.selected' );
-
-				// Find it's index in the parent's children
-				const idx = Array.prototype.indexOf.call( results, selected );
-
-				let item;
-
-				if ( 38 === keyCode )
-				{
-					// Check if we are the first item and select the last one if true
-					if ( 0 > idx - 1 )
-					{
-						item = results[ results.length - 1 ];
-					}
-					else
-					{
-						item = results[ idx - 1 ];
-					}
-				}
-				else
-				{
-					// Check if we are the last item and select the first one if true
-					if ( results.length <= idx + 1 )
-					{
-						item = results[ 0 ];
-					}
-					else
-					{
-						item = results[ idx + 1 ];
-					}
-				}
-
-				// Select first item in results window and in playlist
-				n.onRowDown( { target: item, currentTarget: item } );
-			}
-		}
-		// Esc key pressed
-		else if ( 27 === keyCode )
-		{
-			n.closeAll();
 		}
 	},
 
@@ -2418,50 +2367,42 @@ let n = {
 	 */
 	initSearch( val )
 	{
-		const results = document.getElementById( 'find-window-results' );
+		const playlist = document.getElementById( n.activePlaylistId );
+		const items    = playlist.querySelectorAll( '.playlist-item' );
 
-		results.innerHTML = '';
+		// We'll search by all words, so we split them
+		const terms = val.split( ' ' );
 
-		if ( val )
+		// Optimize re-flows on each item hide by first hiding the whole playlist and showing it after search finished
+		playlist.hidden = true;
+
+		// Loop through all playlist items
+		main: for ( let i = 0; i < items.length; i++ )
 		{
-			const items = document.getElementById( 'playlists' ).querySelectorAll( 'article:not([hidden]) section[data-url]' );
+			const item  = items[ i ];
+			const url   = item.dataset.url.toLowerCase();
+			// By default we have a match
+			const title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
 
-			// We'll search by all words, so we split them
-			const terms = val.split( ' ' );
-
-			// Loop through all playlist items
-			main: for ( let i = 0; i < items.length; i++ )
+			// Loop through all search terms (words)
+			for ( let j = 0; j < terms.length; j++ )
 			{
-				const item  = items[ i ];
-				const url   = item.dataset.url.toLowerCase();
-				// By default we have a match
-				const title = item.querySelector( '.item-title' ).innerHTML.toLowerCase();
+				const term = terms[ j ];
 
-				// Loop through all search terms (words)
-				for ( let j = 0; j < terms.length; j++ )
+				// If this term is not found in current item, mark item as not suitable and move on
+				if ( !url.includes( term ) && !title.includes( term ) )
 				{
-					const term = terms[ j ];
-
-					// If this term is not found in current item, mark item as not suitable and move on
-					if ( !url.includes( term ) && !title.includes( term ) )
-					{
-						continue main;
-					}
+					item.hidden = true;
+					continue main;
 				}
-
-				const cloning = item.cloneNode( true );
-
-				// Remove queue and duration elements from the cloning
-				cloning.querySelector( '.playback-options' ).remove();
-				cloning.querySelector( '.item-duration' ).remove();
-
-				results.appendChild( cloning );
-
-				// Add event listeners for the cloning
-				cloning.addEventListener( 'mousedown', n.onRowDown );
-				cloning.addEventListener( 'dblclick', n.onRowDblClick );
 			}
+
+			// Show item (it may have been hidden from previous search)
+			item.hidden = false;
 		}
+
+		// Show resulting filtered playlist
+		playlist.hidden = false;
 	},
 
 	initWhatsNew()
@@ -2690,13 +2631,14 @@ let n = {
 		}
 
 		// Get current item and set next item to null
-		let item     = n.activeItem;
-		let next     = null;
-		let selected = n.currentlySelectedItem;
-		let idx      = document.getElementById( 'playback-order' ).selectedIndex;
+		const item          = n.activeItem;
+		const selected      = n.currentlySelectedItem;
+		const playbackOrder = document.getElementById( 'playback-order' ).selectedIndex;
+		const visibleItems  = Array.from( item.closest( '.playlist' ).querySelectorAll( '.playlist-item:not([hidden])' ) );
+		let next            = null;
 
 		// If user wants to repeat the same item don't do anything - audio.loop is set to true
-		if ( 2 === idx )
+		if ( 2 === playbackOrder )
 		{
 			return;
 		}
@@ -2721,49 +2663,65 @@ let n = {
 		}
 
 		// Play next song depending on user's selection if any
-		if ( n.pref.playbackFollowsCursorEnabled && selected && 4 !== idx )
+		if ( n.pref.playbackFollowsCursorEnabled && selected && 4 !== playbackOrder )
 		{
 			next = selected;
 		}
 		else if ( 'next' === direction && n.queue.length )
 		{
 			next = n.queue[ 0 ];
+
+			// If next item is not in the current filtering, we need to skip it
+			if ( !visibleItems.includes( next ) )
+			{
+				next = null;
+			}
 		}
 
 		if ( !next )
 		{
-			// Choose next item depending on the playback order set by the user
-			switch ( idx )
+			const itemIdx = visibleItems.indexOf( item );
+			const dir     = direction === 'next' ? 1 : -1;
+
+			// If the item is not found in the visible items, then user changed the filter and we need to play the
+			// first item in the stack
+			if ( ~itemIdx )
 			{
-				// Default mode
-				case 0:
-					next = item[ `${direction}Sibling` ];
-					break;
+				// Choose next item depending on the playback order set by the user
+				switch ( playbackOrder )
+				{
+					// Default mode
+					case 0:
+						next = visibleItems[ itemIdx + dir ];
+						break;
 
-				// Repeat playlist mode
-				case 1:
-					next = item[ `${direction}Sibling` ];
-					if ( !next )
-					{
-						next = n.getAllItems();
+					// Repeat playlist mode
+					case 1:
+						next = visibleItems[ itemIdx + dir ];
 
-						// Get the last item if previous item is required
-						if ( 'previous' === direction )
+						if ( !next )
 						{
-							next = next.item( next.length - 1 );
+							// Get the last item if previous item is required
+							if ( 'previous' === direction )
+							{
+								next = visibleItems[ visibleItems.length - 1 ];
+							}
+							else
+							{
+								next = visibleItems[ 0 ];
+							}
 						}
-						else
-						{
-							next = next.item( 0 );
-						}
-					}
-					break;
+						break;
 
-				// Random mode
-				case 3:
-					let items = n.getAllItems();
-					next      = items[ Math.floor( (Math.random() * items.length) ) ];
-					break;
+					// Random mode
+					case 3:
+						next = visibleItems[ Math.floor( (Math.random() * visibleItems.length) ) ];
+						break;
+				}
+			}
+			else if ( visibleItems.length )
+			{
+				next = visibleItems[ 0 ];
 			}
 		}
 		// Otherwise set player to stop state, but only if not being set to return as pre-loading shouldn't brake
@@ -3178,6 +3136,75 @@ let n = {
 		return false;
 	},
 
+	/**
+	 * Searches for items.
+	 *
+	 * @param {Event} e Required. Event for the input element in which
+	 * the search term is entered. Searching is done only when Enter key is pressed.
+	 */
+	onFindKeyDown( e )
+	{
+		const keyCode = e.keyCode;
+
+		// Enter pressed
+		if ( 13 === keyCode )
+		{
+			n.play();
+		}
+		// Esc key pressed
+		else if ( 27 === keyCode )
+		{
+			n.emptyFind();
+		}
+		// Up or Down key pressed
+		else if ( 38 === keyCode || 40 === keyCode )
+		{
+			let results = document.getElementById( n.activePlaylistId ).querySelectorAll( '.playlist-item:not([hidden])' );
+
+			if ( results.length )
+			{
+				// Get selected item
+				const selected = n.currentlySelectedItem;
+
+				// Find it's index in the parent's children
+				const idx = Array.prototype.indexOf.call( results, selected );
+
+				let item;
+
+				if ( 38 === keyCode )
+				{
+					// Check if we are the first item and select the last one if true
+					if ( 0 > idx - 1 )
+					{
+						item = results[ results.length - 1 ];
+					}
+					else
+					{
+						item = results[ idx - 1 ];
+					}
+				}
+				else
+				{
+					// Check if we are the last item and select the first one if true
+					if ( results.length <= idx + 1 )
+					{
+						item = results[ 0 ];
+					}
+					else
+					{
+						item = results[ idx + 1 ];
+					}
+				}
+
+				// Select first item in results window and in playlist
+				n.onRowDown( { target: item, currentTarget: item } );
+
+				// Scroll the item into the view
+				scrollIntoViewIfOutOfView( item );
+			}
+		}
+	},
+
 	onPowerSaverStateChange( select )
 	{
 		n.pref.powerSaverState = select.value;
@@ -3259,32 +3286,6 @@ let n = {
 
 			// Select clicked item depending on the keyboard keys pressed
 			n._selectItems.call( row, e, n.activePlaylistId, '.playlist-item', 'selected' );
-
-			// Manage search results, if window is opened
-			if ( document.getElementById( 'find-window-results' ).contains( row ) )
-			{
-				let toSelect        = document.querySelectorAll( '.window .selected' );
-				const selectedClass = 'selected';
-				let selected        = document.querySelectorAll( `#${n.activePlaylistId} .selected` );
-
-				// Deselect all selected items from the current playlist
-				for ( let i = 0; i < selected.length; i++ )
-				{
-					selected[ i ].classList.remove( selectedClass );
-				}
-
-				for ( let i = 0; i < toSelect.length; i++ )
-				{
-					document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${toSelect[ i ].dataset.url}"]` ).classList.add( selectedClass );
-				}
-
-				let el = document.getElementById( n.activePlaylistId ).querySelector( `section[data-url="${row.dataset.url}"]` );
-
-				el.classList.add( selectedClass );
-
-				scrollIntoViewIfOutOfView( el );
-				scrollIntoViewIfOutOfView( row );
-			}
 		} );
 
 		n.movingItem       = e.currentTarget;
@@ -4233,17 +4234,10 @@ let n = {
 	/**
 	 * Shows find window.
 	 */
-	showSearch( e )
+	showSearch()
 	{
-		if ( e )
-		{
-			e.stopPropagation();
-		}
-
-		n.window( 'find-window' );
-
-		// Focus input element after CSS3 animation is over
-		setTimeout( _ => document.getElementById( 'find-item' ).focus(), 300 );
+		// Focus search field
+		document.getElementById( 'find' ).focus();
 	},
 
 	/**
@@ -4680,9 +4674,6 @@ let n = {
 			// All other classes are ids and should replace old id
 			default:
 				[ 'add-window', 'save-playlist-window', 'load-playlist-window', 'save-preferences-window', 'load-preferences-window' ].includes( cls ) && n.resetAddWindow();
-
-				// Empty find window only when we are about to open it
-				cls === 'find-window' && n.emptyFindWindow();
 
 				window.id = cls;
 
