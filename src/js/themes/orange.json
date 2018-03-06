@@ -13,9 +13,10 @@
     "background": "#ffcc8b"
   },
   ".playlist": {
-    "background-image": "repeating-linear-gradient(to bottom,#fdd9aa,#fdd9aa 32px,#f8dfc0 32px,#f8dfc0 64px)"
+    "background-image": "repeating-linear-gradient(to bottom,#fdd9aa,#fdd9aa 32px,#f8dfc0 32px,#f8dfc0 64px)",
+    "color": "#000"
   },
-  ".playlist-item.selected": {
+  ".playlist-item.selected,.item-menu-items": {
     "color": "#fff",
     "background": "#fcae4c"
   },
@@ -65,7 +66,7 @@
   "#window-content": {
     "background": "#fcc27b"
   },
-  ".top-bar": {
+  ".select": {
     "color": "initial"
   },
   ".select select": {
@@ -84,7 +85,8 @@
     "color": "#ffb557"
   },
   "#translation-contributors": {
-    "background": "#ffd8a6"
+    "background": "#ffd8a6",
+	"color": "initial"
   },
   "#find:focus": {
     "color": "#000"

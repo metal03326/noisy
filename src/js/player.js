@@ -398,6 +398,14 @@ let n = {
 			notConnecteds[ i ].title = n.lang.other[ 'not-connected' ];
 		}
 
+		const itemMenuItems = document.querySelectorAll( '.item-menu-item > div' );
+		for ( let i = 0; i < itemMenuItems.length; i++ )
+		{
+			const item = itemMenuItems[ i ];
+
+			item.innerHTML = n.lang.itemMenu[ item.className ];
+		}
+
 		// Refresh window title
 		n.setTitle( null, true );
 		n.refreshWindowTitle();
@@ -2063,7 +2071,7 @@ let n = {
 			let _onTabClick  = function ()
 			{
 				// Check if user clicked on the active tab already and stop execution if true
-				if ( this.classList.contains( 'active' ) )
+				if ( this.matches( '.active' ) )
 				{
 					return;
 				}
@@ -3256,22 +3264,17 @@ let n = {
 		let row            = e.currentTarget;
 
 		// Delete selected items if the user has clicked on the trash can on some of them, then on the confirm icon
-		if ( row.classList.contains( 'confirmation' ) && clickedElement.classList.contains( 'delete-icon' ) )
+		if ( clickedElement.matches( '.delete-item' ) )
 		{
 			return n.deleteItems();
 		}
-		// Otherwise add confirmation to the row
-		else if ( clickedElement.classList.contains( 'delete-icon' ) )
-		{
-			return row.classList.add( 'confirmation' );
-		}
 		// Otherwise check if user clicked add to queue icon and add the item to the queue if true
-		else if ( clickedElement.classList.contains( 'item-add-to-queue' ) )
+		else if ( clickedElement.matches( '.item-add-to-queue' ) )
 		{
 			return n.addToQueue( row );
 		}
 		// If not, check if user clicked remove from queue icon and remove the item from the queue
-		else if ( clickedElement.classList.contains( 'item-remove-from-queue' ) )
+		else if ( clickedElement.matches( '.item-remove-from-queue' ) )
 		{
 			return n.removeFromQueue( row );
 		}
@@ -3625,27 +3628,7 @@ let n = {
 	 */
 	removeFromPlaylist()
 	{
-		let selectedRows = document.getElementById( n.activePlaylistId ).querySelectorAll( '.playlist-item.selected' );
-		let len          = selectedRows.length;
-		let confirm      = 0;
-
-		for ( let i = 0; i < len; i++ )
-		{
-			let row = selectedRows[ i ];
-			if ( row.classList.contains( 'confirmation' ) )
-			{
-				confirm++;
-			}
-			else
-			{
-				row.classList.add( 'confirmation' );
-			}
-		}
-
-		if ( len === confirm )
-		{
-			n.deleteItems();
-		}
+		n.deleteItems();
 	},
 
 	/**
@@ -3762,7 +3745,7 @@ let n = {
 		// Create duration container if not already created and fill it
 		if ( !durationContainer.length )
 		{
-			item.innerHTML += `<span class="item-duration">${duration}</span><div class="delete-icon" tabindex="-1" data-icon="m"></div>`;
+			item.innerHTML += `<span class="item-duration">${duration}</span><div class="item-menu" tabindex="-1" data-icon="M"><div class="item-menu-items" tabindex="-1"><div class="item-menu-item" tabindex="-1"><div class="delete-item">${n.lang.itemMenu['delete-item']}</div></div></div></div>`;
 		}
 		// Otherwise just fill the already there duration element
 		else

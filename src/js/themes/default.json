@@ -39,7 +39,7 @@
   ".playlists-tabs-li.active": {
     "background": "#4f4f4f"
   },
-  ".playlist-item.selected": {
+  ".playlist-item.selected,.item-menu-items": {
     "background": "#525252"
   },
   ".playlist": {

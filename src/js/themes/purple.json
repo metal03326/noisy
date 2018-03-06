@@ -12,7 +12,7 @@
   ".playlist": {
     "background-image": "repeating-linear-gradient(to bottom,#ba69bd,#ba69bd 32px,#c477c9 32px,#c477c9 64px)"
   },
-  ".playlist-item.selected": {
+  ".playlist-item.selected,.item-menu-items": {
     "background": "#a759ac"
   },
   ".window": {
@@ -67,6 +67,9 @@
   },
   ".top-bar select": {
     "background": "#cb81cf"
+  },
+  ".select:not(.top-bar)": {
+    "color": "initial"
   },
   "#connected-table tr td:first-child": {
     "color": "#860288"

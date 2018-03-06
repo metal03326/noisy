@@ -16,7 +16,7 @@
   ".playlist-item": {
     "color": "#fffd00"
   },
-  ".playlist-item.selected": {
+  ".playlist-item.selected,.item-menu-items": {
     "color": "#000",
     "background": "#fff"
   },
