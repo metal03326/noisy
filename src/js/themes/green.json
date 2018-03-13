@@ -15,7 +15,7 @@
   ".playlist": {
     "background-image": "repeating-linear-gradient(to bottom,#e0fccc,#e0fccc 32px,#ecfddf 32px,#ecfddf 64px)"
   },
-  ".playlist-item.selected": {
+  ".playlist-item.selected,.item-menu-items": {
     "background": "#6daa41",
     "color": "#fff"
   },

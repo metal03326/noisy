@@ -286,7 +286,7 @@ class Cloud {
 		} ) );
 	}
 
-	_preload( url, item )
+	_preload( url, item, tagsOnly )
 	{
 		n.setItemState( 'w', false, item );
 
@@ -295,6 +295,31 @@ class Cloud {
 			this.fetch( url, 'GET', void 0, {}, 'arraybuffer' ).then( buffer =>
 			{
 				let extension = item.dataset.placeholder.split( '.' ).pop();
+
+				// Read tags if not in Power Save mode and no tags were previously been read
+				if ( ( !n.powerSaveMode && !n.hasTags( item ) ) || tagsOnly )
+				{
+					const icon = item.querySelector( '.playback-status' ).dataset.icon;
+
+					// Show loading indicator when reading tags
+					n.setItemState( 'w', false, item, false );
+
+					n.readTags( buffer, extension ).then( tags =>
+					{
+						// Hide loading indicator if it was loading, but keep it otherwise (play)
+						n.setItemState( icon !== 'w' ? icon : null, false, item, false );
+
+						// Update tags
+						n.updateItemTags( tags, item );
+					} );
+				}
+
+				// Do not play the item if we only wanted tags being read
+				if ( tagsOnly )
+				{
+					return;
+				}
+
 				let mimeType  = 'unknown';
 
 				switch ( extension )
@@ -312,24 +337,6 @@ class Cloud {
 					case 'wav':
 						mimeType = 'audio/wav';
 						break;
-				}
-
-				// Read tags if not in Power Save mode
-				if ( !n.powerSaveMode )
-				{
-					const icon = item.querySelector( '.playback-status' ).dataset.icon;
-
-					// Show loading indicator when reading tags
-					n.setItemState( 'w', false, item, false );
-
-					n.readTags( buffer, extension ).then( tags =>
-					{
-						// Hide loading indicator if it was loading, but keep it otherwise (play)
-						n.setItemState( icon !== 'w' ? icon : null, false, item, false );
-
-						// Update tags
-						n.updateItemTags( tags, item );
-					} );
 				}
 
 				// Check if current item is supported by the browser
@@ -403,13 +410,13 @@ class Cloud {
 		} );
 	}
 
-	preload( item )
+	preload( item, tagsOnly )
 	{
 		if ( !this.urlManager.get( item.dataset.url ) )
 		{
 			if ( !this.usesIds && this.constructor.isValid( item ) )
 			{
-				this._preload( item.dataset.tempurl, item );
+				this._preload( item.dataset.tempurl, item, tagsOnly );
 			}
 			else
 			{
@@ -433,7 +440,7 @@ class Cloud {
 
 						n.saveActivePlaylist();
 
-						this._preload( item.dataset.tempurl, item );
+						this._preload( item.dataset.tempurl, item, tagsOnly );
 					} ).catch( _ =>
 					{
 						n.log( 'connection-retry', loop.index );

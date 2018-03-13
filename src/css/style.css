@@ -147,8 +147,7 @@
 }
 
 [data-icon]:before,
-.select:after,
-.confirmation .delete-icon:before
+.select:after
 {
 	font-family             : 'Noisy';
 	content                 : attr(data-icon);
@@ -175,12 +174,6 @@
 	animation        : spin 1s infinite linear;
 }
 
-/* Special case for delete confirmation */
-.confirmation .delete-icon:before
-{
-	content : 'o';
-}
-
 /*Common theme rules*/
 a
 {
@@ -194,7 +187,8 @@ a
 
 #battery-level-menu-handle:hover,
 .menu-ul-li:hover,
-[data-menulistener]:hover
+[data-menulistener]:hover,
+.item-menu-item:hover
 {
 	opacity : .6;
 }
@@ -385,8 +379,8 @@ button
 
 .playlist-item
 {
+	position    : relative;
 	height      : 32px;
-	overflow    : hidden;
 	white-space : nowrap;
 	font-size   : 16px;
 	align-items : center;
@@ -614,17 +608,56 @@ button,
 	flex : 1 1 auto;
 }
 
-.delete-icon
+.item-menu
 {
 	outline   : none;
 	margin    : 0 5px;
 	width     : 16px;
-	font-size : 0;
+	font-size : 16px;
 }
 
-.selected .delete-icon
+.playlist-item:not(.selected) .item-menu
 {
-	font-size : 16px;
+	visibility : hidden;
+}
+
+.item-menu-items
+{
+	position   : absolute;
+	right      : 0;
+	top        : 100%;
+	font-size  : 16px;
+	padding    : 0 10px;
+	visibility : hidden;
+	opacity    : 0;
+	transition : visibility .3s linear;
+
+	/* Without z-index icons act as a transparent elements (durations of underlying items is visible in the menu items) */
+	z-index    : 1;
+}
+
+/* Make sure last 3 items in the playlist pop the menu up, if they are not the first 3 items */
+.playlist-item:nth-last-child(1):not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)) .item-menu-items,
+.playlist-item:nth-last-child(2):not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)) .item-menu-items,
+.playlist-item:nth-last-child(3):not(:nth-child(1)):not(:nth-child(2)):not(:nth-child(3)) .item-menu-items
+{
+	top    : auto;
+	bottom : 100%;
+}
+
+.item-menu:focus .item-menu-items
+{
+	opacity    : 1;
+	visibility : visible;
+}
+
+.item-menu-item
+{
+	height          : 32px;
+	display         : flex;
+	flex-direction  : column;
+	align-items     : flex-end;
+	justify-content : center;
 }
 
 #volume
