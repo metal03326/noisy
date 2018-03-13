@@ -84,7 +84,8 @@
 	},
 	"whatsnew"    : [
 		"Restructuring of action buttons (Play, Pause, etc.)",
-		"New playlist find system"
+		"New playlist find system",
+		"New item dropdown menu"
 	],
 	"placeholders": {
 		"save-playlist-window-filename": "Enter filename"
@@ -195,6 +196,7 @@
 		"splash-screen-text": "If you are seeing this message for too long, this probably means the settings of Noisy are corrupted. If you are in Dev channel, try <a href=\"javascript:(function(){try{var settings=JSON.parse(localStorage.getItem('preferences'));localStorage.setItem('preferences',JSON.stringify(settings))}catch(e){};location.replace('//'+location.host+'/')})()\" style=\"text-decoration:none;color:red\">leaving it</a>. If not you can <a href=\"javascript:localStorage.removeItem('preferences'),location.reload()\" style=\"text-decoration:none;color:red\">click here to delete the settings</a>. If that doesn't help, try <a href=\"javascript:localStorage.removeItem('playlists'),location.reload()\" style=\"text-decoration:none;color:red\">deleting the playlists</a>, too."
 	},
 	"itemMenu"   : {
-		"delete-item": "Delete"
+		"delete-item": "Delete",
+		"read-item": "Read tags"
 	}
 }

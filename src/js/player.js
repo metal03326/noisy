@@ -1996,6 +1996,18 @@ let n = {
 	},
 
 	/**
+	 * Check if any tags for that item were read
+	 * @param {HTMLElement} item Item to check for tags
+	 * @returns {Boolean}
+	 */
+	hasTags( item )
+	{
+		const { artist, title, album, date } = item.dataset;
+
+		return !!(artist || title || album || date);
+	},
+
+	/**
 	 * NB initialization function. Called on window load
 	 */
 	init()
@@ -3268,6 +3280,11 @@ let n = {
 		{
 			return n.deleteItems();
 		}
+		// Read tags
+		else if ( clickedElement.matches( '.read-item' ) )
+		{
+			return n[ n.getCloud( row ) ].preload( row, true );
+		}
 		// Otherwise check if user clicked add to queue icon and add the item to the queue if true
 		else if ( clickedElement.matches( '.item-add-to-queue' ) )
 		{
@@ -3745,7 +3762,7 @@ let n = {
 		// Create duration container if not already created and fill it
 		if ( !durationContainer.length )
 		{
-			item.innerHTML += `<span class="item-duration">${duration}</span><div class="item-menu" tabindex="-1" data-icon="M"><div class="item-menu-items" tabindex="-1"><div class="item-menu-item" tabindex="-1"><div class="delete-item">${n.lang.itemMenu['delete-item']}</div></div></div></div>`;
+			item.innerHTML += `<span class="item-duration">${duration}</span><div class="item-menu" tabindex="-1" data-icon="M"><div class="item-menu-items" tabindex="-1"><div class="item-menu-item" tabindex="-1"><div class="delete-item">${n.lang.itemMenu['delete-item']}</div></div><div class="item-menu-item" tabindex="-1"><div class="read-item">${n.lang.itemMenu['read-item']}</div></div></div></div>`;
 		}
 		// Otherwise just fill the already there duration element
 		else
@@ -4489,14 +4506,19 @@ let n = {
 	 */
 	updateItemTags( tags, item, playlistId = n.activePlaylistId )
 	{
+		const playlist = document.getElementById( playlistId );
+
 		// Get already rendered item
-		item = item.tagName ? item : document.querySelector( `#${playlistId} .playlist-item[data-url="${item}"]` );
+		item = item.tagName ? item : playlist.querySelector( `.playlist-item[data-url="${item}"]` );
 
 		// Add tags as data attributes
 		Object.assign( item.dataset, tags );
 
 		// Re-render the item
 		n.renderItem( item );
+
+		// Save updated tags
+		n.savePlaylist( playlist );
 	},
 
 	/**
