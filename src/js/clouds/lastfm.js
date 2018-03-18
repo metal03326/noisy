@@ -215,7 +215,7 @@ let lastfm = new Cloud( {
 	 */
 	scrobble()
 	{
-		if ( n.pref.scrobbling && !n.powerSaveMode )
+		if ( n.pref.scrobbling && !n.pref.powerSaver )
 		{
 			this.queue.add();
 		}

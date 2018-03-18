@@ -185,8 +185,7 @@ a
 	color : currentColor;
 }
 
-#battery-level-menu-handle:hover,
-.menu-ul-li:hover,
+#the-menu-trigger:hover,
 [data-menulistener]:hover,
 .item-menu-item:hover
 {
@@ -225,7 +224,6 @@ button
 .one-tab #playlists-tabs,
 .playlists-tabs-li:not(.active) .playlist-edit,
 .playlists-tabs-li:not(.active) .playlist-remove,
-#battery-level-menu-handle:not([title]) #battery-cap,
 #add-window-files:empty,
 .window:not(#add-window) .local-icon,
 .window:not(.exists) .exists-text,
@@ -268,11 +266,6 @@ button
 	cursor    : default;
 	padding   : 0 10px;
 	font-size : 20px;
-}
-
-#header-left > div:first-child
-{
-	padding : .13em 0;
 }
 
 .nav-inputs-li
@@ -367,14 +360,15 @@ button
 	background-attachment : local;
 }
 
-.one-tab #header-left
+.one-tab #the-menu-trigger
 {
-	font-size : 14px;
+	font-size : 22px;
+	padding: 4px 5px 0 5px;
 }
 
 .one-tab #the-menu
 {
-	font-size : 16px;
+	font-size : 22px;
 }
 
 .playlist-item
@@ -623,17 +617,20 @@ button,
 
 .item-menu-items
 {
-	position   : absolute;
-	right      : 0;
-	top        : 100%;
-	font-size  : 16px;
-	padding    : 0 10px;
-	visibility : hidden;
-	opacity    : 0;
-	transition : visibility .3s linear;
+	position    : absolute;
+	right       : 0;
+	top         : 100%;
+	font-size   : 16px;
+	padding     : 0 10px;
+	visibility  : hidden;
+	opacity     : 0;
+	transition  : visibility .3s linear;
+
+	/* When item is playing it's font is bold - menu shouldn't be */
+	font-weight : 400;
 
 	/* Without z-index icons act as a transparent elements (durations of underlying items is visible in the menu items) */
-	z-index    : 1;
+	z-index     : 1;
 }
 
 /* Make sure last 3 items in the playlist pop the menu up, if they are not the first 3 items */
@@ -658,6 +655,10 @@ button,
 	flex-direction  : column;
 	align-items     : flex-end;
 	justify-content : center;
+
+	/* Since the parent has pointer-events set to none (in order to close the menu if user clicks on it again), we need
+	to return the pointer events to all for the menu */
+	pointer-events  : all;
 }
 
 #volume
@@ -922,18 +923,28 @@ h6
 	margin-right : 5px;
 }
 
+#the-menu-trigger
+{
+	font-size : 44px;
+	padding   : 8px 10px 0 10px;
+}
+
 #the-menu
 {
-	font-size  : 36px;
-	visibility : hidden;
-	opacity    : 0;
-	width      : 100%;
-	z-index    : 2000;
-	position   : absolute;
-	background : inherit;
-	padding    : 0;
-	text-align : center;
-	transition : visibility .3s linear;
+	font-size      : 36px;
+	visibility     : hidden;
+	opacity        : 0;
+	width          : 100%;
+	z-index        : 2000;
+	position       : absolute;
+	background     : inherit;
+	padding        : 0;
+	text-align     : center;
+	transition     : visibility .3s linear;
+
+	/* Since the parent has pointer-events set to none (in order to close the menu if user clicks on it again), we need
+	to return the pointer events to all for the menu */
+	pointer-events : all;
 }
 
 #footer a
@@ -947,20 +958,26 @@ h6
 	font-size : 27px;
 }
 
-.menu-ul-li
+.menu-item
 {
-	outline   : none;
-	font-size : inherit;
-}
-
-.menu-ul-li:last-child
-{
-	margin-bottom : 2px;
+	outline         : none;
+	font-size       : inherit;
+	display         : flex;
+	align-items     : center;
+	justify-content : center;
+	padding         : 3px 0;
 }
 
 #header
 {
 	background : inherit;
+}
+
+#header-left:focus,
+.item-menu:focus
+{
+	/* Make sure if user clicks on the menu icon again, menu will close */
+	pointer-events : none;
 }
 
 #header-left:focus #the-menu
@@ -1229,7 +1246,6 @@ h6
 	padding : 0;
 }
 
-#preference-performance-powersaver-threshold,
 #lastfm-preferences
 {
 	margin-left : 30px;
@@ -1238,71 +1254,6 @@ h6
 .scrobble-action
 {
 	margin-left : 4px;
-}
-
-#battery-level-menu-handle
-{
-	width    : 2em;
-	height   : 1.15em;
-	margin   : .25em 0;
-	position : relative;
-}
-
-.battery-level
-{
-	width        : 0;
-	height       : 0;
-	margin       : 2px auto;
-	background   : currentColor;
-	border-top   : .25em solid transparent;
-	border-right : 1em solid transparent;
-}
-
-#battery-cap
-{
-	width      : .4em;
-	height     : .2em;
-	background : currentColor;
-	position   : absolute;
-	top        : .1em;
-	left       : .8em;
-	z-index    : -1;
-}
-
-.battery-level-green-full
-{
-	border-top-color   : #90ee90;
-	border-right-color : #90ee90;
-}
-
-.battery-level-green-half
-{
-	border-top-color   : transparent;
-	border-right-color : #90ee90;
-}
-
-.battery-level-orange-full
-{
-	border-top-color   : #ffb79a;
-	border-right-color : #ffb79a;
-}
-
-.battery-level-orange-half
-{
-	border-top-color   : transparent;
-	border-right-color : #ffb79a;
-}
-
-.battery-level-red-full
-{
-	border-top-color   : #ffa39c;
-	border-right-color : #ffa39c;
-}
-
-.battery-level-red-half
-{
-	border-top-color   : transparent;
-	border-right-color : #ffa39c;
 }
 
 #console-content div:last-child

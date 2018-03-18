@@ -61,7 +61,7 @@ let urlManager = {
 	removeExcess()
 	{
 		// Remove all but last items if we are in power saving mode
-		if ( n.powerSaveMode )
+		if ( n.pref.powerSaver )
 		{
 			while ( this.urls.order.length > 1 )
 			{
