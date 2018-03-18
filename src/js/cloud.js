@@ -487,18 +487,6 @@ class Cloud {
 			// Format duration using toHHMMSS() method defined in main.js
 			item.dataset.duration = Math.floor( n.audio.duration ).toString().toHHMMSS();
 
-			// Checks for Mozilla's mozGetMetadata() method of the HTML
-			// Audio tag and uses it to get more metadata out of the file
-			if ( 'function' === typeof n.audio.mozGetMetadata && !n.powerSaveMode )
-			{
-				let metadata = n.audio.mozGetMetadata();
-
-				Object.keys( metadata ).forEach( prop =>
-				{
-					item.dataset[ prop.toLowerCase() ] = metadata[ prop ];
-				} );
-			}
-
 			// Save playlist as we have new data
 			n.savePlaylist( item.parentNode );
 
