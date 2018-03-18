@@ -117,10 +117,6 @@ let n = {
 	// Starting position (either X or Y) at the beginning of the drag or when element (playlist item/tab) swap happens
 	movingStart: -1,
 
-	// Shows if Noisy is in power saving mode (meaning the device is not charging and battery level is below the
-	// threshold set) or not
-	powerSaveMode: false,
-
 	// Preferences object - all preferences are available here
 	pref,
 
@@ -282,38 +278,24 @@ let n = {
 
 		let splashItems = n.lang.splash;
 
-		Object.keys( splashItems ).forEach( key =>
-		{
-			// When changing language the splash screen isn't present in the DOM, so we need fake object to set the
-			// HTML to
-			let splashNode       = document.getElementById( key ) || {};
-			splashNode.innerHTML = splashItems[ key ];
-		} );
+		//todo: When changing language the splash screen is not in the DOM and when Noisy is loading the splash screen
+		// is not visible. The only reason to translate it is to show error in proper language only in the edge cases
+		// where language file loaded, but there was another error. Maybe remove this translation and stick only with
+		// English for the splash screen?
+		Object.keys( splashItems ).forEach( key => (document.getElementById( key ) || {}).innerHTML = splashItems[ key ] );
 
 		let menuItems = n.lang.menu;
-		Object.keys( menuItems ).forEach( key =>
-		{
-			document.getElementById( key ).innerHTML = menuItems[ key ];
-		} );
+		Object.keys( menuItems ).forEach( key => document.getElementById( key ).innerHTML = menuItems[ key ] );
 
 		let windowItems = n.lang.window;
-		Object.keys( windowItems ).forEach( key =>
-		{
-			document.getElementById( key ).innerHTML = n.literalize( windowItems[ key ] );
-		} );
+		Object.keys( windowItems ).forEach( key => document.getElementById( key ).innerHTML = n.literalize( windowItems[ key ] ) );
 
 		let placeholderItems = n.lang.placeholders;
-		Object.keys( placeholderItems ).forEach( key =>
-		{
-			document.getElementById( key ).placeholder = placeholderItems[ key ];
-		} );
+		Object.keys( placeholderItems ).forEach( key => document.getElementById( key ).placeholder = placeholderItems[ key ] );
 
 		let preferenceItems = n.lang.preferences;
 		let id              = 'preferences-tabs';
-		Object.keys( preferenceItems ).forEach( key =>
-		{
-			document.getElementById( id ).querySelector( `button[data-preference="${key}"]` ).innerHTML = preferenceItems[ key ];
-		} );
+		Object.keys( preferenceItems ).forEach( key => document.getElementById( id ).querySelector( `button[data-preference="${key}"]` ).innerHTML = preferenceItems[ key ] );
 
 		let actionItems = n.lang.actions;
 		let secondId    = 'keyboard-shortcuts';
@@ -335,10 +317,7 @@ let n = {
 
 		let themeItems = n.lang.themes;
 		id             = 'preference-theme';
-		Object.keys( themeItems ).forEach( key =>
-		{
-			document.getElementById( id ).querySelector( `option[value="${key}"]` ).innerHTML = themeItems[ key ];
-		} );
+		Object.keys( themeItems ).forEach( key => document.getElementById( id ).querySelector( `option[value="${key}"]` ).innerHTML = themeItems[ key ] );
 
 		let buttonItems = n.lang.buttons;
 		Object.keys( buttonItems ).forEach( key =>
@@ -382,10 +361,7 @@ let n = {
 		} );
 
 		let helpItems = n.lang.help;
-		Object.keys( helpItems ).forEach( key =>
-		{
-			document.getElementById( key ).title = helpItems[ key ];
-		} );
+		Object.keys( helpItems ).forEach( key => document.getElementById( key ).title = helpItems[ key ] );
 
 		let faq = n.lang.faq;
 
@@ -666,16 +642,6 @@ let n = {
 		{
 			_add( item );
 		}
-	},
-
-	/**
-	 * Enables or disables features, depending on the state of power save mode
-	 */
-	applyPowerSaveMode()
-	{
-		n.initAnimations();
-		n.initBlur();
-		n.changeCounterState( document.getElementById( 'preference-enable-counter' ).checked );
 	},
 
 	/**
@@ -1121,9 +1087,6 @@ let n = {
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
 		document.getElementById( 'preference-enable-scrobbling' ).addEventListener( changeEvent, e => n.changeScrobblingState( e.currentTarget.checked ) );
 
-		// We need to enable/diable threshold dropdown depending on the state of the checkbox
-		document.getElementById( 'preference-enable-powersaver' ).addEventListener( changeEvent, e => n.changePowerSaverState( e.currentTarget.checked ) );
-
 		// We need to enable/diable range input and buttons depending on the state of the checkbox
 		document.getElementById( 'preference-enable-counter' ).addEventListener( changeEvent, e => n.changeCounterState( e.currentTarget.checked ) );
 
@@ -1201,7 +1164,7 @@ let n = {
 
 		counter.innerHTML = '';
 
-		counter.hidden = !state || n.powerSaveMode;
+		counter.hidden = !state || n.pref.powerSaver;
 	},
 
 	/**
@@ -1235,31 +1198,6 @@ let n = {
 		document.getElementById( tab.dataset.for ).hidden = false;
 
 		n.saveActivePlaylistIdDelayed();
-	},
-
-	/**
-	 * Method to enable or disable threshold dropdown when user checks/un-checks Enable Power saver option
-	 * @param {Boolean} enabled Required. State to which we should set the dropdown
-	 */
-	changePowerSaverState( enabled )
-	{
-		document.getElementById( 'power-saver-state' ).disabled = !enabled;
-
-		// We need to change power save mode also
-		if ( enabled && n.battery )
-		{
-			n.updateBatteryStatus();
-		}
-		else
-		{
-			n.powerSaveMode = false;
-			n.applyPowerSaveMode();
-
-			if ( n.battery )
-			{
-				n.updateBatteryStatus();
-			}
-		}
 	},
 
 	/**
@@ -2026,8 +1964,6 @@ let n = {
 			n.applyTheme()
 		] ).then( n.checkConnections ).then( _ =>
 		{
-			n.initBatteryWatcher().then( _ => n.applyPowerSaveMode() );
-
 			n.initAudio();
 
 			// Set the counter for lastfm
@@ -2195,19 +2131,19 @@ let n = {
 		// Enable animations only if user said so
 		let rules = [];
 
-		if ( !n.powerSaveMode && n.pref.settings.checkboxes[ 'preference-enable-animations' ] )
+		if ( !n.pref.powerSaver && n.pref.settings.checkboxes[ 'preference-enable-animations' ] )
 		{
 			const duration    = '.5s';
 			const timing      = 'linear';
 			const last        = ` ${duration} ${timing}`;
 			const join        = `${last},`;
 			const transitions = {
-				'#the-menu,#splash'                                                                               : [ 'opacity', 'visibility' ],
-				'.preferences-item,.add-item'                                                                     : [ 'background', 'color' ],
-				'#drop-zone'                                                                                      : 'border',
-				'.window,.cloud-icon,#battery-level-menu-handle:hover,.menu-ul-li:hover,[data-menulistener]:hover': 'opacity',
-				'#color-bulb'                                                                                     : 'color',
-				'#header,#playlists-wrapper,#footer,#add-window-files'                                            : 'filter'
+				'#the-menu,#splash'                                                                     : [ 'opacity', 'visibility' ],
+				'.preferences-item,.add-item'                                                           : [ 'background', 'color' ],
+				'#drop-zone'                                                                            : 'border',
+				'.window,.cloud-icon,#the-menu-trigger:hover,.menu-item:hover,[data-menulistener]:hover': 'opacity',
+				'#color-bulb'                                                                           : 'color',
+				'#header,#playlists-wrapper,#footer,#add-window-files'                                  : 'filter'
 			};
 
 			rules = [ spinKeyframes ];
@@ -2236,7 +2172,7 @@ let n = {
 	{
 		let rules = [];
 
-		if ( !n.powerSaveMode )
+		if ( !n.pref.powerSaver )
 		{
 			rules = [
 				'.window-opened~*{filter:blur(5px)}',
@@ -2358,28 +2294,6 @@ let n = {
 
 		// Detect codecs support
 		n.detectFormats();
-	},
-
-	/**
-	 * Watches battery levels and enters power saving mode if user chose so when battery level is low
-	 */
-	initBatteryWatcher()
-	{
-		// Check for newer specification of Battery API
-		if ( navigator.getBattery )
-		{
-			return navigator.getBattery().then( battery =>
-			{
-				n.battery = battery;
-				n.battery.addEventListener( 'chargingchange', n.updateBatteryStatus );
-				n.battery.addEventListener( 'levelchange', n.updateBatteryStatus );
-
-				// Delay initial set, to wait for the proper Noisy initialization
-				setTimeout( n.updateBatteryStatus, 1000 );
-			} );
-		}
-
-		return Promise.reject( new Error( 'No Battery API support' ) );
 	},
 
 	/**
@@ -2808,7 +2722,7 @@ let n = {
 	notify( item = n.activeItem, request )
 	{
 		// We don't do notifications if we are in power save mode
-		if ( !n.powerSaveMode )
+		if ( !n.pref.powerSaver )
 		{
 			// Request desktop notification permission if not already and user wants to
 			if ( request && Notification.permission !== 'granted' )
@@ -3121,7 +3035,7 @@ let n = {
 		document.getElementById( 'selected-playback-files' ).value = '';
 
 		// Read tags, if not in a Power Save mode
-		if ( !n.powerSaveMode )
+		if ( !n.pref.powerSaver )
 		{
 			files.forEach( ( file, index ) =>
 			{
@@ -3223,12 +3137,6 @@ let n = {
 				scrollIntoViewIfOutOfView( item );
 			}
 		}
-	},
-
-	onPowerSaverStateChange( select )
-	{
-		n.pref.powerSaverState = select.value;
-		n.updateBatteryStatus();
 	},
 
 	onRenameKeyDown( e )
@@ -3762,7 +3670,7 @@ let n = {
 		// Create duration container if not already created and fill it
 		if ( !durationContainer.length )
 		{
-			item.innerHTML += `<span class="item-duration">${duration}</span><div class="item-menu" tabindex="-1" data-icon="M"><div class="item-menu-items" tabindex="-1"><div class="item-menu-item" tabindex="-1"><div class="delete-item">${n.lang.itemMenu['delete-item']}</div></div><div class="item-menu-item" tabindex="-1"><div class="read-item">${n.lang.itemMenu['read-item']}</div></div></div></div>`;
+			item.innerHTML += `<span class="item-duration">${duration}</span><div class="item-menu" tabindex="-1" data-icon="M"><div class="item-menu-items" tabindex="-1"><div class="item-menu-item" tabindex="-1"><div class="delete-item">${n.lang.itemMenu[ 'delete-item' ]}</div></div><div class="item-menu-item" tabindex="-1"><div class="read-item">${n.lang.itemMenu[ 'read-item' ]}</div></div></div></div>`;
 		}
 		// Otherwise just fill the already there duration element
 		else
@@ -4352,6 +4260,11 @@ let n = {
 		n.pref.muted = !n.audio.muted;
 	},
 
+	togglePowerSaver()
+	{
+		n.pref.powerSaver = !n.pref.powerSaver;
+	},
+
 	/**
 	 * Translate Noisy to the language set in the preferences.
 	 */
@@ -4377,104 +4290,6 @@ let n = {
 
 				return Promise.resolve();
 			} );
-		}
-	},
-
-	/**
-	 * Updates battery meter and sets Noisy in power save mode
-	 */
-	updateBatteryStatus()
-	{
-		let batteryContainer = document.getElementById( 'battery-level-menu-handle' );
-		let levels           = document.querySelectorAll( '.battery-level' );
-		let level            = n.battery.level;
-		let level1;
-		let level2;
-		let level3;
-		let lvl;
-		let threshold        = parseInt( document.getElementById( 'power-saver-state' ).value, 10 ) / 100;
-
-		for ( let i = 0; i < levels.length; i++ )
-		{
-			lvl = levels[ i ];
-			lvl.classList.remove( 'battery-level-green-full' );
-			lvl.classList.remove( 'battery-level-green-half' );
-			lvl.classList.remove( 'battery-level-orange-full' );
-			lvl.classList.remove( 'battery-level-orange-half' );
-			lvl.classList.remove( 'battery-level-red-full' );
-			lvl.classList.remove( 'battery-level-red-half' );
-		}
-
-		if ( n.battery.level <= threshold && !n.battery.charging && n.pref.powerSaverEnabled )
-		{
-			if ( !n.powerSaveMode )
-			{
-				n.powerSaveMode = true;
-				n.applyPowerSaveMode();
-			}
-		}
-		else
-		{
-			if ( n.powerSaveMode )
-			{
-				n.powerSaveMode = false;
-				n.applyPowerSaveMode();
-			}
-		}
-
-		if ( !n.battery.charging && n.pref.powerSaverEnabled )
-		{
-			batteryContainer.setAttribute( 'title', `${Math.floor( n.battery.level * 100 )}%` );
-
-			if ( 1 >= level && .83 <= level )
-			{
-				level1 = 'battery-level-green-full';
-				level2 = 'battery-level-green-full';
-				level3 = 'battery-level-green-full';
-			}
-			else if ( .82 >= level && .66 <= level )
-			{
-				level1 = 'battery-level-green-full';
-				level2 = 'battery-level-green-full';
-				level3 = 'battery-level-green-half';
-			}
-			else if ( .65 >= level && .50 <= level )
-			{
-				level1 = 'battery-level-orange-full';
-				level2 = 'battery-level-orange-full';
-			}
-			else if ( .49 >= level && .33 <= level )
-			{
-				level1 = 'battery-level-orange-full';
-				level2 = 'battery-level-orange-half';
-			}
-			else if ( .32 >= level && .16 <= level )
-			{
-				level1 = 'battery-level-red-full';
-			}
-			else
-			{
-				level1 = 'battery-level-red-half';
-			}
-
-			if ( level1 )
-			{
-				document.getElementById( 'battery-level-1' ).classList.add( level1 );
-			}
-
-			if ( level2 )
-			{
-				document.getElementById( 'battery-level-2' ).classList.add( level2 );
-			}
-
-			if ( level3 )
-			{
-				document.getElementById( 'battery-level-3' ).classList.add( level3 );
-			}
-		}
-		else
-		{
-			batteryContainer.removeAttribute( 'title' );
 		}
 	},
 

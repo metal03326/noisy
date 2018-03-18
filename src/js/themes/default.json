@@ -73,7 +73,7 @@
   ".selected .item-queue": {
     "color": "#000"
   },
-  "#volume-progress,#playback-progress": {
+  "#volume-progress,#playback-progress,.menu-item.active": {
     "background": "#4f4f4f"
   },
   "#volume,#progress": {

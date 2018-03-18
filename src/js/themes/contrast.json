@@ -41,6 +41,10 @@
     "border-color": "#fffd00",
     "background": "#fffd00"
   },
+  "#volume-progress,#playback-progress,.menu-item.active": {
+    "background": "#fff",
+    "color": "#000"
+  },
   "#volume,#progress": {
     "background": "#000"
   },
@@ -89,7 +93,7 @@
     "background": "#fffd00",
     "color": "#000"
   },
-  ".playlists-tabs-li.active a,.menu-ul-li:hover": {
+  ".playlists-tabs-li.active a,.menu-item:hover": {
     "color": "#000"
   },
   "#drop-zone.hover": {

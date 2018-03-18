@@ -36,6 +36,9 @@
     "border-color": "#cfcfcf",
     "background": "#ececec"
   },
+  "#volume-progress,#playback-progress,.menu-item.active": {
+    "background": "#fff"
+  },
   "#volume,#progress": {
     "background": "#e1e7ef"
   },

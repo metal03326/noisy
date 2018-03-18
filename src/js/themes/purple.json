@@ -35,7 +35,7 @@
   "#volume,#progress": {
     "background": "#ba69bd"
   },
-  "#volume-progress,#playback-progress": {
+  "#volume-progress,#playback-progress,.menu-item.active": {
     "background": "#d297d5"
   },
   ".add-item.active": {

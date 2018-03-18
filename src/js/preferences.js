@@ -14,7 +14,6 @@ let pref = {
 	settings: {
 		//todo: Join values and checkboxes and use Object.values() with typeof to figure out if it's a checkbox or not
 		values                       : {
-			'power-saver-state'                   : '15',
 			'preference-user-language'            : 'en',
 			'preference-theme'                    : 'default',
 			'preference-scrobbling-position'      : '50',
@@ -27,7 +26,6 @@ let pref = {
 			'preference-enable-notifications'   : false,
 			'preference-enable-counter'         : true,
 			'preference-enable-animations'      : true,
-			'preference-enable-powersaver'      : true,
 			'preference-enable-scrobbling'      : true,
 			'preference-hide-playlist-tabs'     : false,
 			'preference-playback-follows-cursor': false,
@@ -52,6 +50,7 @@ let pref = {
 		activePlaylistId             : null,
 		muted                        : false,
 		playbackOrder                : 0,
+		powerSaver                   : false,
 		dropbox                      : { accessToken: null },
 		googledrive                  : { accessToken: null },
 		lastfm                       : { accessToken: null }
@@ -82,7 +81,7 @@ let pref = {
 	 */
 	clean( exceptionList = [] )
 	{
-		let removeExact = [ 'devChannel', 'showWelcome' ];
+		let removeExact = [ 'devChannel', 'showWelcome', 'preference-enable-powersaver', 'power-saver-state' ];
 		let removeRegEx = [ 'showWhatsNew' ];
 
 		removeExact.forEach( key =>
@@ -90,6 +89,8 @@ let pref = {
 			if ( !exceptionList.includes( key ) )
 			{
 				delete this.settings[ key ];
+				delete this.settings.values[ key ];
+				delete this.settings.checkboxes[ key ];
 			}
 		} );
 
@@ -102,6 +103,8 @@ let pref = {
 				if ( !exceptionList.includes( key ) && key.match( new RegExp( removeKey ) ) )
 				{
 					delete this.settings[ key ];
+					delete this.settings.values[ key ];
+					delete this.settings.checkboxes[ key ];
 				}
 			} );
 		} );
@@ -162,6 +165,9 @@ let pref = {
 
 		// Set mute state depending on loaded value
 		n.audio.muted = this.settings.muted;
+
+		// Make sure button has the proper state when loading preferences;
+		this.powerSaver = this.settings.powerSaver;
 
 		n.updateVolumeState();
 
@@ -297,18 +303,6 @@ let pref = {
 		}
 	},
 
-	set powerSaverState( value )
-	{
-		let shouldSave = this.settings.values[ 'power-saver-state' ] !== value;
-
-		this.settings.values[ 'power-saver-state' ] = value;
-
-		if ( shouldSave )
-		{
-			this.save();
-		}
-	},
-
 	set accessToken( object )
 	{
 		// Some clouds, like last.fm, have to fetch accessToken with an additional call. This is why we have
@@ -405,6 +399,40 @@ let pref = {
 		}
 	},
 
+	get powerSaver()
+	{
+		return this.settings.powerSaver;
+	},
+
+	set powerSaver( value )
+	{
+		const shouldSave = this.settings.powerSaver !== value;
+
+		this.settings.powerSaver = value;
+
+		if ( value )
+		{
+			// Mark menu item as active
+			document.getElementById( 'togglePowerSaver' ).classList.add( 'active' );
+
+			// Add icon in the footer to indicate Power Saver is active
+			document.getElementById( 'power-saver-activated' ).dataset.icon = '|';
+		}
+		else
+		{
+			// Remove menu highlight
+			document.getElementById( 'togglePowerSaver' ).classList.remove( 'active' );
+
+			// Remove icon from footer
+			delete document.getElementById( 'power-saver-activated' ).dataset.icon;
+		}
+
+		if ( shouldSave )
+		{
+			this.save();
+		}
+	},
+
 	set volume( value )
 	{
 		// Fix 0.7000000000000001 to be 0.7
@@ -439,11 +467,6 @@ let pref = {
 	get notify()
 	{
 		return this.settings.checkboxes[ 'preference-enable-notifications' ];
-	},
-
-	get powerSaverEnabled()
-	{
-		return this.settings.checkboxes[ 'preference-enable-powersaver' ];
 	},
 
 	get cursorFollowsPlaybackEnabled()

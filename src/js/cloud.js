@@ -297,7 +297,7 @@ class Cloud {
 				let extension = item.dataset.placeholder.split( '.' ).pop();
 
 				// Read tags if not in Power Save mode and no tags were previously been read
-				if ( ( !n.powerSaveMode && !n.hasTags( item ) ) || tagsOnly )
+				if ( ( !n.pref.powerSaver && !n.hasTags( item ) ) || tagsOnly )
 				{
 					const icon = item.querySelector( '.playback-status' ).dataset.icon;
 

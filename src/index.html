@@ -251,26 +251,6 @@
                             </table>
                         </div>
                         <div id="preference-performance" class="flex-column" hidden>
-                            <label>
-                                <input id="preference-enable-powersaver" type="checkbox"/>
-                                <span id="preference-performance-powersaver"></span>
-                                <i id="preference-powersaver-help" class="help" data-icon="H"></i>
-                            </label>
-                            <label class="form-row">
-                                <span id="preference-performance-powersaver-threshold"></span>
-                                <span class="select form-control">
-                                    <select id="power-saver-state" onchange="n.onPowerSaverStateChange(this);">
-                                        <option>5</option>
-                                        <option>10</option>
-                                        <option>15</option>
-                                        <option>25</option>
-                                        <option>50</option>
-                                        <option>75</option>
-                                        <option>100</option>
-                                    </select>
-                                </span>
-                                %
-                            </label>
                             <div id="preference-performance-notes"></div>
                             <label>
                                 <input id="preference-enable-animations" type="checkbox"/>
@@ -510,22 +490,57 @@
 </div>
 <header id="header" class="flex flex-no-shrink">
     <div id="header-left" tabindex="0">
-        <div id="battery-level-menu-handle">
-            <div id="battery-cap"></div>
-            <div id="battery-level-3" class="battery-level"></div>
-            <div id="battery-level-2" class="battery-level"></div>
-            <div id="battery-level-1" class="battery-level"></div>
-        </div>
+        <div data-icon="m" id="the-menu-trigger"></div>
         <div id="the-menu">
-            <div id="connect" data-menulistener="connect" class="menu-ul-li" tabindex="0" data-icon="<"></div>
-            <div id="showAddFileFolder" data-menulistener="showAddFileFolder" class="menu-ul-li" tabindex="0"
-                 data-icon="="></div>
-            <div id="showSavePlaylist" data-menulistener="showSavePlaylist" class="menu-ul-li" tabindex="0"
-                 data-icon="9"></div>
-            <div id="showLoadPlaylist" data-menulistener="showLoadPlaylist" class="menu-ul-li" tabindex="0"
-                 data-icon="8"></div>
-            <div id="showAbout" data-menulistener="showAbout" class="menu-ul-li" tabindex="0" data-icon=";"></div>
-            <div id="showWhatsNew" data-menulistener="showWhatsNew" class="menu-ul-li" tabindex="0" data-icon="6"></div>
+            <div
+                id="connect"
+                data-menulistener="connect"
+                class="menu-item"
+                tabindex="0"
+                data-icon="<"
+            ></div>
+            <div
+                id="showAddFileFolder"
+                data-menulistener="showAddFileFolder"
+                class="menu-item"
+                tabindex="0"
+                data-icon="="
+            ></div>
+            <div
+                id="showSavePlaylist"
+                data-menulistener="showSavePlaylist"
+                class="menu-item"
+                tabindex="0"
+                data-icon="9"
+            ></div>
+            <div
+                id="showLoadPlaylist"
+                data-menulistener="showLoadPlaylist"
+                class="menu-item"
+                tabindex="0"
+                data-icon="8"
+            ></div>
+            <div
+                id="showAbout"
+                data-menulistener="showAbout"
+                class="menu-item"
+                tabindex="0"
+                data-icon=";"
+            ></div>
+            <div
+                id="showWhatsNew"
+                data-menulistener="showWhatsNew"
+                class="menu-item"
+                tabindex="0"
+                data-icon="6"
+            ></div>
+            <div
+                id="togglePowerSaver"
+                data-menulistener="togglePowerSaver"
+                class="menu-item"
+                tabindex="0"
+                data-icon="|"
+            ></div>
         </div>
     </div>
     <div class="flex-column flex-item-full">
@@ -609,6 +624,7 @@
 </div>
 <footer id="footer" class="flex flex-no-shrink">
     <div class="flex flex-item-full">
+        <div id="power-saver-activated" class="flex flex-align"></div>
         <div id="footer-text" class="flex-item-full flex-ellipsis"></div>
         <button onclick="n.setFooter(null,true);" id="cancel-action" data-icon="*" hidden class="link"></button>
     </div>
